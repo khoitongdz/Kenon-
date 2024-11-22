@@ -6,6 +6,40 @@ local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/khoito
     Acrylic = false,
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.End
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+-- Function to find nearest enemy (example)
+local function findNearestEnemy()
+    local nearestEnemy = nil
+    local shortestDistance = math.huge
+    for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
+        if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") then
+            local distance = (character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
+            if distance < shortestDistance then
+                shortestDistance = distance
+                nearestEnemy = enemy
+            end
+        end
+    end
+    return nearestEnemy
+end
+
+-- Attack function
+local function attackEnemy(target)
+    if target then
+        character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame
+        local remote = game.ReplicatedStorage:WaitForChild("RemoteEvent")  -- Replace with the actual RemoteEvent name
+        remote:FireServer("Attack", target)
+    end
+end
+
+-- Auto attack loop
+while wait(0.1) do
+    local target = findNearestEnemy()
+    if target then
+        attackEnemy(target)
+    end
+end
 -- Modules
 local Toggle = Tabs.Main:AddToggle("Toggle", {Title = "Auto Farm Bone", Default = false })
 Toggle:OnChanged(function(Value)
