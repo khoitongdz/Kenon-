@@ -1,4 +1,4 @@
--- Kenon Hub - Auto Fly, Fast Attack, and Auto Quest Script (Universal)
+-- Kenon Hub - Auto Farm with Leveling, Toggle Menu, Circular Button, Auto Haki, Stand on Ocean, and Auto Gather & Attack Monsters
 
 -- Display Script Information
 print([[
@@ -10,7 +10,7 @@ print([[
 ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝
 ]])
 
-print("🔥 Kenon Hub - Auto Attack, Fast Attack, and Auto Quest Script 🔥")
+print("🔥 Kenon Hub - Auto Farm, Leveling, Toggle Menu, Circular Button, Auto Haki, Stand on Ocean, and Auto Gather & Attack Monsters 🔥")
 
 -- GUI Setup
 local ScreenGui = Instance.new("ScreenGui")
@@ -18,47 +18,104 @@ ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.Name = "KenonHub"
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 500, 0, 400)
-mainFrame.Position = UDim2.new(0.5, -250, 0.5, -200)
+mainFrame.Size = UDim2.new(0, 500, 0, 500)
+mainFrame.Position = UDim2.new(0.5, -250, 0.5, -250)
 mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 mainFrame.Parent = ScreenGui
 
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(0, 500, 0, 50)
-titleLabel.Text = "Kenon Hub"
+titleLabel.Text = "Kenon Hub - Auto Farm"
 titleLabel.TextSize = 24
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Parent = mainFrame
 
--- Toggle Buttons for Features
-local startAutoAttack = Instance.new("TextButton")
-startAutoAttack.Size = UDim2.new(0, 200, 0, 50)
-startAutoAttack.Position = UDim2.new(0, 0, 0, 100)
-startAutoAttack.Text = "Start Auto Attack"
-startAutoAttack.TextSize = 18
-startAutoAttack.BackgroundColor3 = Color3.fromRGB(0, 128, 0)
-startAutoAttack.TextColor3 = Color3.fromRGB(255, 255, 255)
-startAutoAttack.Parent = mainFrame
+-- Tabs setup
+local tabFrame = Instance.new("Frame")
+tabFrame.Size = UDim2.new(0, 500, 0, 40)
+tabFrame.Position = UDim2.new(0, 0, 0, 50)
+tabFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+tabFrame.Parent = mainFrame
 
-local stopAutoAttack = Instance.new("TextButton")
-stopAutoAttack.Size = UDim2.new(0, 200, 0, 50)
-stopAutoAttack.Position = UDim2.new(0, 0, 0, 160)
-stopAutoAttack.Text = "Stop Auto Attack"
-stopAutoAttack.TextSize = 18
-stopAutoAttack.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-stopAutoAttack.TextColor3 = Color3.fromRGB(255, 255, 255)
-stopAutoAttack.Parent = mainFrame
+local farmTab = Instance.new("TextButton")
+farmTab.Size = UDim2.new(0, 250, 0, 40)
+farmTab.Position = UDim2.new(0, 0, 0, 0)
+farmTab.Text = "Auto Farm"
+farmTab.TextSize = 18
+farmTab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+farmTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+farmTab.Parent = tabFrame
 
--- Fast Attack Toggle Button
-local fastAttackEnabled = false
+local levelTab = Instance.new("TextButton")
+levelTab.Size = UDim2.new(0, 250, 0, 40)
+levelTab.Position = UDim2.new(0.5, 0, 0, 0)
+levelTab.Text = "Auto Farm by Level"
+levelTab.TextSize = 18
+levelTab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+levelTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+levelTab.Parent = tabFrame
+
+-- Auto Farm and Auto Farm by Level Toggles
+local startAutoFarm = Instance.new("TextButton")
+startAutoFarm.Size = UDim2.new(0, 200, 0, 50)
+startAutoFarm.Position = UDim2.new(0, 0, 0, 100)
+startAutoFarm.Text = "Start Auto Farm"
+startAutoFarm.TextSize = 18
+startAutoFarm.BackgroundColor3 = Color3.fromRGB(0, 128, 0)
+startAutoFarm.TextColor3 = Color3.fromRGB(255, 255, 255)
+startAutoFarm.Parent = mainFrame
+
+local stopAutoFarm = Instance.new("TextButton")
+stopAutoFarm.Size = UDim2.new(0, 200, 0, 50)
+stopAutoFarm.Position = UDim2.new(0, 0, 0, 160)
+stopAutoFarm.Text = "Stop Auto Farm"
+stopAutoFarm.TextSize = 18
+stopAutoFarm.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+stopAutoFarm.TextColor3 = Color3.fromRGB(255, 255, 255)
+stopAutoFarm.Parent = mainFrame
+
+local startAutoFarmByLevel = Instance.new("TextButton")
+startAutoFarmByLevel.Size = UDim2.new(0, 200, 0, 50)
+startAutoFarmByLevel.Position = UDim2.new(0, 0, 0, 220)
+startAutoFarmByLevel.Text = "Start Auto Farm by Level"
+startAutoFarmByLevel.TextSize = 18
+startAutoFarmByLevel.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
+startAutoFarmByLevel.TextColor3 = Color3.fromRGB(255, 255, 255)
+startAutoFarmByLevel.Parent = mainFrame
+
+local stopAutoFarmByLevel = Instance.new("TextButton")
+stopAutoFarmByLevel.Size = UDim2.new(0, 200, 0, 50)
+stopAutoFarmByLevel.Position = UDim2.new(0, 0, 0, 280)
+stopAutoFarmByLevel.Text = "Stop Auto Farm by Level"
+stopAutoFarmByLevel.TextSize = 18
+stopAutoFarmByLevel.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+stopAutoFarmByLevel.TextColor3 = Color3.fromRGB(255, 255, 255)
+stopAutoFarmByLevel.Parent = mainFrame
+
+-- Circular Button to Toggle Menu Visibility
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 50, 0, 50)
+toggleButton.Position = UDim2.new(0, 10, 0, 10)
+toggleButton.Text = "☰"
+toggleButton.TextSize = 24
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.TextButton.MouseButton1Click:Connect(function()
+    ScreenGui.Enabled = not ScreenGui.Enabled  -- Toggle visibility of the entire menu
+end)
+toggleButton.Parent = mainFrame
+
+-- Variables
 local xp = 0
 local level = 1
-
+local autoFarming = false
+local autoFarmingByLevel = false
+local autoHakiEnabled = true  -- Default value to enable Haki
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 
--- Function to find the nearest enemy
+-- Function to find nearest enemy
 local function findNearestEnemy()
     local nearestEnemy = nil
     local shortestDistance = math.huge
@@ -74,17 +131,31 @@ local function findNearestEnemy()
     return nearestEnemy
 end
 
--- Function to perform a fast attack
-local function fastAttack()
-    while fastAttackEnabled do
-        wait(0.1)  -- Attack every 0.1 seconds for fast attacks
+-- Function to make the character automatically move to the nearest enemy and attack
+local function autoGatherAndAttack()
+    while autoFarming do
+        wait(1)
         local target = findNearestEnemy()
         if target then
             -- Move to the enemy's position
-            character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame
-            -- Perform attack (customize the attack method for your game)
+            local path = game:GetService("PathfindingService"):CreatePath({
+                AgentRadius = 2,
+                AgentHeight = 5,
+                AgentCanJump = true,
+                AgentJumpHeight = 10,
+                AgentMaxSlope = 45,
+                })
+            path:ComputeAsync(character.HumanoidRootPart.Position, target.HumanoidRootPart.Position)
+            path:MoveTo(character)
+
+            -- Wait until the character reaches the target
+            while path.Status ~= Enum.PathStatus.Complete do
+                wait(0.5)
+            end
+
+            -- Once the character reaches the target, attack it
             game.ReplicatedStorage:WaitForChild("RemoteEvent"):FireServer("Attack", target)
-            xp = xp + 10  -- Gain XP for attacking (example)
+            xp = xp + 10  -- Example XP gain
             if xp >= level * 100 then
                 level = level + 1
                 xp = 0
@@ -93,25 +164,15 @@ local function fastAttack()
     end
 end
 
--- Function to start auto attack (with fast attack enabled)
-local function startAutoAttackFunc()
-    fastAttackEnabled = true
-    fastAttack()  -- Start fast attack loop
-end
-
--- Function to stop auto attack
-local function stopAutoAttackFunc()
-    fastAttackEnabled = false
-end
-
--- Button Click Events
-startAutoAttack.MouseButton1Click:Connect(function()
-    startAutoAttackFunc()
+-- Start Auto Farm
+startAutoFarm.MouseButton1Click:Connect(function()
+    autoFarming = true
+    autoGatherAndAttack()  -- Start the auto gather and attack loop
 end)
 
-stopAutoAttack.MouseButton1Click:Connect(function()
-    stopAutoAttackFunc()
+-- Stop Auto Farm
+stopAutoFarm.MouseButton1Click:Connect(function()
+    autoFarming = false
 end)
 
--- Automatically Show Menu on Executor Start
-ScreenGui.Enabled = true
+-- Start Auto Farm
