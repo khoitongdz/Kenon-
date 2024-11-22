@@ -1,4 +1,4 @@
--- Kenon Hub - Auto Farm, Leveling, Toggle Menu, Circular Button, Auto Haki, Stand on Ocean, Auto Gather & Attack Monsters, and Server Status Check
+-- Kenon Hub - Auto Fly, Auto Gather, and Auto Attack Monsters
 
 -- Display Script Information
 print([[
@@ -10,7 +10,7 @@ print([[
 ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝
 ]])
 
-print("🔥 Kenon Hub - Auto Farm, Leveling, Toggle Menu, Circular Button, Auto Haki, Stand on Ocean, Auto Gather & Attack Monsters, and Server Status Check 🔥")
+print("🔥 Kenon Hub - Auto Fly, Auto Gather, Auto Attack Monsters 🔥")
 
 -- GUI Setup
 local ScreenGui = Instance.new("ScreenGui")
@@ -56,16 +56,6 @@ levelTab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 levelTab.TextColor3 = Color3.fromRGB(255, 255, 255)
 levelTab.Parent = tabFrame
 
--- New Server Status Tab
-local serverStatusTab = Instance.new("TextButton")
-serverStatusTab.Size = UDim2.new(0, 250, 0, 40)
-serverStatusTab.Position = UDim2.new(0, 0, 0, 40)
-serverStatusTab.Text = "Server Status"
-serverStatusTab.TextSize = 18
-serverStatusTab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-serverStatusTab.TextColor3 = Color3.fromRGB(255, 255, 255)
-serverStatusTab.Parent = tabFrame
-
 -- Auto Farm and Auto Farm by Level Toggles
 local startAutoFarm = Instance.new("TextButton")
 startAutoFarm.Size = UDim2.new(0, 200, 0, 50)
@@ -85,68 +75,6 @@ stopAutoFarm.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 stopAutoFarm.TextColor3 = Color3.fromRGB(255, 255, 255)
 stopAutoFarm.Parent = mainFrame
 
--- Server Status Indicator
-local statusIndicator = Instance.new("Frame")
-statusIndicator.Size = UDim2.new(0, 20, 0, 20)
-statusIndicator.Position = UDim2.new(0.5, 0, 0, 200)
-statusIndicator.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red for offline by default
-statusIndicator.Parent = mainFrame
-
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(0, 500, 0, 50)
-statusLabel.Position = UDim2.new(0, 0, 0, 230)
-statusLabel.Text = "Server Status: Checking..."
-statusLabel.TextSize = 18
-statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-statusLabel.BackgroundTransparency = 1
-statusLabel.Parent = mainFrame
-
--- Circular Button to Toggle Menu Visibility
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 50, 0, 50)
-toggleButton.Position = UDim2.new(0, 10, 0, 10)
-toggleButton.Text = "☰"
-toggleButton.TextSize = 24
-toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.TextButton.MouseButton1Click:Connect(function()
-    ScreenGui.Enabled = not ScreenGui.Enabled  -- Toggle visibility of the entire menu
-end)
-toggleButton.Parent = mainFrame
-
--- Function to check server status
-local function checkServerStatus()
-    if game:IsLoaded() and game.Players.LocalPlayer.Character then
-        statusLabel.Text = "Server Status: Online"
-        statusIndicator.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Green for online
-    else
-        statusLabel.Text = "Server Status: Offline"
-        statusIndicator.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red for offline
-    end
-end
-
--- Update Server Status every 5 seconds
-game:GetService("RunService").Heartbeat:Connect(function()
-    checkServerStatus()
-end)
-
--- Start Auto Farm
-startAutoFarm.MouseButton1Click:Connect(function()
-    autoFarming = true
-    autoGatherAndAttack()  -- Start the auto gather and attack loop
-end)
-
--- Stop Auto Farm
-stopAutoFarm.MouseButton1Click:Connect(function()
-    autoFarming = false
-end)
-
--- Server Status Tab Toggle
-serverStatusTab.MouseButton1Click:Connect(function()
-    print("Checking Server Status...")
-    checkServerStatus()  -- Call server status check when the user clicks the tab
-end)
-
 -- Variables
 local xp = 0
 local level = 1
@@ -156,17 +84,80 @@ local autoHakiEnabled = true  -- Default value to enable Haki
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 
--- Function to find nearest enemy
-local function findNearestEnemy()
-    local nearestEnemy = nil
+-- Function to find the nearest monster spawn point
+local function findNearestSpawnPoint()
+    local nearestSpawn = nil
     local shortestDistance = math.huge
-    for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
-        if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") then
-            local distance = (character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
+    for _, spawnPoint in pairs(game.Workspace.SpawnPoints:GetChildren()) do
+        if spawnPoint:IsA("Part") then
+            local distance = (character.HumanoidRootPart.Position - spawnPoint.Position).Magnitude
             if distance < shortestDistance then
                 shortestDistance = distance
-                nearestEnemy = enemy
+                nearestSpawn = spawnPoint
             end
         end
     end
-    return nearest
+    return nearestSpawn
+end
+
+-- Function to fly to the nearest spawn point using Pathfinding
+local function flyToNearestSpawnPoint()
+    local targetSpawn = findNearestSpawnPoint()
+    if targetSpawn then
+        local path = game:GetService("PathfindingService"):CreatePath({
+            AgentRadius = 2,
+            AgentHeight = 5,
+            AgentCanJump = true,
+            AgentJumpHeight = 10,
+            AgentMaxSlope = 45,
+        })
+        path:ComputeAsync(character.HumanoidRootPart.Position, targetSpawn.Position)
+        path:MoveTo(character)
+        
+        -- Wait until the path is completed
+        while path.Status ~= Enum.PathStatus.Complete do
+            wait(0.5)
+        end
+    end
+end
+
+-- Function to gather monsters around the spawn point and attack
+local function gatherAndAttackMonsters()
+    while autoFarming do
+        wait(1)
+        flyToNearestSpawnPoint()  -- Fly to the nearest spawn point
+
+        -- Look for monsters within the gathered spawn area
+        local monsters = {}
+        for _, monster in pairs(game.Workspace.Enemies:GetChildren()) do
+            if monster:FindFirstChild("HumanoidRootPart") and monster:FindFirstChild("Humanoid") then
+                table.insert(monsters, monster)
+            end
+        end
+
+        -- Attack all gathered monsters
+        for _, monster in pairs(monsters) do
+            -- Attack logic (assuming the attack function is defined)
+            game.ReplicatedStorage:WaitForChild("RemoteEvent"):FireServer("Attack", monster)
+            xp = xp + 10  -- Example XP gain
+            if xp >= level * 100 then
+                level = level + 1
+                xp = 0
+            end
+        end
+    end
+end
+
+-- Start Auto Farm
+startAutoFarm.MouseButton1Click:Connect(function()
+    autoFarming = true
+    gatherAndAttackMonsters()  -- Start the auto fly, gather, and attack loop
+end)
+
+-- Stop Auto Farm
+stopAutoFarm.MouseButton1Click:Connect(function()
+    autoFarming = false
+end)
+
+-- Additional functions and features can be added here, such as auto-haki, server checks, etc.
+
