@@ -7,6 +7,28 @@ local Window = Fluent:CreateWindow({
     Acrylic = false,
     Theme = "Dark",
 MinimizeKey = Enum.KeyCode.End
+-- Logo and Script Name
+print([[
+███████╗ █████╗ ███╗   ██╗
+██╔════╝██╔══██╗████╗  ██║
+█████╗  ███████║██╔██╗ ██║
+██╔══╝  ██╔══██║██║╚██╗██║
+███████╗██║  ██║██║ ╚████║
+╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝
+]])
+print("🔥 Kenon hub🔥")
+
+-- Auto-Attack Logic
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+while wait(0.1) do
+    local target = findNearestEnemy()  -- Define this function
+    if target then
+        character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame
+        game.ReplicatedStorage.RemoteEvent:FireServer("Attack", target)
+    end
+end
 local replicatedStorage = game:GetService("ReplicatedStorage")
 local remoteEvent = replicatedStorage:FindFirstChild("RemoteEvent")
 
