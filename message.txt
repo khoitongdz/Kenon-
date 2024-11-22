@@ -42,6 +42,20 @@ local Toggle = Tabs.Main:AddToggle("Toggle", {Title = "Auto Farm Bone", Default 
 Toggle:OnChanged(function(Value)
     _G.AutoBone = Value
 end)
+_G.AutoBone = false  -- Đặt trạng thái mặc định
+
+spawn(function()
+    while wait(0.1) do
+        if _G.AutoBone then
+            pcall(function()
+                local target = findNearestEnemy()
+                if target then
+                    attackEnemy(target)
+                end
+            end)
+        end
+    end
+end)
 local Toggle = Tabs.Main:AddToggle("Toggle", {Title = "Auto Farm Bone", Default = false })
 Options.ToggleBone:SetValue(false)
 local BoneCFrame = CFrame.new(-9515.75, 174.8521728515625, 6079.40625)
