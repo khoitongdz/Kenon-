@@ -1,179 +1,60 @@
--- Load UI Library (Fallback Safe)
-local success, Fluent = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/khoitongdz/ui/refs/heads/main/.gitignore"))()
-end)
+-- Global Settings
+getgenv().AutoFarm = true -- Enable Auto Farm
+getgenv().FastAttack = true -- Enable Fast Attack
+getgenv().FixCrash = false -- Optimize performance when changing servers
+getgenv().FixCrash2 = false -- Reduce lag but disable some features
 
-if not success then
-    warn("Failed to load Fluent UI. Aborting script.")
-    return
-end
+-- Custom Logo Settings
+getgenv().DisplayLogo = true -- Set to false if you don't want to display the logo
+getgenv().LogoText = "Kenon Loading..." -- Text for the loading state
+getgenv().LogoLink = "https://example.com" -- URL for the logo link (change to desired link)
+getgenv().LogoImageUrl = "https://cdn.discordapp.com/attachments/1305080398400983100/1308677136789278801/th_1.png?ex=6741730f&is=6740218f&hm=612606234a430c812a8e9da3b08024cdeda7e446a8ee193cf035f7bd11a51b9f" -- Logo image URL
 
--- Create Window
-local Window = Fluent:CreateWindow({
-    Title = "Kenon Hub",
-    SubTitle = "Blox Fruits Script",
-    TabWidth = 120,
-    Size = UDim2.fromOffset(600, 400),
-    Acrylic = true,
-    Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.End
-})
+-- Script Loader
+local url = "https://api.luarmor.net/files/v3/loaders/3b2169cf53bc6104dabe8e19562e5cc2.lua"
 
-print([[ 
-███████╗ █████╗ ███╗   ██╗
-██╔════╝██╔══██╗████╗  ██║
-█████╗  ███████║██╔██╗ ██║
-██╔══╝  ██╔══██║██║╚██╗██║
-███████╗██║  ██║██║ ╚████║
-╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝
-]])
-print("🔥 Kenon Hub for Blox Fruits 🔥")
+-- Display Custom Logo if enabled
+if getgenv().DisplayLogo then
+    local logo = Instance.new("ScreenGui")
+    logo.Name = "KenonLogo"
+    logo.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Services and Player Setup
-local player = game.Players.LocalPlayer
-local replicatedStorage = game:GetService("ReplicatedStorage")
-local workspaceEnemies = game.Workspace:WaitForChild("Enemies")
+    -- Image Logo
+    local imageLabel = Instance.new("ImageLabel")
+    imageLabel.Size = UDim2.new(0, 200, 0, 200) -- Set the size of the logo image
+    imageLabel.Position = UDim2.new(0.5, -100, 0.1, 0) -- Center the image
+    imageLabel.Image = getgenv().LogoImageUrl -- Set the logo image URL
+    imageLabel.BackgroundTransparency = 1
+    imageLabel.Parent = logo
 
--- Global Toggles
-_G.AutoBone = false
-_G.AutoFarmLevel = false
-_G.AutoFarmBoss = false
-_G.FastAttack = false
+    -- Text for Loading State
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(0, 400, 0, 100)
+    textLabel.Position = UDim2.new(0.5, -200, 0.4, 0)
+    textLabel.Text = getgenv().LogoText
+    textLabel.TextSize = 36
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextStrokeTransparency = 0.8
+    textLabel.Parent = logo
 
--- Functions
-local function findNearestEnemy()
-    local closestEnemy = nil
-    local shortestDistance = math.huge
-
-    for _, enemy in pairs(workspaceEnemies:GetChildren()) do
-        if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
-            local distance = (enemy.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
-            if distance < shortestDistance then
-                closestEnemy = enemy
-                shortestDistance = distance
-            end
-        end
-    end
-
-    return closestEnemy
-end
-
-local function attackEnemy(target)
-    if replicatedStorage:FindFirstChild("RemoteEvent") then
-        replicatedStorage.RemoteEvent:FireServer("Attack", target)
-    else
-        warn("RemoteEvent not found!")
-    end
-end
-
-local function teleportToLocation(locationCFrame)
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        player.Character.HumanoidRootPart.CFrame = locationCFrame
-    end
-end
-
--- Auto Farm Logic
-local function autoFarmLevel()
-    spawn(function()
-        while _G.AutoFarmLevel do
-            pcall(function()
-                -- Set NPC position or adjust to current level
-                local questNPC = CFrame.new(0, 0, 0) -- Replace with specific NPC position
-                teleportToLocation(questNPC)
-                replicatedStorage.Remotes.CommF_:InvokeServer("StartQuest", "QuestNameHere", 1)
-
-                for _, enemy in pairs(workspaceEnemies:GetChildren()) do
-                    if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
-                        attackEnemy(enemy)
-                    end
-                end
-            end)
-            wait(0.1)
-        end
+    -- Making the logo clickable and opening the URL
+    imageLabel.MouseButton1Click:Connect(function()
+        game:GetService("GuiService"):OpenBrowserWindow(getgenv().LogoLink)
     end)
 end
 
-local function autoFarmBoss()
-    spawn(function()
-        while _G.AutoFarmBoss do
-            pcall(function()
-                local bossCFrame = CFrame.new(1000, 100, 2000) -- Update to boss location
-                teleportToLocation(bossCFrame)
+-- Starting the script load (Custom name added)
+print("Loading Kenon Hub...")
+loadstring(game:HttpGet(url))()
 
-                for _, enemy in pairs(workspaceEnemies:GetChildren()) do
-                    if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
-                        if enemy.Name == "BossNameHere" then
-                            attackEnemy(enemy)
-                        end
-                    end
-                end
-            end)
-            wait(0.1)
+-- Update logo text after the script starts loading
+if getgenv().DisplayLogo then
+    local logo = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("KenonLogo")
+    if logo then
+        local textLabel = logo:FindFirstChild("TextLabel")
+        if textLabel then
+            textLabel.Text = "Kenon Hub Loaded!" -- Change text after loading
         end
-    end)
+    end
 end
-
-local function fastAttack()
-    spawn(function()
-        while _G.FastAttack do
-            pcall(function()
-                replicatedStorage.Remotes.CommF_:FireServer("FastAttack")
-            end)
-            wait(0.01) -- Adjust for attack speed
-        end
-    end)
-end
-
--- Farming Tab
-local farmingTab = Window:AddTab("Farming")
-farmingTab:AddToggle("Auto Farm Level", {
-    Title = "Enable Auto Farm Level",
-    Default = false,
-    Callback = function(value)
-        _G.AutoFarmLevel = value
-        if value then
-            autoFarmLevel()
-        end
-    end
-})
-
-farmingTab:AddToggle("Auto Farm Boss", {
-    Title = "Enable Auto Farm Boss",
-    Default = false,
-    Callback = function(value)
-        _G.AutoFarmBoss = value
-        if value then
-            autoFarmBoss()
-        end
-    end
-})
-
-farmingTab:AddToggle("Auto Farm Bone", {
-    Title = "Enable Auto Farm Bone",
-    Default = false,
-    Callback = function(value)
-        _G.AutoBone = value
-        if value then
-            autoFarmBone()
-        end
-    end
-})
-
-farmingTab:AddToggle("Fast Attack", {
-    Title = "Enable Fast Attack",
-    Default = false,
-    Callback = function(value)
-        _G.FastAttack = value
-        if value then
-            fastAttack()
-        end
-    end
-})
-
--- Menu and Appearance
-Window:AddTab("Appearance"):AddLabel("Kenon Hub UI - Modern and Optimized")
-Window:AddTab("Settings"):AddLabel("Press [END] to minimize the script.")
-
--- Final Touches
-Window:Show()
-print("Kenon Hub loaded successfully!")
