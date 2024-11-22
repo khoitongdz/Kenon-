@@ -1,4 +1,4 @@
--- Kenon Hub - Improved UI with Toggle Button
+-- Kenon Hub - Improved UI with Logo and Toggle Button
 
 -- Display Script Information
 print([[
@@ -10,7 +10,7 @@ print([[
 ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝
 ]])
 
-print("🔥 Kenon Hub - Beautiful Menu with Toggle 🔥")
+print("🔥 Kenon Hub - Beautiful Menu with Logo 🔥")
 
 -- GUI Setup
 local ScreenGui = Instance.new("ScreenGui")
@@ -24,6 +24,14 @@ mainFrame.Position = UDim2.new(0.5, -200, 0.5, -250)
 mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 mainFrame.Parent = ScreenGui
 mainFrame.Visible = false -- Initially hidden
+
+-- Logo Image
+local logoImage = Instance.new("ImageLabel")
+logoImage.Size = UDim2.new(0, 200, 0, 100)
+logoImage.Position = UDim2.new(0.5, -100, 0, 10) -- Centered at the top
+logoImage.Image = "rbxassetid://YOUR_LOGO_ASSET_ID" -- Replace with your logo asset ID
+logoImage.BackgroundTransparency = 1
+logoImage.Parent = mainFrame
 
 -- Title Label
 local titleLabel = Instance.new("TextLabel")
@@ -163,25 +171,4 @@ stopFarmButton.MouseButton1Click:Connect(function()
     print("Auto Farm Stopped!")
 end)
 
-enableHakiButton.MouseButton1Click:Connect(function()
-    -- Enable Haki logic here
-    print("Haki Enabled!")
-end)
-
-disableHakiButton.MouseButton1Click:Connect(function()
-    -- Disable Haki logic here
-    print("Haki Disabled!")
-end)
-
--- Toggle Menu Visibility
-toggleButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = not mainFrame.Visible
-    if mainFrame.Visible then
-        toggleButton.Text = "Close Menu"
-    else
-        toggleButton.Text = "Open Menu"
-    end
-end)
-
--- Final Debug Message
-print("Kenon Hub Loaded. You can now use the menu to toggle features!")
+enableHakiButton.MouseButton1Click:Connect(function
