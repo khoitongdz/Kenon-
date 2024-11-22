@@ -1,96 +1,117 @@
---[[
-    This script has been licensed using Luarmor
-      Luarmor v3.8b, Lua whitelisting system
-            https://luarmor.net/
+-- Kenon Hub - Auto Fly, Fast Attack, and Auto Quest Script (Universal)
 
-      _____                  _     _ _        __     ______  
-     |_   _| __ _   _  ___  | |   (_) |_ ___  \ \   / /___ \ 
-       | || '__| | | |/ _ \ | |   | | __/ _ \  \ \ / /  __) |
-       | || |  | |_| |  __/ | |___| | ||  __/   \ V /  / __/ 
-       |_||_|   \__,_|\___| |_____|_|\__\___|    \_/  |_____|
-                                                             
+-- Display Script Information
+print([[
+██╗  ██╗███████╗ █████╗ ███╗   ██╗
+██║  ██║██╔════╝██╔══██╗████╗  ██║
+███████║█████╗  ███████║██╔██╗ ██║
+██╔══██║██╔══╝  ██╔══██║██║╚██╗██║
+██║  ██║███████╗██║  ██║██║ ╚████║
+╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝
+]])
 
-    Script Name: Kenon Hub
-    Creator: khoitongdz
+print("🔥 Kenon Hub - Auto Attack, Fast Attack, and Auto Quest Script 🔥")
 
-    -- Insert Logo Here --
-    -- You can add your custom logo or image display code in this section.
-    -- Example: Use ImageLabel for custom logos.
-]]
+-- GUI Setup
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Name = "KenonHub"
 
--- Set up the licensing and loading system
-local a = "This file is licensed with Luarmor. You must use the actual loadstring to execute this script. Do not run this file directly. Always use the loadstring."
-local b = "3b2169cf53bc6104dabe8e19562e5cc2"
-if lrm_load_script then 
-    lrm_load_script(b)
-    while wait(1) do end
-end
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 500, 0, 400)
+mainFrame.Position = UDim2.new(0.5, -250, 0.5, -200)
+mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+mainFrame.Parent = ScreenGui
 
-local c = "https://api.luarmor.net/files/v3/l/" .. b .. ".lua"
-is_from_loader = {Mode = "fastload"}
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(0, 500, 0, 50)
+titleLabel.Text = "Kenon Hub"
+titleLabel.TextSize = 24
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Parent = mainFrame
 
-local d = 0.03
-l_fastload_enabled = function(e)
-    if e == "flush" then
-        wait(d)
-        d = d + 2
-        local f, g
-        local h, i = pcall(function()
-            g = game:HttpGet(c)
-            pcall(writefile, b .. "-cache.lua", "-- " .. a .. "\n\n if not is_from_loader then warn('Use the loadstring, do not run this directly') return end;\n "..g)
-            wait(0.1)
-            f = loadstring(g)
-        end)
-        if not h or not f then
-            pcall(writefile, "lrm-err-loader-log-httpresp.txt", tostring(g))
-            warn("Error while executing loader. Err:" .. tostring(i) .. " See lrm-err-loader-log-httpresp.txt in your workspace.")
-            return
+-- Toggle Buttons for Features
+local startAutoAttack = Instance.new("TextButton")
+startAutoAttack.Size = UDim2.new(0, 200, 0, 50)
+startAutoAttack.Position = UDim2.new(0, 0, 0, 100)
+startAutoAttack.Text = "Start Auto Attack"
+startAutoAttack.TextSize = 18
+startAutoAttack.BackgroundColor3 = Color3.fromRGB(0, 128, 0)
+startAutoAttack.TextColor3 = Color3.fromRGB(255, 255, 255)
+startAutoAttack.Parent = mainFrame
+
+local stopAutoAttack = Instance.new("TextButton")
+stopAutoAttack.Size = UDim2.new(0, 200, 0, 50)
+stopAutoAttack.Position = UDim2.new(0, 0, 0, 160)
+stopAutoAttack.Text = "Stop Auto Attack"
+stopAutoAttack.TextSize = 18
+stopAutoAttack.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+stopAutoAttack.TextColor3 = Color3.fromRGB(255, 255, 255)
+stopAutoAttack.Parent = mainFrame
+
+-- Fast Attack Toggle Button
+local fastAttackEnabled = false
+local xp = 0
+local level = 1
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Function to find the nearest enemy
+local function findNearestEnemy()
+    local nearestEnemy = nil
+    local shortestDistance = math.huge
+    for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
+        if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") then
+            local distance = (character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
+            if distance < shortestDistance then
+                shortestDistance = distance
+                nearestEnemy = enemy
+            end
         end
-        f(is_from_loader)
     end
-    if e == "rl" then
-        pcall(writefile, b .. "-cache.lua", "recache required")
-        wait(0.2)
-        pcall(delfile, b .. "-cache.lua")
+    return nearestEnemy
+end
+
+-- Function to perform a fast attack
+local function fastAttack()
+    while fastAttackEnabled do
+        wait(0.1)  -- Attack every 0.1 seconds for fast attacks
+        local target = findNearestEnemy()
+        if target then
+            -- Move to the enemy's position
+            character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame
+            -- Perform attack (customize the attack method for your game)
+            game.ReplicatedStorage:WaitForChild("RemoteEvent"):FireServer("Attack", target)
+            xp = xp + 10  -- Gain XP for attacking (example)
+            if xp >= level * 100 then
+                level = level + 1
+                xp = 0
+            end
+        end
     end
 end
 
-local j
-local k, l = pcall(function()
-    j = readfile(b .. "-cache.lua")
-    if (not j) or (#j < 5) then
-        j = nil
-        return
-    end
-    j = loadstring(j)
+-- Function to start auto attack (with fast attack enabled)
+local function startAutoAttackFunc()
+    fastAttackEnabled = true
+    fastAttack()  -- Start fast attack loop
+end
+
+-- Function to stop auto attack
+local function stopAutoAttackFunc()
+    fastAttackEnabled = false
+end
+
+-- Button Click Events
+startAutoAttack.MouseButton1Click:Connect(function()
+    startAutoAttackFunc()
 end)
 
-if not k or not j then
-    l_fastload_enabled("flush")
-    return
-end
+stopAutoAttack.MouseButton1Click:Connect(function()
+    stopAutoAttackFunc()
+end)
 
-j(is_from_loader)
-
--- Kill Player Trial Feature (Free)
-getgenv().KillPlayerTrial = true -- Trial for killing players is enabled for free
-
--- Unlock All Premium Features for Free
-getgenv().UnlockPremiumFeatures = true -- All premium features are unlocked for free
-
--- Example of a kill player function (to be triggered from the game)
-if getgenv().KillPlayerTrial then
-    game.Players.PlayerAdded:Connect(function(player)
-        player.CharacterAdded:Connect(function(character)
-            -- Insert logic for killing the player here
-            -- Example: player.Character:BreakJoints() -- This kills the player character
-        end)
-    end)
-end
-
--- Premium features unlock section
-if getgenv().UnlockPremiumFeatures then
-    -- Add code here to unlock premium features that are normally paid
-    -- For example: Enable specific tools, abilities, etc.
-    print("All premium features are unlocked for free!")
-end
+-- Automatically Show Menu on Executor Start
+ScreenGui.Enabled = true
