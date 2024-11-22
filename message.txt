@@ -44,17 +44,23 @@ if getgenv().DisplayLogo then
     end)
 end
 
--- Starting the script load (Custom name added)
-print("Loading Kenon Hub...")
-loadstring(game:HttpGet(url))()
+-- To make the loading script faster, we load the external script as quickly as possible.
+-- Using `loadstring(game:HttpGet(url))()` to load the script immediately without any other processing.
+print("Loading Kenon Hub...") 
+spawn(function()
+    loadstring(game:HttpGet(url))() -- Load the script as quickly as possible
+end)
 
--- Update logo text after the script starts loading
-if getgenv().DisplayLogo then
-    local logo = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("KenonLogo")
-    if logo then
-        local textLabel = logo:FindFirstChild("TextLabel")
-        if textLabel then
-            textLabel.Text = "Kenon Hub Loaded!" -- Change text after loading
+-- Update logo text after the script starts loading (using `spawn` to avoid blocking execution)
+spawn(function()
+    -- Update the logo text after loading begins
+    if getgenv().DisplayLogo then
+        local logo = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("KenonLogo")
+        if logo then
+            local textLabel = logo:FindFirstChild("TextLabel")
+            if textLabel then
+                textLabel.Text = "Kenon Hub Loaded!" -- Change text after loading
+            end
         end
     end
-end
+end)
