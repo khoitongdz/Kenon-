@@ -6,8 +6,10 @@ local Window = Fluent:CreateWindow({
     Size = UDim2.fromOffset(480, 320),
     Acrylic = false,
     Theme = "Dark",
-MinimizeKey = Enum.KeyCode.End
--- Logo and Script Name
+    MinimizeKey = Enum.KeyCode.End
+})
+
+-- Logo
 print([[
 ███████╗ █████╗ ███╗   ██╗
 ██╔════╝██╔══██╗████╗  ██║
@@ -18,54 +20,82 @@ print([[
 ]])
 print("🔥 Kenon hub🔥")
 
--- Auto-Attack Logic
+-- Global Variables
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
-
-while wait(0.1) do
-    local target = findNearestEnemy()  -- Define this function
-    if target then
-        character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame
-        game.ReplicatedStorage.RemoteEvent:FireServer("Attack", target)
-    end
-end
 local replicatedStorage = game:GetService("ReplicatedStorage")
 local remoteEvent = replicatedStorage:FindFirstChild("RemoteEvent")
+local _G = _G or {}
+_G.AutoBone = false
+_G.AutoHeal = true
+_G.AutoEquipWeapon = true
+_G.AutoHaki = false -- Set to true if you want to use Haki automatically
+local BoneCFrame = CFrame.new(-9515.75, 174.852, 6079.406)
+local BoneCFrame2 = CFrame.new(-9359.453, 141.327, 5446.82)
 
-if remoteEvent then
-    remoteEvent:FireServer("Attack", target)
-else
-    warn("RemoteEvent không tồn tại!")
-end
--- Automatically starts when executed
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
--- Automatically starts when executed
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+-- Helper Functions
 local function findNearestEnemy()
-    -- Logic to find nearest enemy
+    local nearestEnemy = nil
+    local shortestDistance = math.huge
+    for _, enemy in pairs(workspace.Enemies:GetChildren()) do
+        if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
+            local distance = (character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
+            if distance < shortestDistance then
+                shortestDistance = distance
+                nearestEnemy = enemy
+            end
+        end
+    end
+    return nearestEnemy
 end
+
 local function attackEnemy(target)
-    character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame
-    game.ReplicatedStorage.RemoteEvent:FireServer("Attack", target)
-end
--- Auto attack loop
-while wait(0.1) do
-    local target = findNearestEnemy()
-    if target then
-        attackEnemy(target)
+    if target and target:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame
+        if remoteEvent then
+            remoteEvent:FireServer("Attack", target)
+        else
+            warn("RemoteEvent không tồn tại!")
+        end
     end
 end
--- Modules
-local Toggle = Tabs.Main:AddToggle("Toggle", {Title = "Auto Farm Bone", Default = false })
-Toggle:OnChanged(function(Value)
-    _G.AutoBone = Value
-end)
-_G.AutoBone = false  -- Đặt trạng thái mặc định
 
+local function teleportTo(cframe)
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.CFrame = cframe
+    end
+end
+
+local function startQuest()
+    if replicatedStorage.Remotes.CommF_ then
+        replicatedStorage.Remotes.CommF_:InvokeServer("StartQuest", "HauntedQuest2", 1)
+    end
+end
+
+local function autoHeal()
+    if _G.AutoHeal then
+        if character.Humanoid.Health < character.Humanoid.MaxHealth * 0.3 then
+            -- Use healing item or ability here, if applicable
+            print("Auto Healing...")
+        end
+    end
+end
+
+local function autoEquipWeapon()
+    if _G.AutoEquipWeapon then
+        -- Equip the best available weapon here (you need to replace this with the actual method)
+        print("Equipping best weapon...")
+    end
+end
+
+local function autoHaki()
+    if _G.AutoHaki then
+        -- Activate Haki automatically if applicable (replace with actual code)
+        print("Activating Haki...")
+    end
+end
+
+-- Auto Farm Logic
 spawn(function()
     while wait(0.1) do
         if _G.AutoBone then
@@ -73,70 +103,64 @@ spawn(function()
                 local target = findNearestEnemy()
                 if target then
                     attackEnemy(target)
+                else
+                    -- Teleport to quest area if no target found
+                    if (character.HumanoidRootPart.Position - BoneCFrame.Position).Magnitude > 3 then
+                        teleportTo(BoneCFrame)
+                        startQuest()
+                    end
                 end
             end)
         end
+
+        -- Auto Heal Logic
+        autoHeal()
+
+        -- Auto Equip Weapon Logic
+        autoEquipWeapon()
+
+        -- Auto Haki Logic
+        autoHaki()
     end
 end)
-local Toggle = Tabs.Main:AddToggle("Toggle", {Title = "Auto Farm Bone", Default = false })
-Options.ToggleBone:SetValue(false)
-local BoneCFrame = CFrame.new(-9515.75, 174.8521728515625, 6079.40625)
-local BoneCFrame2 = CFrame.new(-9359.453125, 141.32679748535156, 5446.81982421875)
+
+-- UI Toggles
+local ToggleAutoFarm = Window:AddToggle("Auto Farm Bone", {
+    Title = "Auto Farm Bone",
+    Default = false
+})
+ToggleAutoFarm:OnChanged(function(Value)
+    _G.AutoBone = Value
+end)
+
+local ToggleAutoHeal = Window:AddToggle("Auto Heal", {
+    Title = "Auto Heal",
+    Default = true
+})
+ToggleAutoHeal:OnChanged(function(Value)
+    _G.AutoHeal = Value
+end)
+
+local ToggleEquipWeapon = Window:AddToggle("Auto Equip Best Weapon", {
+    Title = "Auto Equip Best Weapon",
+    Default = true
+})
+ToggleEquipWeapon:OnChanged(function(Value)
+    _G.AutoEquipWeapon = Value
+end)
+
+local ToggleAutoHaki = Window:AddToggle("Auto Haki", {
+    Title = "Auto Haki",
+    Default = false
+})
+ToggleAutoHaki:OnChanged(function(Value)
+    _G.AutoHaki = Value
+end)
+
+-- Anti-AFK (optional)
 spawn(function()
-    while wait() do
-        if _G.AutoBone then
-            pcall(function()
-                local QuestTitle = game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text
-                if not string.find(QuestTitle, "Demonic Soul") then
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AbandonQuest")
-                end
-                if game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == false then
-                    if BypassTP then
-                        wait()
-                       if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - BoneCFrame2.Position).Magnitude > 2500 then
-                       BTP(BoneCFrame2)
-                       elseif (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - BoneCFrame.Position).Magnitude < 2500 then
-                       Tween(BoneCFrame)
-                       end
-                 else
-                         Tween(BoneCFrame)
-                         end
-                if (BoneCFrame.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 3 then    
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest","HauntedQuest2",1)
-                    end
-                elseif game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == true then
-                    if game:GetService("Workspace").Enemies:FindFirstChild("Reborn Skeleton") or game:GetService("Workspace").Enemies:FindFirstChild("Living Zombie") or game:GetService("Workspace").Enemies:FindFirstChild("Demonic Soul") or game:GetService("Workspace").Enemies:FindFirstChild("Posessed Mummy") then
-                        for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
-                            if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                                if v.Name == "Reborn Skeleton" or v.Name == "Living Zombie" or v.Name == "Demonic Soul" or v.Name == "Posessed Mummy" then
-                                    if string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Demonic Soul") then
-                                        repeat wait(_G.Fast_Delay)
-                                            AttackNoCD()
-                                            AutoHaki()
-                                            EquipTool(SelectWeapon)
-                                                      Tween(v.HumanoidRootPart.CFrame * CFrame.new(posX,posY,posZ))
-			                                v.HumanoidRootPart.Size = Vector3.new(1, 1, 1)
-                                            v.HumanoidRootPart.Transparency = 1
-                                            v.Humanoid.JumpPower = 0
-                                            v.Humanoid.WalkSpeed = 0
-                                            v.HumanoidRootPart.CanCollide = false
-                                            FarmPos = v.HumanoidRootPart.CFrame
-                                            MonFarm = v.Name
-                                
-                                            --Click
-                                        until not _G.AutoBone or v.Humanoid.Health <= 0 or not v.Parent or game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == false
-                                    else
-                                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AbandonQuest")
-                                    end
-                                end
-                            end
-                        end
-                    else
-                        if game:GetService("ReplicatedStorage"):FindFirstChild("Demonic Soul") then
-                        Tween(v.HumanoidRootPart.CFrame * Pos2)
-                        end
-                    end
-              end
-        end
+    while true do
+        wait(60)  -- Every 60 seconds, move the character slightly to prevent AFK
+        character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1)
     end
 end)
