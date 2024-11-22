@@ -59,13 +59,14 @@ while wait(0.1) do
         attackEnemy(target)
     end
 end
+findNearestEnemy()
+game.ReplicatedStorage.RemoteEvent
 -- Modules
 local Toggle = Tabs.Main:AddToggle("Toggle", {Title = "Auto Farm Bone", Default = false })
 Toggle:OnChanged(function(Value)
     _G.AutoBone = Value
 end)
 _G.AutoBone = false  -- Đặt trạng thái mặc định
-
 spawn(function()
     while wait(0.1) do
         if _G.AutoBone then
@@ -74,10 +75,19 @@ spawn(function()
                 if target then
                     attackEnemy(target)
                 end
+            end
+        end
+    end
+spawn(function()
+    while wait() do
+        if _G.AutoBone then
+            pcall(function()
+                -- Logic thực hiện nhiệm vụ farm
             end)
         end
     end
 end)
+
 local Toggle = Tabs.Main:AddToggle("Toggle", {Title = "Auto Farm Bone", Default = false })
 Options.ToggleBone:SetValue(false)
 local BoneCFrame = CFrame.new(-9515.75, 174.8521728515625, 6079.40625)
