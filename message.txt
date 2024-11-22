@@ -9,32 +9,19 @@ MinimizeKey = Enum.KeyCode.End
 -- Automatically starts when executed
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
-
--- Function to find the nearest enemy
+-- Automatically starts when executed
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
 local function findNearestEnemy()
-    local nearestEnemy = nil
-    local shortestDistance = math.huge
-    for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
-        if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") then
-            local distance = (character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
-            if distance < shortestDistance then
-                shortestDistance = distance
-                nearestEnemy = enemy
-            end
-        end
-    end
-    return nearestEnemy
+    -- Logic to find nearest enemy
 end
 
--- Function to attack the enemy
 local function attackEnemy(target)
-    if target then
-        character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-        local remote = game.ReplicatedStorage:WaitForChild("RemoteEvent")  -- Replace with your event
-        remote:FireServer("Attack", target)
-    end
+    character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame
+    game.ReplicatedStorage.RemoteEvent:FireServer("Attack", target)
 end
-
 -- Auto attack loop
 while wait(0.1) do
     local target = findNearestEnemy()
