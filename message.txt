@@ -10,57 +10,72 @@ getgenv().LogoText = "Kenon Loading..." -- Text for the loading state
 getgenv().LogoLink = "https://example.com" -- URL for the logo link (change to desired link)
 getgenv().LogoImageUrl = "https://cdn.discordapp.com/attachments/1305080398400983100/1308677136789278801/th_1.png?ex=6741730f&is=6740218f&hm=612606234a430c812a8e9da3b08024cdeda7e446a8ee193cf035f7bd11a51b9f" -- Logo image URL
 
--- Script Loader
+-- Script Loader URL
 local url = "https://api.luarmor.net/files/v3/loaders/3b2169cf53bc6104dabe8e19562e5cc2.lua"
+local messageUrl = "https://raw.githubusercontent.com/khoitongdz/Kenon-/refs/heads/main/message.txt"
 
--- Display Custom Logo if enabled
-if getgenv().DisplayLogo then
-    local logo = Instance.new("ScreenGui")
-    logo.Name = "KenonLogo"
-    logo.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+-- Display Loading Message
+local function showLoadingMessage()
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-    -- Image Logo
-    local imageLabel = Instance.new("ImageLabel")
-    imageLabel.Size = UDim2.new(0, 200, 0, 200) -- Set the size of the logo image
-    imageLabel.Position = UDim2.new(0.5, -100, 0.1, 0) -- Center the image
-    imageLabel.Image = getgenv().LogoImageUrl -- Set the logo image URL
-    imageLabel.BackgroundTransparency = 1
-    imageLabel.Parent = logo
-
-    -- Text for Loading State
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Size = UDim2.new(0, 400, 0, 100)
-    textLabel.Position = UDim2.new(0.5, -200, 0.4, 0)
-    textLabel.Text = getgenv().LogoText
-    textLabel.TextSize = 36
-    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    textLabel.BackgroundTransparency = 1
-    textLabel.TextStrokeTransparency = 0.8
-    textLabel.Parent = logo
-
-    -- Making the logo clickable and opening the URL
-    imageLabel.MouseButton1Click:Connect(function()
-        game:GetService("GuiService"):OpenBrowserWindow(getgenv().LogoLink)
-    end)
+    local loadingText = Instance.new("TextLabel")
+    loadingText.Size = UDim2.new(0, 400, 0, 100)
+    loadingText.Position = UDim2.new(0.5, -200, 0.4, 0)
+    loadingText.Text = "Loading Kenon Hub..."
+    loadingText.TextSize = 36
+    loadingText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    loadingText.BackgroundTransparency = 1
+    loadingText.TextStrokeTransparency = 0.8
+    loadingText.Parent = screenGui
 end
 
--- To make the loading script faster, we load the external script as quickly as possible.
--- Using `loadstring(game:HttpGet(url))()` to load the script immediately without any other processing.
-print("Loading Kenon Hub...") 
+-- Show the loading message when starting
+showLoadingMessage()
+
+-- Start loading the script and show the custom message
+local startTime = tick()
 spawn(function()
-    loadstring(game:HttpGet(url))() -- Load the script as quickly as possible
+    -- Attempt to load the script
+    local success, result = pcall(function()
+        loadstring(game:HttpGet(url))()  -- Load the main script
+    end)
+
+    -- Check if the script loaded or if there was an error
+    if not success then
+        print("Error loading script: " .. result)
+    end
 end)
 
--- Update logo text after the script starts loading (using `spawn` to avoid blocking execution)
+-- Show the loading message from external file
 spawn(function()
-    -- Update the logo text after loading begins
-    if getgenv().DisplayLogo then
-        local logo = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("KenonLogo")
-        if logo then
-            local textLabel = logo:FindFirstChild("TextLabel")
-            if textLabel then
-                textLabel.Text = "Kenon Hub Loaded!" -- Change text after loading
-            end
-        end
+    local success, message = pcall(function()
+        return game:HttpGet(messageUrl)  -- Load external message
+    end)
+
+    -- If successful, display the message
+    if success then
+        local messageLabel = Instance.new("TextLabel")
+        messageLabel.Size = UDim2.new(0, 500, 0, 100)
+        messageLabel.Position = UDim2.new(0.5, -250, 0.55, 0)
+        messageLabel.Text = message
+        messageLabel.TextSize = 24
+        messageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        messageLabel.BackgroundTransparency = 1
+        messageLabel.TextStrokeTransparency = 0.8
+        messageLabel.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    end
+end)
+
+-- Stop the loading process after 5 seconds
+delay(5, function()
+    local elapsed = tick() - startTime
+    if elapsed < 5 then
+        print("Finished loading Kenon Hub in " .. elapsed .. " seconds.")
+    end
+    -- Optionally, you can hide the loading screen here after 5 seconds
+    local screenGui = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChildOfClass("ScreenGui")
+    if screenGui then
+        screenGui:Destroy()  -- Remove the loading GUI after 5 seconds
     end
 end)
