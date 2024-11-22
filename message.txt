@@ -13,8 +13,8 @@ local Window = Fluent:CreateWindow({
     Title = "Kenon Hub",
     SubTitle = "Blox Fruits Script",
     TabWidth = 120,
-    Size = UDim2.fromOffset(500, 350),
-    Acrylic = false,
+    Size = UDim2.fromOffset(600, 400),
+    Acrylic = true,
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.End
 })
@@ -36,6 +36,9 @@ local workspaceEnemies = game.Workspace:WaitForChild("Enemies")
 
 -- Global Toggles
 _G.AutoBone = false
+_G.AutoFarmLevel = false
+_G.AutoFarmBoss = false
+_G.FastAttack = false
 
 -- Functions
 local function findNearestEnemy()
@@ -70,36 +73,36 @@ local function teleportToLocation(locationCFrame)
 end
 
 -- Auto Farm Logic
-local function autoFarmBone()
+local function autoFarmLevel()
     spawn(function()
-        while _G.AutoBone do
+        while _G.AutoFarmLevel do
             pcall(function()
-                -- Bone Farming Locations
-                local BoneCFrame = CFrame.new(-9515.75, 174.85, 6079.4)
-                local BoneCFrame2 = CFrame.new(-9359.45, 141.32, 5446.81)
+                -- Set NPC position or adjust to current level
+                local questNPC = CFrame.new(0, 0, 0) -- Replace with specific NPC position
+                teleportToLocation(questNPC)
+                replicatedStorage.Remotes.CommF_:InvokeServer("StartQuest", "QuestNameHere", 1)
 
-                -- Teleport and Start Quest
-                local questTitle = player.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text
-                if not string.find(questTitle, "Demonic Soul") then
-                    replicatedStorage.Remotes.CommF_:InvokeServer("AbandonQuest")
-                end
-
-                -- Determine Location
-                if (player.Character.HumanoidRootPart.Position - BoneCFrame.Position).Magnitude > 1000 then
-                    teleportToLocation(BoneCFrame)
-                elseif (player.Character.HumanoidRootPart.Position - BoneCFrame2.Position).Magnitude < 1000 then
-                    teleportToLocation(BoneCFrame2)
-                end
-
-                -- Quest Start
-                if (player.Character.HumanoidRootPart.Position - BoneCFrame.Position).Magnitude <= 5 then
-                    replicatedStorage.Remotes.CommF_:InvokeServer("StartQuest", "HauntedQuest2", 1)
-                end
-
-                -- Attack Enemies
                 for _, enemy in pairs(workspaceEnemies:GetChildren()) do
                     if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
-                        if enemy.Name == "Reborn Skeleton" or enemy.Name == "Living Zombie" or enemy.Name == "Demonic Soul" or enemy.Name == "Posessed Mummy" then
+                        attackEnemy(enemy)
+                    end
+                end
+            end)
+            wait(0.1)
+        end
+    end)
+end
+
+local function autoFarmBoss()
+    spawn(function()
+        while _G.AutoFarmBoss do
+            pcall(function()
+                local bossCFrame = CFrame.new(1000, 100, 2000) -- Update to boss location
+                teleportToLocation(bossCFrame)
+
+                for _, enemy in pairs(workspaceEnemies:GetChildren()) do
+                    if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
+                        if enemy.Name == "BossNameHere" then
                             attackEnemy(enemy)
                         end
                     end
@@ -110,8 +113,41 @@ local function autoFarmBone()
     end)
 end
 
--- UI Toggle for Auto Farm Bone
+local function fastAttack()
+    spawn(function()
+        while _G.FastAttack do
+            pcall(function()
+                replicatedStorage.Remotes.CommF_:FireServer("FastAttack")
+            end)
+            wait(0.01) -- Adjust for attack speed
+        end
+    end)
+end
+
+-- Farming Tab
 local farmingTab = Window:AddTab("Farming")
+farmingTab:AddToggle("Auto Farm Level", {
+    Title = "Enable Auto Farm Level",
+    Default = false,
+    Callback = function(value)
+        _G.AutoFarmLevel = value
+        if value then
+            autoFarmLevel()
+        end
+    end
+})
+
+farmingTab:AddToggle("Auto Farm Boss", {
+    Title = "Enable Auto Farm Boss",
+    Default = false,
+    Callback = function(value)
+        _G.AutoFarmBoss = value
+        if value then
+            autoFarmBoss()
+        end
+    end
+})
+
 farmingTab:AddToggle("Auto Farm Bone", {
     Title = "Enable Auto Farm Bone",
     Default = false,
@@ -123,7 +159,21 @@ farmingTab:AddToggle("Auto Farm Bone", {
     end
 })
 
+farmingTab:AddToggle("Fast Attack", {
+    Title = "Enable Fast Attack",
+    Default = false,
+    Callback = function(value)
+        _G.FastAttack = value
+        if value then
+            fastAttack()
+        end
+    end
+})
+
+-- Menu and Appearance
+Window:AddTab("Appearance"):AddLabel("Kenon Hub UI - Modern and Optimized")
+Window:AddTab("Settings"):AddLabel("Press [END] to minimize the script.")
+
 -- Final Touches
 Window:Show()
-
-print("Kenon Hub initialized! Use the UI menu to enable features.")
+print("Kenon Hub loaded successfully!")
