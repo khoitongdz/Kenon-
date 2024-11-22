@@ -1,81 +1,71 @@
--- Global Settings
-getgenv().AutoFarm = true -- Enable Auto Farm
-getgenv().FastAttack = true -- Enable Fast Attack
-getgenv().FixCrash = false -- Optimize performance when changing servers
-getgenv().FixCrash2 = false -- Reduce lag but disable some features
+--[[
+    This script has been licensed using Luarmor
+      Luarmor v3.8b, Lua whitelisting system
+            https://luarmor.net/
 
--- Custom Logo Settings
-getgenv().DisplayLogo = true -- Set to false if you don't want to display the logo
-getgenv().LogoText = "Kenon Loading..." -- Text for the loading state
-getgenv().LogoLink = "https://example.com" -- URL for the logo link (change to desired link)
-getgenv().LogoImageUrl = "https://cdn.discordapp.com/attachments/1305080398400983100/1308677136789278801/th_1.png?ex=6741730f&is=6740218f&hm=612606234a430c812a8e9da3b08024cdeda7e446a8ee193cf035f7bd11a51b9f" -- Logo image URL
+      _____                  _     _ _        __     ______  
+     |_   _| __ _   _  ___  | |   (_) |_ ___  \ \   / /___ \ 
+       | || '__| | | |/ _ \ | |   | | __/ _ \  \ \ / /  __) |
+       | || |  | |_| |  __/ | |___| | ||  __/   \ V /  / __/ 
+       |_||_|   \__,_|\___| |_____|_|\__\___|    \_/  |_____|
+                                                             
 
--- Script Loader URL
-local url = "https://api.luarmor.net/files/v3/loaders/3b2169cf53bc6104dabe8e19562e5cc2.lua"
-local messageUrl = "https://raw.githubusercontent.com/khoitongdz/Kenon-/refs/heads/main/message.txt"
+    Script Name: Kenon Hub
+    Creator: khoitongdz
 
--- Display Loading Message
-local function showLoadingMessage()
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    -- Insert Logo Here --
+    -- You can add your custom logo or image display code in this section.
+]]
 
-    local loadingText = Instance.new("TextLabel")
-    loadingText.Size = UDim2.new(0, 400, 0, 100)
-    loadingText.Position = UDim2.new(0.5, -200, 0.4, 0)
-    loadingText.Text = "Loading Kenon Hub..."
-    loadingText.TextSize = 36
-    loadingText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    loadingText.BackgroundTransparency = 1
-    loadingText.TextStrokeTransparency = 0.8
-    loadingText.Parent = screenGui
+local a="This file is licensed with Luarmor. You must use the actual loadstring to execute this script. Do not run this file directly. Always use the loadstring."
+local b="3b2169cf53bc6104dabe8e19562e5cc2"
+if lrm_load_script then 
+    lrm_load_script(b)
+    while wait(1) do end
 end
 
--- Show the loading message when starting
-showLoadingMessage()
+local c="https://api.luarmor.net/files/v3/l/"..b..".lua"
+is_from_loader={Mode="fastload"}
 
--- Start loading the script and show the custom message
-local startTime = tick()
-spawn(function()
-    -- Attempt to load the script
-    local success, result = pcall(function()
-        loadstring(game:HttpGet(url))()  -- Load the main script
-    end)
-
-    -- Check if the script loaded or if there was an error
-    if not success then
-        print("Error loading script: " .. result)
+local d=0.03
+l_fastload_enabled=function(e)
+    if e=="flush" then
+        wait(d)
+        d=d+2
+        local f,g
+        local h,i=pcall(function()
+            g=game:HttpGet(c)
+            pcall(writefile, b.."-cache.lua", "-- "..a.."\n\n if not is_from_loader then warn('Use the loadstring, do not run this directly') return end;\n "..g)
+            wait(0.1)
+            f=loadstring(g)
+        end)
+        if not h or not f then
+            pcall(writefile,"lrm-err-loader-log-httpresp.txt",tostring(g))
+            warn("Error while executing loader. Err:"..tostring(i).." See lrm-err-loader-log-httpresp.txt in your workspace.")
+            return
+        end
+        f(is_from_loader)
     end
+    if e=="rl" then
+        pcall(writefile,b.."-cache.lua","recache required")
+        wait(0.2)
+        pcall(delfile,b.."-cache.lua")
+    end
+end
+
+local j
+local k,l=pcall(function()
+    j=readfile(b.."-cache.lua")
+    if (not j) or (#j < 5) then
+        j=nil
+        return
+    end
+    j=loadstring(j)
 end)
 
--- Show the loading message from external file
-spawn(function()
-    local success, message = pcall(function()
-        return game:HttpGet(messageUrl)  -- Load external message
-    end)
+if not k or not j then
+    l_fastload_enabled("flush")
+    return
+end
 
-    -- If successful, display the message
-    if success then
-        local messageLabel = Instance.new("TextLabel")
-        messageLabel.Size = UDim2.new(0, 500, 0, 100)
-        messageLabel.Position = UDim2.new(0.5, -250, 0.55, 0)
-        messageLabel.Text = message
-        messageLabel.TextSize = 24
-        messageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-        messageLabel.BackgroundTransparency = 1
-        messageLabel.TextStrokeTransparency = 0.8
-        messageLabel.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    end
-end)
-
--- Stop the loading process after 5 seconds
-delay(5, function()
-    local elapsed = tick() - startTime
-    if elapsed < 5 then
-        print("Finished loading Kenon Hub in " .. elapsed .. " seconds.")
-    end
-    -- Optionally, you can hide the loading screen here after 5 seconds
-    local screenGui = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChildOfClass("ScreenGui")
-    if screenGui then
-        screenGui:Destroy()  -- Remove the loading GUI after 5 seconds
-    end
-end)
+j(is_from_loader)
