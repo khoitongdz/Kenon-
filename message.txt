@@ -1,4 +1,4 @@
--- Kenon Hub - Auto Farm with Leveling, Toggle Menu, Circular Button, Auto Haki, Stand on Ocean, and Auto Gather & Attack Monsters
+-- Kenon Hub - Auto Farm, Leveling, Toggle Menu, Circular Button, Auto Haki, Stand on Ocean, Auto Gather & Attack Monsters, and Server Status Check
 
 -- Display Script Information
 print([[
@@ -10,7 +10,7 @@ print([[
 ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝
 ]])
 
-print("🔥 Kenon Hub - Auto Farm, Leveling, Toggle Menu, Circular Button, Auto Haki, Stand on Ocean, and Auto Gather & Attack Monsters 🔥")
+print("🔥 Kenon Hub - Auto Farm, Leveling, Toggle Menu, Circular Button, Auto Haki, Stand on Ocean, Auto Gather & Attack Monsters, and Server Status Check 🔥")
 
 -- GUI Setup
 local ScreenGui = Instance.new("ScreenGui")
@@ -56,6 +56,16 @@ levelTab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 levelTab.TextColor3 = Color3.fromRGB(255, 255, 255)
 levelTab.Parent = tabFrame
 
+-- New Server Status Tab
+local serverStatusTab = Instance.new("TextButton")
+serverStatusTab.Size = UDim2.new(0, 250, 0, 40)
+serverStatusTab.Position = UDim2.new(0, 0, 0, 40)
+serverStatusTab.Text = "Server Status"
+serverStatusTab.TextSize = 18
+serverStatusTab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+serverStatusTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+serverStatusTab.Parent = tabFrame
+
 -- Auto Farm and Auto Farm by Level Toggles
 local startAutoFarm = Instance.new("TextButton")
 startAutoFarm.Size = UDim2.new(0, 200, 0, 50)
@@ -75,23 +85,21 @@ stopAutoFarm.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 stopAutoFarm.TextColor3 = Color3.fromRGB(255, 255, 255)
 stopAutoFarm.Parent = mainFrame
 
-local startAutoFarmByLevel = Instance.new("TextButton")
-startAutoFarmByLevel.Size = UDim2.new(0, 200, 0, 50)
-startAutoFarmByLevel.Position = UDim2.new(0, 0, 0, 220)
-startAutoFarmByLevel.Text = "Start Auto Farm by Level"
-startAutoFarmByLevel.TextSize = 18
-startAutoFarmByLevel.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
-startAutoFarmByLevel.TextColor3 = Color3.fromRGB(255, 255, 255)
-startAutoFarmByLevel.Parent = mainFrame
+-- Server Status Indicator
+local statusIndicator = Instance.new("Frame")
+statusIndicator.Size = UDim2.new(0, 20, 0, 20)
+statusIndicator.Position = UDim2.new(0.5, 0, 0, 200)
+statusIndicator.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red for offline by default
+statusIndicator.Parent = mainFrame
 
-local stopAutoFarmByLevel = Instance.new("TextButton")
-stopAutoFarmByLevel.Size = UDim2.new(0, 200, 0, 50)
-stopAutoFarmByLevel.Position = UDim2.new(0, 0, 0, 280)
-stopAutoFarmByLevel.Text = "Stop Auto Farm by Level"
-stopAutoFarmByLevel.TextSize = 18
-stopAutoFarmByLevel.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-stopAutoFarmByLevel.TextColor3 = Color3.fromRGB(255, 255, 255)
-stopAutoFarmByLevel.Parent = mainFrame
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(0, 500, 0, 50)
+statusLabel.Position = UDim2.new(0, 0, 0, 230)
+statusLabel.Text = "Server Status: Checking..."
+statusLabel.TextSize = 18
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Parent = mainFrame
 
 -- Circular Button to Toggle Menu Visibility
 local toggleButton = Instance.new("TextButton")
@@ -105,6 +113,39 @@ toggleButton.TextButton.MouseButton1Click:Connect(function()
     ScreenGui.Enabled = not ScreenGui.Enabled  -- Toggle visibility of the entire menu
 end)
 toggleButton.Parent = mainFrame
+
+-- Function to check server status
+local function checkServerStatus()
+    if game:IsLoaded() and game.Players.LocalPlayer.Character then
+        statusLabel.Text = "Server Status: Online"
+        statusIndicator.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Green for online
+    else
+        statusLabel.Text = "Server Status: Offline"
+        statusIndicator.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red for offline
+    end
+end
+
+-- Update Server Status every 5 seconds
+game:GetService("RunService").Heartbeat:Connect(function()
+    checkServerStatus()
+end)
+
+-- Start Auto Farm
+startAutoFarm.MouseButton1Click:Connect(function()
+    autoFarming = true
+    autoGatherAndAttack()  -- Start the auto gather and attack loop
+end)
+
+-- Stop Auto Farm
+stopAutoFarm.MouseButton1Click:Connect(function()
+    autoFarming = false
+end)
+
+-- Server Status Tab Toggle
+serverStatusTab.MouseButton1Click:Connect(function()
+    print("Checking Server Status...")
+    checkServerStatus()  -- Call server status check when the user clicks the tab
+end)
 
 -- Variables
 local xp = 0
@@ -128,51 +169,4 @@ local function findNearestEnemy()
             end
         end
     end
-    return nearestEnemy
-end
-
--- Function to make the character automatically move to the nearest enemy and attack
-local function autoGatherAndAttack()
-    while autoFarming do
-        wait(1)
-        local target = findNearestEnemy()
-        if target then
-            -- Move to the enemy's position
-            local path = game:GetService("PathfindingService"):CreatePath({
-                AgentRadius = 2,
-                AgentHeight = 5,
-                AgentCanJump = true,
-                AgentJumpHeight = 10,
-                AgentMaxSlope = 45,
-                })
-            path:ComputeAsync(character.HumanoidRootPart.Position, target.HumanoidRootPart.Position)
-            path:MoveTo(character)
-
-            -- Wait until the character reaches the target
-            while path.Status ~= Enum.PathStatus.Complete do
-                wait(0.5)
-            end
-
-            -- Once the character reaches the target, attack it
-            game.ReplicatedStorage:WaitForChild("RemoteEvent"):FireServer("Attack", target)
-            xp = xp + 10  -- Example XP gain
-            if xp >= level * 100 then
-                level = level + 1
-                xp = 0
-            end
-        end
-    end
-end
-
--- Start Auto Farm
-startAutoFarm.MouseButton1Click:Connect(function()
-    autoFarming = true
-    autoGatherAndAttack()  -- Start the auto gather and attack loop
-end)
-
--- Stop Auto Farm
-stopAutoFarm.MouseButton1Click:Connect(function()
-    autoFarming = false
-end)
-
--- Start Auto Farm
+    return nearest
