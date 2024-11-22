@@ -1,4 +1,4 @@
--- Kenon Hub - Auto Fly, Auto Gather, and Auto Attack Monsters
+-- Kenon Hub - Improved UI with Toggle Button
 
 -- Display Script Information
 print([[
@@ -10,154 +10,178 @@ print([[
 ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝
 ]])
 
-print("🔥 Kenon Hub - Auto Fly, Auto Gather, Auto Attack Monsters 🔥")
+print("🔥 Kenon Hub - Beautiful Menu with Toggle 🔥")
 
 -- GUI Setup
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.Name = "KenonHub"
 
+-- Main Menu Frame (Hidden Initially)
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 500, 0, 500)
-mainFrame.Position = UDim2.new(0.5, -250, 0.5, -250)
-mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+mainFrame.Size = UDim2.new(0, 400, 0, 500)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -250)
+mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 mainFrame.Parent = ScreenGui
+mainFrame.Visible = false -- Initially hidden
 
+-- Title Label
 local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(0, 500, 0, 50)
-titleLabel.Text = "Kenon Hub - Auto Farm"
+titleLabel.Size = UDim2.new(0, 400, 0, 50)
+titleLabel.Text = "Kenon Hub"
 titleLabel.TextSize = 24
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Parent = mainFrame
 
--- Tabs setup
+-- Toggle Button to Open/Close Menu
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 100, 0, 40)
+toggleButton.Position = UDim2.new(0, 10, 0, 10)
+toggleButton.Text = "Open Menu"
+toggleButton.TextSize = 18
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Parent = ScreenGui
+
+-- Menu Tabs
 local tabFrame = Instance.new("Frame")
-tabFrame.Size = UDim2.new(0, 500, 0, 40)
+tabFrame.Size = UDim2.new(0, 400, 0, 40)
 tabFrame.Position = UDim2.new(0, 0, 0, 50)
-tabFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+tabFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 tabFrame.Parent = mainFrame
 
 local farmTab = Instance.new("TextButton")
-farmTab.Size = UDim2.new(0, 250, 0, 40)
+farmTab.Size = UDim2.new(0, 200, 0, 40)
 farmTab.Position = UDim2.new(0, 0, 0, 0)
 farmTab.Text = "Auto Farm"
 farmTab.TextSize = 18
-farmTab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+farmTab.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 farmTab.TextColor3 = Color3.fromRGB(255, 255, 255)
 farmTab.Parent = tabFrame
 
-local levelTab = Instance.new("TextButton")
-levelTab.Size = UDim2.new(0, 250, 0, 40)
-levelTab.Position = UDim2.new(0.5, 0, 0, 0)
-levelTab.Text = "Auto Farm by Level"
-levelTab.TextSize = 18
-levelTab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-levelTab.TextColor3 = Color3.fromRGB(255, 255, 255)
-levelTab.Parent = tabFrame
+local settingsTab = Instance.new("TextButton")
+settingsTab.Size = UDim2.new(0, 200, 0, 40)
+settingsTab.Position = UDim2.new(0.5, 0, 0, 0)
+settingsTab.Text = "Settings"
+settingsTab.TextSize = 18
+settingsTab.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+settingsTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+settingsTab.Parent = tabFrame
 
--- Auto Farm and Auto Farm by Level Toggles
-local startAutoFarm = Instance.new("TextButton")
-startAutoFarm.Size = UDim2.new(0, 200, 0, 50)
-startAutoFarm.Position = UDim2.new(0, 0, 0, 100)
-startAutoFarm.Text = "Start Auto Farm"
-startAutoFarm.TextSize = 18
-startAutoFarm.BackgroundColor3 = Color3.fromRGB(0, 128, 0)
-startAutoFarm.TextColor3 = Color3.fromRGB(255, 255, 255)
-startAutoFarm.Parent = mainFrame
+-- Farm Tab Content
+local farmFrame = Instance.new("Frame")
+farmFrame.Size = UDim2.new(0, 400, 0, 200)
+farmFrame.Position = UDim2.new(0, 0, 0, 90)
+farmFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+farmFrame.Parent = mainFrame
+farmFrame.Visible = false
 
-local stopAutoFarm = Instance.new("TextButton")
-stopAutoFarm.Size = UDim2.new(0, 200, 0, 50)
-stopAutoFarm.Position = UDim2.new(0, 0, 0, 160)
-stopAutoFarm.Text = "Stop Auto Farm"
-stopAutoFarm.TextSize = 18
-stopAutoFarm.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-stopAutoFarm.TextColor3 = Color3.fromRGB(255, 255, 255)
-stopAutoFarm.Parent = mainFrame
+local autoFarmButton = Instance.new("TextButton")
+autoFarmButton.Size = UDim2.new(0, 150, 0, 40)
+autoFarmButton.Position = UDim2.new(0, 25, 0, 20)
+autoFarmButton.Text = "Start Auto Farm"
+autoFarmButton.TextSize = 18
+autoFarmButton.BackgroundColor3 = Color3.fromRGB(0, 128, 0)
+autoFarmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+autoFarmButton.Parent = farmFrame
 
--- Variables
-local xp = 0
-local level = 1
-local autoFarming = false
-local autoFarmingByLevel = false
-local autoHakiEnabled = true  -- Default value to enable Haki
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+local stopFarmButton = Instance.new("TextButton")
+stopFarmButton.Size = UDim2.new(0, 150, 0, 40)
+stopFarmButton.Position = UDim2.new(0, 25, 0, 80)
+stopFarmButton.Text = "Stop Auto Farm"
+stopFarmButton.TextSize = 18
+stopFarmButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+stopFarmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+stopFarmButton.Parent = farmFrame
 
--- Function to find the nearest monster spawn point
-local function findNearestSpawnPoint()
-    local nearestSpawn = nil
-    local shortestDistance = math.huge
-    for _, spawnPoint in pairs(game.Workspace.SpawnPoints:GetChildren()) do
-        if spawnPoint:IsA("Part") then
-            local distance = (character.HumanoidRootPart.Position - spawnPoint.Position).Magnitude
-            if distance < shortestDistance then
-                shortestDistance = distance
-                nearestSpawn = spawnPoint
-            end
-        end
-    end
-    return nearestSpawn
-end
+-- Settings Tab Content
+local settingsFrame = Instance.new("Frame")
+settingsFrame.Size = UDim2.new(0, 400, 0, 200)
+settingsFrame.Position = UDim2.new(0, 0, 0, 90)
+settingsFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+settingsFrame.Parent = mainFrame
+settingsFrame.Visible = false
 
--- Function to fly to the nearest spawn point using Pathfinding
-local function flyToNearestSpawnPoint()
-    local targetSpawn = findNearestSpawnPoint()
-    if targetSpawn then
-        local path = game:GetService("PathfindingService"):CreatePath({
-            AgentRadius = 2,
-            AgentHeight = 5,
-            AgentCanJump = true,
-            AgentJumpHeight = 10,
-            AgentMaxSlope = 45,
-        })
-        path:ComputeAsync(character.HumanoidRootPart.Position, targetSpawn.Position)
-        path:MoveTo(character)
-        
-        -- Wait until the path is completed
-        while path.Status ~= Enum.PathStatus.Complete do
-            wait(0.5)
-        end
-    end
-end
+local enableHakiButton = Instance.new("TextButton")
+enableHakiButton.Size = UDim2.new(0, 150, 0, 40)
+enableHakiButton.Position = UDim2.new(0, 25, 0, 20)
+enableHakiButton.Text = "Enable Haki"
+enableHakiButton.TextSize = 18
+enableHakiButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
+enableHakiButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+enableHakiButton.Parent = settingsFrame
 
--- Function to gather monsters around the spawn point and attack
-local function gatherAndAttackMonsters()
-    while autoFarming do
-        wait(1)
-        flyToNearestSpawnPoint()  -- Fly to the nearest spawn point
+local disableHakiButton = Instance.new("TextButton")
+disableHakiButton.Size = UDim2.new(0, 150, 0, 40)
+disableHakiButton.Position = UDim2.new(0, 25, 0, 80)
+disableHakiButton.Text = "Disable Haki"
+disableHakiButton.TextSize = 18
+disableHakiButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+disableHakiButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+disableHakiButton.Parent = settingsFrame
 
-        -- Look for monsters within the gathered spawn area
-        local monsters = {}
-        for _, monster in pairs(game.Workspace.Enemies:GetChildren()) do
-            if monster:FindFirstChild("HumanoidRootPart") and monster:FindFirstChild("Humanoid") then
-                table.insert(monsters, monster)
-            end
-        end
-
-        -- Attack all gathered monsters
-        for _, monster in pairs(monsters) do
-            -- Attack logic (assuming the attack function is defined)
-            game.ReplicatedStorage:WaitForChild("RemoteEvent"):FireServer("Attack", monster)
-            xp = xp + 10  -- Example XP gain
-            if xp >= level * 100 then
-                level = level + 1
-                xp = 0
-            end
-        end
-    end
-end
-
--- Start Auto Farm
-startAutoFarm.MouseButton1Click:Connect(function()
-    autoFarming = true
-    gatherAndAttackMonsters()  -- Start the auto fly, gather, and attack loop
+-- Button Toggles for Tabs
+farmTab.MouseButton1Click:Connect(function()
+    farmFrame.Visible = true
+    settingsFrame.Visible = false
 end)
 
--- Stop Auto Farm
-stopAutoFarm.MouseButton1Click:Connect(function()
-    autoFarming = false
+settingsTab.MouseButton1Click:Connect(function()
+    settingsFrame.Visible = true
+    farmFrame.Visible = false
 end)
 
--- Additional functions and features can be added here, such as auto-haki, server checks, etc.
+-- Auto Farm Logic
+local isAutoFarming = false
 
+local function startAutoFarm()
+    while isAutoFarming do
+        -- Logic to automatically farm monsters goes here
+        print("Farming monsters...")
+        -- Example of XP Gain and Level Up
+        local xp = 100
+        local level = 1
+        xp = xp + 10
+        if xp >= level * 100 then
+            level = level + 1
+            print("Level Up! Now at Level " .. level)
+        end
+        wait(1) -- Delay to prevent too fast farming
+    end
+end
+
+-- Button Click Handlers
+autoFarmButton.MouseButton1Click:Connect(function()
+    isAutoFarming = true
+    print("Auto Farm Started!")
+    startAutoFarm()
+end)
+
+stopFarmButton.MouseButton1Click:Connect(function()
+    isAutoFarming = false
+    print("Auto Farm Stopped!")
+end)
+
+enableHakiButton.MouseButton1Click:Connect(function()
+    -- Enable Haki logic here
+    print("Haki Enabled!")
+end)
+
+disableHakiButton.MouseButton1Click:Connect(function()
+    -- Disable Haki logic here
+    print("Haki Disabled!")
+end)
+
+-- Toggle Menu Visibility
+toggleButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = not mainFrame.Visible
+    if mainFrame.Visible then
+        toggleButton.Text = "Close Menu"
+    else
+        toggleButton.Text = "Open Menu"
+    end
+end)
+
+-- Final Debug Message
+print("Kenon Hub Loaded. You can now use the menu to toggle features!")
