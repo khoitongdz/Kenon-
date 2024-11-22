@@ -1,14 +1,15 @@
 local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/khoitongdz/ui/refs/heads/main/.gitignore"))()
 local Window = Fluent:CreateWindow({
-    Title = "Khoitong dz",
+    Title = "Kenon Hub",  -- Updated to the desired name
     SubTitle = "Premium",
     TabWidth = 110,
     Size = UDim2.fromOffset(480, 320),
     Acrylic = false,
     Theme = "Dark",
-MinimizeKey = Enum.KeyCode.End
--- Logo and Script Name
-print([[
+    MinimizeKey = Enum.KeyCode.End
+})
+
+print([[ 
 ███████╗ █████╗ ███╗   ██╗
 ██╔════╝██╔══██╗████╗  ██║
 █████╗  ███████║██╔██╗ ██║
@@ -16,137 +17,104 @@ print([[
 ███████╗██║  ██║██║ ╚████║
 ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝
 ]])
-print("🔥 Kenon hub🔥")
+print("🔥 Kenon hub 🔥")
 
--- Auto-Attack Logic
+-- Player setup
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
-
-while wait(0.1) do
-    local target = findNearestEnemy()  -- Define this function
-    if target then
-        character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame
-        game.ReplicatedStorage.RemoteEvent:FireServer("Attack", target)
-    end
-end
 local replicatedStorage = game:GetService("ReplicatedStorage")
-local remoteEvent = replicatedStorage:FindFirstChild("RemoteEvent")
 
-if remoteEvent then
-    remoteEvent:FireServer("Attack", target)
-else
-    warn("RemoteEvent không tồn tại!")
-end
--- Automatically starts when executed
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
--- Automatically starts when executed
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+-- Function to find nearest enemy
 local function findNearestEnemy()
-    -- Logic to find nearest enemy
+    local closestEnemy = nil
+    local shortestDistance = math.huge
+    for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
+        if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
+            local distance = (enemy.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude
+            if distance < shortestDistance then
+                closestEnemy = enemy
+                shortestDistance = distance
+            end
+        end
+    end
+    return closestEnemy
 end
+
+-- Function to attack nearest enemy
 local function attackEnemy(target)
     character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame
-    game.ReplicatedStorage.RemoteEvent:FireServer("Attack", target)
+    replicatedStorage.RemoteEvent:FireServer("Attack", target)
 end
--- Auto attack loop
-while wait(0.1) do
-    local target = findNearestEnemy()
-    if target then
-        attackEnemy(target)
+
+-- Auto-attack loop
+spawn(function()
+    while wait(0.1) do
+        local target = findNearestEnemy()
+        if target then
+            attackEnemy(target)
+        end
     end
-end
-findNearestEnemy()
-game.ReplicatedStorage.RemoteEvent
--- Modules
-local Toggle = Tabs.Main:AddToggle("Toggle", {Title = "Auto Farm Bone", Default = false })
+end)
+
+-- Modules for farming and toggles
+local Toggle = Window:AddToggle("Auto Farm Bone", {Title = "Toggle Auto Farm Bone", Default = false })
 Toggle:OnChanged(function(Value)
     _G.AutoBone = Value
 end)
-_G.AutoBone = false  -- Đặt trạng thái mặc định
+
+-- Logic for Bone Farm
+local BoneCFrame = CFrame.new(-9515.75, 174.8521728515625, 6079.40625) -- Bone position 1
+local BoneCFrame2 = CFrame.new(-9359.453125, 141.32679748535156, 5446.81982421875) -- Bone position 2
+
 spawn(function()
     while wait(0.1) do
         if _G.AutoBone then
             pcall(function()
-                local target = findNearestEnemy()
-                if target then
-                    attackEnemy(target)
+                local QuestTitle = player.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text
+                if not string.find(QuestTitle, "Demonic Soul") then
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AbandonQuest")
                 end
-            end
-        end
-    end
-spawn(function()
-    while wait() do
-        if _G.AutoBone then
-            pcall(function()
-                -- Logic thực hiện nhiệm vụ farm
+                
+                -- Teleport to farm location if not near enough
+                if (player.Character.HumanoidRootPart.Position - BoneCFrame2.Position).Magnitude > 2500 then
+                    player.Character.HumanoidRootPart.CFrame = BoneCFrame2
+                elseif (player.Character.HumanoidRootPart.Position - BoneCFrame.Position).Magnitude < 2500 then
+                    player.Character.HumanoidRootPart.CFrame = BoneCFrame
+                end
+                
+                -- Start Quest if near BoneCFrame
+                if (BoneCFrame.Position - player.Character.HumanoidRootPart.Position).Magnitude <= 3 then
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", "HauntedQuest2", 1)
+                end
             end)
         end
     end
 end)
 
-local Toggle = Tabs.Main:AddToggle("Toggle", {Title = "Auto Farm Bone", Default = false })
-Options.ToggleBone:SetValue(false)
-local BoneCFrame = CFrame.new(-9515.75, 174.8521728515625, 6079.40625)
-local BoneCFrame2 = CFrame.new(-9359.453125, 141.32679748535156, 5446.81982421875)
+-- Auto attack while farming
 spawn(function()
-    while wait() do
+    while wait(0.1) do
         if _G.AutoBone then
             pcall(function()
-                local QuestTitle = game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text
-                if not string.find(QuestTitle, "Demonic Soul") then
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AbandonQuest")
+                -- Logic to attack enemies while farming
+                for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
+                    if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
+                        if enemy.Name == "Reborn Skeleton" or enemy.Name == "Living Zombie" or enemy.Name == "Demonic Soul" or enemy.Name == "Posessed Mummy" then
+                            attackEnemy(enemy)
+                        end
+                    end
                 end
-                if game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == false then
-                    if BypassTP then
-                        wait()
-                       if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - BoneCFrame2.Position).Magnitude > 2500 then
-                       BTP(BoneCFrame2)
-                       elseif (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - BoneCFrame.Position).Magnitude < 2500 then
-                       Tween(BoneCFrame)
-                       end
-                 else
-                         Tween(BoneCFrame)
-                         end
-                if (BoneCFrame.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 3 then    
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest","HauntedQuest2",1)
-                    end
-                elseif game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == true then
-                    if game:GetService("Workspace").Enemies:FindFirstChild("Reborn Skeleton") or game:GetService("Workspace").Enemies:FindFirstChild("Living Zombie") or game:GetService("Workspace").Enemies:FindFirstChild("Demonic Soul") or game:GetService("Workspace").Enemies:FindFirstChild("Posessed Mummy") then
-                        for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
-                            if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                                if v.Name == "Reborn Skeleton" or v.Name == "Living Zombie" or v.Name == "Demonic Soul" or v.Name == "Posessed Mummy" then
-                                    if string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Demonic Soul") then
-                                        repeat wait(_G.Fast_Delay)
-                                            AttackNoCD()
-                                            AutoHaki()
-                                            EquipTool(SelectWeapon)
-                                                      Tween(v.HumanoidRootPart.CFrame * CFrame.new(posX,posY,posZ))
-			                                v.HumanoidRootPart.Size = Vector3.new(1, 1, 1)
-                                            v.HumanoidRootPart.Transparency = 1
-                                            v.Humanoid.JumpPower = 0
-                                            v.Humanoid.WalkSpeed = 0
-                                            v.HumanoidRootPart.CanCollide = false
-                                            FarmPos = v.HumanoidRootPart.CFrame
-                                            MonFarm = v.Name
-                                
-                                            --Click
-                                        until not _G.AutoBone or v.Humanoid.Health <= 0 or not v.Parent or game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == false
-                                    else
-                                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AbandonQuest")
-                                    end
-                                end
-                            end
-                        end
-                    else
-                        if game:GetService("ReplicatedStorage"):FindFirstChild("Demonic Soul") then
-                        Tween(v.HumanoidRootPart.CFrame * Pos2)
-                        end
-                    end
-              end
+            end)
         end
     end
 end)
+
+-- Finalize the main loop
+while wait(0.1) do
+    if _G.AutoBone then
+        local target = findNearestEnemy()
+        if target then
+            attackEnemy(target)
+        end
+    end
+end
