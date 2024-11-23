@@ -3,8 +3,8 @@
 
 -- Function to check for supported executor
 local function IsSupportedExecutor()
-    local executor = pcall(function() return identifyexecutor() end)  -- Safely check for identifyexecutor
-    if executor then
+    local success, executor = pcall(function() return identifyexecutor() end)  -- Safely check for identifyexecutor
+    if success and executor then
         return true
     else
         warn("Unsupported Executor! Script may not function properly.")
@@ -71,15 +71,20 @@ BoneCountLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 BoneCountLabel.BackgroundTransparency = 1  -- Make background transparent
 BoneCountLabel.Parent = script.Parent
 
--- Enable fast attack function
-local function EnableFastAttack()
-    FastAttackEnabled = true
-    -- Logic to speed up attack
-    while FastAttackEnabled do
-        wait(0.1)
-        local player = game.Players.LocalPlayer
-        if player.Character and player.Character:FindFirstChild("Humanoid") then
-            player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Attacking)
+-- Enable fast melee attack function
+local function EnableMeleeAttack(target)
+    local player = game.Players.LocalPlayer
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        local humanoid = player.Character.Humanoid
+        -- Ensure the player is targeting the right enemy (target is a mob)
+        if target and target:FindFirstChild("Humanoid") then
+            -- Melee attack logic: Move closer and initiate attack
+            player.Character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame
+            humanoid:MoveTo(target.HumanoidRootPart.Position)
+            humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+            humanoid:MoveTo(target.HumanoidRootPart.Position)
+            -- Trigger attack animation or damage logic based on game mechanics
+            humanoid:ChangeState(Enum.HumanoidStateType.Attacking)  -- Assuming this triggers the melee animation
         end
     end
 end
@@ -100,13 +105,9 @@ local function AutoFarmBone()
             wait(0.1)
             for _, mob in pairs(hauntedCastleIsland.Enemies:GetChildren()) do
                 if mob and mob:FindFirstChild("Humanoid") then
-                    -- Move to the enemy
-                    player.Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame
-                    wait(0.5)
-
-                    -- Gather enemies and enable fast attack
-                    mob.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
-                    EnableFastAttack()
+                    -- Move to the enemy and attack with melee
+                    EnableMeleeAttack(mob)
+                    wait(0.5)  -- Wait before attacking the next enemy
                 end
             end
         end
@@ -181,5 +182,4 @@ end)
 
 -- Ensure script works only if supported executor
 if not IsSupportedExecutor() then
-    return -- Exit script if the executor is unsupported
-end
+    return  -- Exit script if executor is not supported
