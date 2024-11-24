@@ -1,28 +1,13 @@
--- Kenon Hub - Auto Farm Bone & Moon Phase Tracker
--- Script created by khoitongdz for Blox Fruits
+-- Kenon Hub - Main Menu Script
+-- Script created by khoitongdz
 
--- Check supported Executor
-local function IsSupportedExecutor()
-    local success, executor = pcall(function() return identifyexecutor() end)
-    if not (success and executor) then
-        warn("Unsupported executor! The script may not work properly.")
-    end
-end
-IsSupportedExecutor()
-
--- Main variables
-local AutoFarmBoneEnabled = false
-local AutoClaimQuestEnabled = false
-local AutoFarmKatakuriEnabled = false
-local MoonPhase = "No Moon"
-local MoonPercentage = 0
-local DimensionKilled = 0
-
--- GUI Setup using Fluent
+-- Load GUI Library
 local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/khoitongdz/ui/refs/heads/main/.gitignore"))()
+
+-- Create Main Window
 local Window = Fluent:CreateWindow({
     Title = "Kenon Hub",
-    SubTitle = "Blox Fruits",
+    SubTitle = "Main Menu",
     TabWidth = 110,
     Size = UDim2.fromOffset(480, 320),
     Acrylic = false,
@@ -30,140 +15,31 @@ local Window = Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.End
 })
 
--- Create Tabs
+-- Create Main Tab
 local MainTab = Window:AddTab("Main")
+MainTab:AddLabel("Welcome to Kenon Hub!")
+MainTab:AddLabel("Created by khoitongdz")
+
+-- Add a button to execute your script
+MainTab:AddButton("Load Auto Farm Script", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/khoitongdz/Kenon-/refs/heads/main/message.txt"))()
+end)
+
+-- Add an exit button
+MainTab:AddButton("Exit", function()
+    game:GetService("CoreGui")[Window.Name]:Destroy()
+end)
+
+-- Add Other Tabs (placeholders for now)
 local FarmTab = Window:AddTab("Auto Farm")
-local SubFarmTab = Window:AddTab("Sub-Farming")
-local MasteryTab = Window:AddTab("Mastery")
+FarmTab:AddLabel("Load Auto Farm features here.")
 
--- Create Auto Farm Bone Toggle in Sub-Farming tab
-local FarmButton = SubFarmTab:AddToggle("Auto Farm Bone", false, function(state)
-    AutoFarmBoneEnabled = state
-end)
+local MiscTab = Window:AddTab("Misc")
+MiscTab:AddLabel("Add miscellaneous features here.")
 
--- Create Auto Claim Quest when Farm Bone Toggle
-local ClaimQuestButton = SubFarmTab:AddToggle("Auto Claim Quest When Farm Bone", false, function(state)
-    AutoClaimQuestEnabled = state
-end)
+-- Add Settings Tab
+local SettingsTab = Window:AddTab("Settings")
+SettingsTab:AddLabel("Settings will be here.")
 
--- Create Auto Farm Katakuri Toggle
-local FarmKatakuriButton = SubFarmTab:AddToggle("Auto Farm Katakuri", false, function(state)
-    AutoFarmKatakuriEnabled = state
-end)
-
--- Create Dimension Killed label
-local DimensionLabel = SubFarmTab:AddLabel("Dimension Killed: " .. DimensionKilled .. "/500")
-
--- Create Moon Phase Label in Main tab
-local MoonLabel = MainTab:AddLabel("Moon Phase: " .. MoonPhase .. " (" .. MoonPercentage .. "%)")
-
--- Function to update Moon Phase status
-local function UpdateMoonPhase()
-    local hour = tonumber(game.Lighting.TimeOfDay:sub(1, 2))
-    local cyclePosition = (hour % 24) / 24
-    MoonPercentage = math.floor(cyclePosition * 100)
-    if cyclePosition >= 0.75 or cyclePosition < 0.25 then
-        MoonPhase = "Full Moon"
-    elseif cyclePosition >= 0.25 and cyclePosition < 0.5 then
-        MoonPhase = "Waning Moon"
-    elseif cyclePosition >= 0.5 and cyclePosition < 0.75 then
-        MoonPhase = "Waxing Moon"
-    else
-        MoonPhase = "No Moon"
-    end
-    MoonLabel:SetText("Moon Phase: " .. MoonPhase .. " (" .. MoonPercentage .. "%)")
-end
-
--- Function for Auto Farm Bone
-local function AutoFarmBone()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-
-    while AutoFarmBoneEnabled do
-        local hauntedCastle = game.Workspace:FindFirstChild("Haunted Castle")
-        if hauntedCastle then
-            character.HumanoidRootPart.CFrame = hauntedCastle.CFrame
-            task.wait(2)
-
-            -- Loop through the mobs in Haunted Castle
-            for _, mob in ipairs(hauntedCastle:GetChildren()) do
-                if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
-                    character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame
-                    task.wait(0.3)
-                    mob.Humanoid:TakeDamage(50)
-                end
-            end
-        else
-            warn("Haunted Castle not found!")
-        end
-        task.wait(1)
-    end
-end
-
--- Function for Auto Claim Quest When Farm Bone
-local function AutoClaimQuest()
-    local player = game.Players.LocalPlayer
-    -- Find the player's current quest and claim it
-    local quest = player:FindFirstChild("CurrentQuest")
-    if quest then
-        -- Implement the actual quest claiming logic here
-        print("Claiming quest...")
-        -- Example logic (you need to adjust it based on your specific game's quest system)
-        -- quest:Claim()  -- Uncomment and adjust this line with actual quest claiming method
-    else
-        warn("No current quest found!")
-    end
-end
-
--- Function for Auto Farm Katakuri
-local function AutoFarmKatakuri()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-
-    while AutoFarmKatakuriEnabled do
-        local katakuri = game.Workspace:FindFirstChild("Katakuri")
-        if katakuri then
-            character.HumanoidRootPart.CFrame = katakuri.HumanoidRootPart.CFrame
-            task.wait(2)
-
-            -- Loop through the mobs in Katakuri's area
-            for _, mob in ipairs(katakuri:GetChildren()) do
-                if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
-                    character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame
-                    task.wait(0.3)
-                    mob.Humanoid:TakeDamage(50)
-                end
-            end
-        else
-            warn("Katakuri not found!")
-        end
-        task.wait(1)
-    end
-end
-
--- Connect the Auto Farm Bone toggle
-FarmButton.OnChanged:Connect(function(state)
-    AutoFarmBoneEnabled = state
-    if state then
-        task.spawn(AutoFarmBone)
-    end
-end)
-
--- Connect the Auto Claim Quest toggle
-ClaimQuestButton.OnChanged:Connect(function(state)
-    AutoClaimQuestEnabled = state
-    if state then
-        task.spawn(AutoClaimQuest)
-    end
-end)
-
--- Connect the Auto Farm Katakuri toggle
-FarmKatakuriButton.OnChanged:Connect(function(state)
-    AutoFarmKatakuriEnabled = state
-    if state then
-        task.spawn(AutoFarmKatakuri)
-    end
-end)
-
--- Update Moon Phase in real-time
-game:GetService("RunService").Heartbeat:Connect(UpdateMoonPhase)
+-- Initialize Menu
+print("Kenon Hub loaded! Open with the specified hotkey.")
