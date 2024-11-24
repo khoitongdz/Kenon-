@@ -22,7 +22,7 @@ MainTab:AddLabel("Created by khoitongdz")
 
 -- Add a button to execute your script
 MainTab:AddButton("Load Auto Farm Script", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/khoitongdz/Kenon-/refs/heads/main/message.txt"))()
+loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/57d5eebd9b111f1639a5970102487168.lua"))()
 end)
 
 -- Add an exit button
