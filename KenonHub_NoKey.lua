@@ -1,44 +1,36 @@
--- Kenon Hub - No Key Version
+-- Kenon Hub Unified Script (No Key Version)
 
--- Global Settings (No Key System)
-getgenv().Team = "Marines" -- Change to "Marines" if needed
-getgenv().Hide_Menu = false -- Show/Hide Menu
-getgenv().AutoFarm = true -- Auto farm toggle (default: true)
+-- Auto load settings
+getgenv().Team = "Marines" -- Pirates/Marines
+getgenv().Hide_Menu = false -- true/false
 
--- Simplified Multi-Source Loader
-local function load_script(url)
-    local success, response = pcall(function()
-        return game:HttpGet(url)
-    end)
-    if success and response then
-        loadstring(response)()
+-- Import common utilities and features from script A and B, combining into one file
+local ui_name = "Kenon Hub" -- Unified script
+local ui_parent = game.CoreGui
+
+local function loadScriptA()
+    -- Load from first source (Xero Hub main)
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/verudous/Xero-Hub/main/main.lua"))()
+end
+
+local function loadScriptB()
+    -- Load from second source (XeroHub-v2)
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/VitinDvne/XeroHub-v2-new/main/xero_main.lua"))()
+end
+
+local function initializeUI()
+    -- Setup UI with appropriate name and link to core GUI components
+    if ui_parent:FindFirstChild(ui_name) then
+        warn(ui_name .. " UI Already Loaded!")
     else
-        warn("Failed to load script from " .. url)
+        -- Custom UI Manager
+        print("Starting " .. ui_name)
+        -- Main UI Configuration:
+        loadScriptA()
+        loadScriptB()
     end
 end
 
--- Change GUI Title (Specific to User Interface)
-local function change_gui_title(new_title)
-    local gui = game.CoreGui:FindFirstChild("Kenon Hub")  -- Changed from "Xero Hub" to "Kenon Hub"
-    if gui then
-        gui.Title.Text = new_title
-    else
-        warn("GUI Title could not be found. Check for other changes.")
-    end
-end
-
--- Execute Script Logic
-local scripts = {
-    "https://raw.githubusercontent.com/verudous/Xero-Hub/main/main.lua",
-    "https://github.com/VitinDvne/XeroHub-v2-new/blob/main/xero_main.lua",
-    "https://api.luarmor.net/files/v3/loaders/3b2169cf53bc6104dabe8e19562e5cc2.lua"
-}
-
--- Load All Scripts and Apply GUI Title Change
-for _, url in ipairs(scripts) do
-    load_script(url)
-end
-
-change_gui_title("Kenon | Blox Fruits") -- Title updated
-
-print("Kenon Hub - No Key Version Loaded Successfully!")
+-- Execute final hub loader
+initializeUI()
+print(ui_name .. " No Key Mode Activated")
