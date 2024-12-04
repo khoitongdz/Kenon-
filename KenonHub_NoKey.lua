@@ -1,7 +1,7 @@
 -- Kenon Hub - No Key Version
 
 -- Global Settings (No Key System)
-getgenv().Team = "Pirates" -- Change to "Marines" if needed
+getgenv().Team = "Marines" -- Change to "Marines" if needed
 getgenv().Hide_Menu = false -- Show/Hide Menu
 getgenv().AutoFarm = true -- Auto farm toggle (default: true)
 
