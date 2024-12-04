@@ -19,7 +19,7 @@ end
 
 -- Change GUI Title (Specific to User Interface)
 local function change_gui_title(new_title)
-    local gui = game.CoreGui:FindFirstChild("Xero Hub")
+    local gui = game.CoreGui:FindFirstChild("Kenon Hub")  -- Changed from "Xero Hub" to "Kenon Hub"
     if gui then
         gui.Title.Text = new_title
     else
