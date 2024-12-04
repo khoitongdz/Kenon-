@@ -1,36 +1,39 @@
 -- Kenon Hub Unified Script (No Key Version)
 
--- Auto load settings
+-- Global Settings
 getgenv().Team = "Marines" -- Pirates/Marines
 getgenv().Hide_Menu = false -- true/false
 
--- Import common utilities and features from script A and B, combining into one file
-local ui_name = "Kenon Hub" -- Unified script
+-- Importing Scripts from Original URLs Replaced for Kenon Hub
+local ui_name = "Kenon Hub"
 local ui_parent = game.CoreGui
 
 local function loadScriptA()
-    -- Load from first source (Xero Hub main)
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/verudous/Xero-Hub/main/main.lua"))()
+    -- Load Script A (Kenon Hub)
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/khoitongdz/kenon-exe/refs/heads/main/message.txt"))()
 end
 
 local function loadScriptB()
-    -- Load from second source (XeroHub-v2)
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/VitinDvne/XeroHub-v2-new/main/xero_main.lua"))()
+    -- Load Script B (Kenon Hub)
+    loadstring(game:HttpGet("https://github.com/VitinDvne/XeroHub-v2-new/blob/main/xero_main.lua"))()
 end
 
+local function loadScriptC()
+    -- Placeholder: (Old Hub Combined and Transformed)
+    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc6104dabe8e19562e5cc2.lua"))()
+end
+
+-- GUI Initialization Process
 local function initializeUI()
-    -- Setup UI with appropriate name and link to core GUI components
     if ui_parent:FindFirstChild(ui_name) then
-        warn(ui_name .. " UI Already Loaded!")
+        warn(ui_name .. " Already Loaded!")
     else
-        -- Custom UI Manager
-        print("Starting " .. ui_name)
-        -- Main UI Configuration:
+        print("Loading " .. ui_name)
         loadScriptA()
         loadScriptB()
+        loadScriptC()
     end
 end
 
--- Execute final hub loader
 initializeUI()
-print(ui_name .. " No Key Mode Activated")
+print(ui_name .. " No Key Version Initialized Successfully")
