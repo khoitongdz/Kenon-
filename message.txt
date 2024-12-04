@@ -1,185 +1,43 @@
--- // Blox Fruits Script - Kenon Hub (All Executor Supported) //
+-- Kenon Hub Configuration
+getgenv().Team = "Marines" -- "Pirates" or "Marines"
+getgenv().Hide_Menu = false -- true/false
 
--- Check if the game is loaded
-if not game:IsLoaded() then
-    game.Loaded:Wait()
-end
-
-local player = game.Players.LocalPlayer
-local char = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = char:WaitForChild("HumanoidRootPart")
-
---=========================
--- UI Library and Window
---=========================
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("Kenon Hub", "DarkTheme")
-
---=========================
--- Logo Display
---=========================
-local logoUrl = "https://cdn.discordapp.com/emojis/1290305687762501723.webp?size=96&quality=lossless" -- Replace with your desired image URL
-
-local LogoTab = Window:NewTab("Logo")
-local LogoSection = LogoTab:NewSection("Welcome to Kenon Hub")
-LogoSection:NewLabel("Blox Fruits Script")
-
-LogoSection:NewButton("Click to Display Logo", "Displays the logo of Kenon Hub", function()
-    -- Make sure we aren't creating the image more than once
-    if not game.Players.LocalPlayer.PlayerGui:FindFirstChild("KenonLogo") then
-        local screenGui = Instance.new("ScreenGui", game.Players.LocalPlayer:WaitForChild("PlayerGui"))
-        screenGui.Name = "KenonLogo"
-        
-        local imageLabel = Instance.new("ImageLabel", screenGui)
-        imageLabel.Size = UDim2.new(0, 400, 0, 200)
-        imageLabel.Position = UDim2.new(0.5, -200, 0.5, -100)
-        imageLabel.Image = logoUrl
-        imageLabel.BackgroundTransparency = 1
-    end
-end)
-
---=========================
--- TABS & SECTIONS
---=========================
-local FarmTab = Window:NewTab("Auto Farm")
-local RaidTab = Window:NewTab("Auto Raid")
-local StatsTab = Window:NewTab("Auto Stats")
-local TeleportTab = Window:NewTab("Teleport")
-local ESPTab = Window:NewTab("ESP")
-local ChestTab = Window:NewTab("Auto Chest")
-
---=========================
--- Auto Farm with Auto Fast Attack
---=========================
-local FarmSection = FarmTab:NewSection("Auto Farm")
-
-FarmSection:NewToggle("Enable/Disable Auto Farm", "Automatically farm the nearest enemy", function(state)
-    _G.AutoFarm = state
-    if state then
-        EnableFastAttack(true) -- Enable Fast Attack when Auto Farm is on
-    else
-        EnableFastAttack(false) -- Disable Fast Attack when Auto Farm is off
-    end
-
-    while _G.AutoFarm do
-        wait(1)
-        local enemy = game.Workspace.Enemies:FindFirstChild("Bandit") -- Change to the appropriate enemy name
-        if enemy and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
-            humanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame
-            wait(0.5)
-            player.Character:FindFirstChildOfClass("Tool"):Activate()
-        else
-            print("No enemy found.")
-        end
-    end
-end)
-
---=========================
--- Fast Attack Function
---=========================
-function EnableFastAttack(enable)
-    _G.FastAttack = enable
-    if enable then
-        coroutine.wrap(function()
-            while _G.FastAttack do
-                wait(0.1) -- Faster attack loop
-                local tool = player.Character:FindFirstChildOfClass("Tool")
-                if tool then
-                    tool:Activate()
-                end
-            end
-        end)()
+-- Function to Auto Select Team
+local function SelectTeam(team)
+    local player = game.Players.LocalPlayer
+    if player.Team.Name ~= team then
+        local args = {
+            [1] = team
+        }
+        game:GetService("ReplicatedStorage").Remotes.TeamSelect:FireServer(unpack(args))
     end
 end
 
---=========================
--- Auto Raid
---=========================
-local RaidSection = RaidTab:NewSection("Auto Raid")
+-- Initialize Kenon Hub
+local function Initialize()
+    if getgenv().Hide_Menu then
+        pcall(function()
+            game:GetService("CoreGui").RobloxGui:Destroy() -- Hide default UI
+        end)
+    end
+    -- Call Team Function
+    SelectTeam(getgenv().Team)
+    print("Kenon Hub Initialized - No Key")
+end
 
-RaidSection:NewButton("Start Auto Raid", "Automatically join and complete raids", function()
-    print("Auto Raid is now active!")
-    -- Customize to suit your raid automation needs
-end)
+-- Example Features Loader (Customize as needed)
+local function LoadFeatures()
+    print("Loading new features for Kenon Hub...") -- Debug
 
---=========================
--- Auto Stats
---=========================
-local StatsSection = StatsTab:NewSection("Auto Stats")
-
-StatsSection:NewDropdown("Select Stat to Upgrade", "Choose the stat you want to upgrade", {"Melee", "Defense", "Sword", "Gun", "Blox Fruit"}, function(selectedStat)
-    _G.SelectedStat = selectedStat
-end)
-
-StatsSection:NewToggle("Enable Auto Upgrade", "Automatically upgrade skill points", function(state)
-    _G.AutoUpgradeStats = state
-    while _G.AutoUpgradeStats do
-        wait(1)
-        if player:FindFirstChild("Data") then
-            local stats = player.Data.Points
-            if stats.Value > 0 then
-                game:GetService("ReplicatedStorage").Remotes["Stats"]:InvokeServer(_G.SelectedStat, 1)
-            end
+    -- Example: Auto Farming (Add actual logic here)
+    local function AutoFarm()
+        while wait(5) do
+            print("Kenon Hub: Auto farming active...") -- Debug
         end
     end
-end)
+    spawn(AutoFarm)
+end
 
---=========================
--- Teleport
---=========================
-local TeleportSection = TeleportTab:NewSection("Teleport")
-
-TeleportSection:NewDropdown("Select Location", "Quickly teleport to a location", {"Starter Island", "Middle Town", "Sky Island"}, function(location)
-    local locations = {
-        ["Starter Island"] = CFrame.new(1056, 16, 1420),
-        ["Middle Town"] = CFrame.new(-657, 7, 135),
-        ["Sky Island"] = CFrame.new(-5000, 300, -300)
-    }
-    if locations[location] then
-        humanoidRootPart.CFrame = locations[location]
-    end
-end)
-
---=========================
--- ESP (Player Position Display)
---=========================
-local ESPSection = ESPTab:NewSection("ESP")
-
-ESPSection:NewToggle("Enable/Disable ESP", "Show player positions", function(state)
-    _G.ESPEnabled = state
-    while _G.ESPEnabled do
-        wait(1)
-        for _, plr in pairs(game.Players:GetPlayers()) do
-            if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                local highlight = Instance.new("Highlight", plr.Character)
-                highlight.FillColor = Color3.fromRGB(255, 0, 0)
-                highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end)
-
---=========================
--- Auto Chest
---=========================
-local ChestSection = ChestTab:NewSection("Auto Chest")
-
-ChestSection:NewToggle("Enable Auto Chest Collection", "Automatically collect all chests nearby", function(state)
-    _G.AutoChest = state
-    while _G.AutoChest do
-        wait(1)
-        for _, chest in pairs(game.Workspace:GetChildren()) do
-            if chest.Name:match("Chest") then
-                humanoidRootPart.CFrame = chest.CFrame
-                wait(0.5)
-            end
-        end
-    end
-end)
-
---=========================
--- Close Menu
---=========================
-Window:NewTab("Menu"):NewSection("Close Script"):NewButton("Close", "Exit the script", function()
-    Library:ToggleUI()
-end)
+-- Execute Kenon Hub
+Initialize()
+LoadFeatures()
