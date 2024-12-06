@@ -1,0 +1,166 @@
+-- Kenon Hub: Auto Farm, Anti AFK, Fast Attack, Anti Disconnect, and more
+
+-- Check supported executor
+local function IsSupportedExecutor()
+    local success, executor = pcall(function() return identifyexecutor() end)
+    if not (success and executor) then
+        warn("Unsupported executor! The script may not work properly.")
+    end
+end
+IsSupportedExecutor()
+
+-- GUI Setup
+local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/khoitongdz/ui/refs/heads/main/.gitignore"))()
+local Window = Fluent:CreateWindow({
+    Title = "Kenon Hub",
+    SubTitle = "Blox Fruits",
+    TabWidth = 110,
+    Size = UDim2.fromOffset(480, 320),
+    Acrylic = false,
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.End
+})
+
+-- Tabs in the GUI
+local MainTab = Window:AddTab("Main")
+local AutoFarmTab = Window:AddTab("Auto Farm")
+local AntiAFKTab = Window:AddTab("Anti AFK")
+local FastAttackTab = Window:AddTab("Fast Attack")
+local AntiDisconnectTab = Window:AddTab("Anti Disconnect")
+
+-- Anti AFK Feature
+local function AntiAFK()
+    game:GetService("Players").LocalPlayer.Idled:Connect(function()
+        game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+    end)
+end
+AntiAFK()
+
+-- Auto Farm Feature
+local AutoFarmEnabled = false
+local FarmButton = AutoFarmTab:AddToggle("Enable Auto Farm", false, function(state)
+    AutoFarmEnabled = state
+end)
+
+local function AutoFarmBone()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+
+    while AutoFarmEnabled do
+        local hauntedCastle = game.Workspace:FindFirstChild("Haunted Castle")
+        if hauntedCastle then
+            character.HumanoidRootPart.CFrame = hauntedCastle.CFrame
+            task.wait(2)
+
+            for _, mob in ipairs(hauntedCastle:GetChildren()) do
+                if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
+                    character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame
+                    task.wait(0.3)
+                    mob.Humanoid:TakeDamage(50)  -- Adjust damage based on game mechanics
+                end
+            end
+        else
+            warn("Haunted Castle not found!")
+        end
+        task.wait(1)
+    end
+end
+
+FarmButton.OnChanged:Connect(function(state)
+    AutoFarmEnabled = state
+    if state then
+        task.spawn(AutoFarmBone)
+    end
+end)
+
+-- Fast Attack Feature
+local FastAttackEnabled = false
+local AttackButton = FastAttackTab:AddToggle("Enable Fast Attack", false, function(state)
+    FastAttackEnabled = state
+end)
+
+local function FastAttack()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+
+    while FastAttackEnabled do
+        if character and character:FindFirstChild("Humanoid") then
+            local humanoid = character:FindFirstChild("Humanoid")
+            humanoid.WalkSpeed = 100  -- Increase walk speed during fast attack
+            -- Simulate faster attacks, based on attack cooldown and animations
+            -- Add attack simulation here if needed
+        end
+        task.wait(0.1)
+    end
+end
+
+AttackButton.OnChanged:Connect(function(state)
+    FastAttackEnabled = state
+    if state then
+        task.spawn(FastAttack)
+    end
+end)
+
+-- Anti Disconnect Feature
+local function AntiDisconnect()
+    local player = game.Players.LocalPlayer
+    player.OnTeleport = function() end
+end
+AntiDisconnect()
+
+-- Auto Heal Feature (Optional)
+local AutoHealEnabled = false
+local HealButton = MainTab:AddToggle("Enable Auto Heal", false, function(state)
+    AutoHealEnabled = state
+end)
+
+local function AutoHeal()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+
+    while AutoHealEnabled do
+        local humanoid = character:FindFirstChild("Humanoid")
+        if humanoid and humanoid.Health < humanoid.MaxHealth then
+            humanoid.Health = humanoid.MaxHealth  -- Automatically heal to full health
+        end
+        task.wait(1)
+    end
+end
+
+HealButton.OnChanged:Connect(function(state)
+    AutoHealEnabled = state
+    if state then
+        task.spawn(AutoHeal)
+    end
+end)
+
+-- Fast Sprint Feature
+local FastSprintEnabled = false
+local SprintButton = MainTab:AddToggle("Enable Fast Sprint", false, function(state)
+    FastSprintEnabled = state
+end)
+
+local function FastSprint()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+
+    while FastSprintEnabled do
+        local humanoid = character:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = 100  -- Increase walk speed to sprint faster
+        end
+        task.wait(0.1)
+    end
+end
+
+SprintButton.OnChanged:Connect(function(state)
+    FastSprintEnabled = state
+    if state then
+        task.spawn(FastSprint)
+    end
+end)
+
+-- Finalizing: Ensure all features work
+game:GetService("RunService").Heartbeat:Connect(function()
+    -- Continuous checks or updates can go here, e.g., checking if the player is idle
+end)
