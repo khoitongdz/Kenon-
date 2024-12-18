@@ -1,21 +1,19 @@
--- Kiểm tra xem game có đang chạy
+-- Check if the game is loaded
 if not game:IsLoaded() then
     game.Loaded:Wait()
 end
 
--- Tải thư viện UI
+-- Load the UI library
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
 local Window = OrionLib:MakeWindow({Name = "Blox Fruits - Kenon Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "KenonHub"})
 
--- Tabs chính với icon từ URL
-local iconUrl = "https://media.discordapp.net/attachments/1251001730997682218/1310851463869632535/1290305687762501723.png?ex=6763ba0f&is=6762688f&hm=0df7474dea7ba9df531347cff793ba643d3879135eb7d789b546b1c9248e4d33&=&format=webp&quality=lossless&width=76&height=76"
+-- Main Tabs
+local MainTab = Window:MakeTab({Name = "Main", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local CombatTab = Window:MakeTab({Name = "Combat", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local ESPTab = Window:MakeTab({Name = "ESP", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local SettingsTab = Window:MakeTab({Name = "Settings", Icon = "rbxassetid://4483345998", PremiumOnly = false})
 
-local MainTab = Window:MakeTab({Name = "Main", Icon = iconUrl, PremiumOnly = false})
-local CombatTab = Window:MakeTab({Name = "Combat", Icon = iconUrl, PremiumOnly = false})
-local ESPTab = Window:MakeTab({Name = "ESP", Icon = iconUrl, PremiumOnly = false})
-local SettingsTab = Window:MakeTab({Name = "Settings", Icon = iconUrl, PremiumOnly = false})
-
--- Biến trạng thái
+-- State variables
 local isFastAttackEnabled = false
 local isAutoFarmEnabled = false
 local isAutoChestEnabled = false
@@ -33,41 +31,52 @@ local isAutoRaidEnabled = false
 local isServerHopEnabled = false
 local selectedStat = "Melee"
 
--- Hàm bật/tắt Fast Attack
+-- Long-range attack (Auto Attack)
+local function longRangeAttack()
+    spawn(function()
+        while isFastAttackEnabled do
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+
+            if character and character:FindFirstChild("Humanoid") then
+                -- Find the nearest enemy
+                local nearestEnemy = nil
+                local shortestDistance = math.huge
+                for _, obj in pairs(workspace:GetChildren()) do
+                    if obj:IsA("Model") and obj:FindFirstChild("Humanoid") and obj ~= character then
+                        local distance = (obj.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude
+                        if distance < shortestDistance then
+                            nearestEnemy = obj
+                            shortestDistance = distance
+                        end
+                    end
+                end
+
+                -- Attack if an enemy is found within range
+                if nearestEnemy and shortestDistance <= 100 then -- Attack range of 100 studs (can be adjusted)
+                    local tool = character:FindFirstChildOfClass("Tool")
+                    if tool then
+                        tool:Activate()
+                    end
+                end
+            end
+            wait(0.1)
+        end
+    end)
+end
+
+-- Toggle Fast Attack
 local function toggleFastAttack(state)
     isFastAttackEnabled = state
 
     if isFastAttackEnabled then
-        spawn(function()
-            while isFastAttackEnabled do
-                local player = game.Players.LocalPlayer
-                local character = player.Character
-
-                if character and character:FindFirstChild("Humanoid") then
-                    local tool = character:FindFirstChildOfClass("Tool")
-                    if tool then
-                        tool:Activate()
-                        local hitbox = character:FindFirstChild("HumanoidRootPart")
-                        if hitbox then
-                            hitbox.Size = Vector3.new(50, 50, 50)
-                            hitbox.Transparency = 0.5
-                        end
-                    end
-                end
-                wait(0.1)
-            end
-        end)
+        longRangeAttack()  -- Activate long-range attack when Fast Attack is enabled
     else
-        local player = game.Players.LocalPlayer
-        local character = player.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.Size = Vector3.new(2, 2, 1)
-            character.HumanoidRootPart.Transparency = 0
-        end
+        -- Stop long-range attack when Fast Attack is disabled (optional)
     end
 end
 
--- Hàm bật/tắt Auto Equip
+-- Toggle Auto Equip
 local function toggleAutoEquip(state)
     isAutoEquipEnabled = state
 
@@ -88,7 +97,7 @@ local function toggleAutoEquip(state)
     end
 end
 
--- Hàm bật/tắt No Clip
+-- Toggle No Clip
 local function toggleNoClip(state)
     isNoClipEnabled = state
 
@@ -111,7 +120,7 @@ local function toggleNoClip(state)
     end
 end
 
--- Hàm bật/tắt Infinite Energy
+-- Toggle Infinite Energy
 local function toggleInfiniteEnergy(state)
     isInfiniteEnergyEnabled = state
 
@@ -129,7 +138,7 @@ local function toggleInfiniteEnergy(state)
     end
 end
 
--- Hàm bật/tắt Auto Raid
+-- Toggle Auto Raid
 local function toggleAutoRaid(state)
     isAutoRaidEnabled = state
 
@@ -146,108 +155,21 @@ local function toggleAutoRaid(state)
     end
 end
 
--- Hàm bật/tắt Server Hop
+-- Toggle Server Hop
 local function toggleServerHop(state)
     isServerHopEnabled = state
 
     if isServerHopEnabled then
         spawn(function()
             while isServerHopEnabled do
-                -- Logic chuyển server sẽ được thêm ở đây
+                -- Logic for server hopping will be added here
                 wait(10)
             end
         end)
     end
 end
 
--- Hàm bật/tắt Auto Farm
-local function toggleAutoFarm(state)
-    isAutoFarmEnabled = state
-
-    if isAutoFarmEnabled then
-        spawn(function()
-            while isAutoFarmEnabled do
-                local player = game.Players.LocalPlayer
-                local character = player.Character
-
-                -- Tìm quái và đánh
-                -- Tùy thuộc vào game, bạn có thể tìm và đánh quái theo cách sau
-                -- Ví dụ: Tìm quái và sử dụng skill để tấn công
-
-                wait(0.1)
-            end
-        end)
-    end
-end
-
--- Hàm bật/tắt Auto Quest
-local function toggleAutoQuest(state)
-    isAutoQuestEnabled = state
-
-    if isAutoQuestEnabled then
-        spawn(function()
-            while isAutoQuestEnabled do
-                -- Tìm và nhận nhiệm vụ
-                -- Hoàn thành nhiệm vụ bằng cách tự động đi tới mục tiêu hoặc đánh quái
-                wait(0.1)
-            end
-        end)
-    end
-end
-
--- Hàm bật/tắt Kill Aura
-local function toggleKillAura(state)
-    isKillAuraEnabled = state
-
-    if isKillAuraEnabled then
-        spawn(function()
-            while isKillAuraEnabled do
-                -- Tìm và tấn công tất cả kẻ thù trong phạm vi
-                wait(0.1)
-            end
-        end)
-    end
-end
-
--- Hàm bật/tắt ESP
-local function toggleESP(state)
-    isESPEnabled = state
-
-    if isESPEnabled then
-        spawn(function()
-            while isESPEnabled do
-                -- Tính năng ESP, hiển thị các vật phẩm, quái, bạn bè, v.v.
-                wait(0.1)
-            end
-        end)
-    end
-end
-
--- Hàm bật/tắt Speed Hack
-local function toggleSpeedHack(state)
-    isSpeedHackEnabled = state
-
-    if isSpeedHackEnabled then
-        spawn(function()
-            while isSpeedHackEnabled do
-                local player = game.Players.LocalPlayer
-                local character = player.Character
-                if character then
-                    character.Humanoid.WalkSpeed = 100 -- Thay đổi tốc độ di chuyển
-                end
-                wait(0.1)
-            end
-        end)
-    else
-        local player = game.Players.LocalPlayer
-        local character = player.Character
-        if character then
-            character.Humanoid.WalkSpeed = 16 -- Tốc độ mặc định
-        end
-    end
-end
-
--- Thêm các nút vào giao diện
+-- Add buttons to the UI
 MainTab:AddToggle({Name = "Fast Attack", Default = false, Callback = toggleFastAttack})
 MainTab:AddToggle({Name = "Auto Equip Best Weapon", Default = false, Callback = toggleAutoEquip})
 CombatTab:AddToggle({Name = "Kill Aura", Default = false, Callback = toggleKillAura})
@@ -259,7 +181,6 @@ SettingsTab:AddToggle({Name = "Infinite Energy", Default = false, Callback = tog
 SettingsTab:AddToggle({Name = "Auto Raid", Default = false, Callback = toggleAutoRaid})
 SettingsTab:AddToggle({Name = "Server Hop", Default = false, Callback = toggleServerHop})
 SettingsTab:AddToggle({Name = "Speed Hack", Default = false, Callback = toggleSpeedHack})
-SettingsTab:AddToggle({Name = "ESP", Default = false, Callback = toggleESP})
+SettingsTab:AddToggle({Name = "Safe Zone", Default = false, Callback = toggleSafeZone})
 
--- Lưu cài đặt
 OrionLib:Init()
