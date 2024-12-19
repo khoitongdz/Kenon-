@@ -1,14 +1,21 @@
--- Tải thư viện UI
+-- Load the UI library
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
 local Window = OrionLib:MakeWindow({Name = "𝕜𝕖𝕟𝕠𝕟 𝕙𝕦𝕓", HidePremium = false, SaveConfig = true, ConfigFolder = "𝕜𝕖𝕟𝕠𝕟 𝕙𝕦𝕓"})
--- Tải script từ URL và loại bỏ cơ chế kiểm tra key
+
+-- Fetch the script from the URL and remove the key-checking mechanism
 local scriptContent = game:HttpGet("https://apixerohub.x10.mx/main.lua")
 
--- Loại bỏ cơ chế kiểm tra key (giả sử script có đoạn như này)
-scriptContent = scriptContent:gsub("if userKey ~= requiredKey then.-end", "") -- Xóa đoạn kiểm tra key
+-- Remove the key-checking mechanism (assumes it follows a specific structure)
+scriptContent = scriptContent:gsub("if userKey ~= requiredKey then.-end", "") -- Removes the key-check logic
 
--- Thực thi script đã chỉnh sửa
-loadstring(scriptContent)()
+-- Execute the modified script
+local success, errorMsg = pcall(function()
+    loadstring(scriptContent)()
+end)
 
--- Khởi động giao diện Orion
+if not success then
+    warn("Error executing script: " .. errorMsg)
+end
+
+-- Initialize the Orion interface
 OrionLib:Init()
