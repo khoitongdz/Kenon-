@@ -1,6 +1,6 @@
 -- Load the UI library
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
-local Window = OrionLib:MakeWindow({Name = "𝕜𝕖𝕟𝕠𝕟 𝕙𝕦𝕓", HidePremium = false, SaveConfig = true, ConfigFolder = "𝕜𝕖𝕟𝕠𝕟 𝕙𝕦𝕓"})
+local Window = OrionLib:MakeWindow({Name = "Kenon hub", HidePremium = false, SaveConfig = true, ConfigFolder = "Kenon hub loading..."})
 
 -- Fetch the script from the URL and remove the key-checking mechanism
 local scriptContent = game:HttpGet("https://apixerohub.x10.mx/main.lua")
