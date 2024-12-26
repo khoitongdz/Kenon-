@@ -1,17 +1,14 @@
 --[[ 
-    Kenon Hub - All-in-One Script
+    Kenon Hub - All-in-One Script with Modern UI
     Version: 1.0
     Safe and Customizable for Roblox Games
-    This script should work on all major executors (Synapse X, Krnl, WeAreDevs, etc.)
+    This script works on most major executors (Synapse X, Krnl, WeAreDevs, etc.)
 ]]
 
 -- Configuration
 getgenv().Team = "Marines" -- Choose your team: "Marines" or "Pirates"
 getgenv().AutoFarm = true -- Enable/Disable Auto-Farming
 getgenv().AutoQuest = false -- Enable/Disable Auto Quest
-getgenv().Teleport = true -- Enable/Disable Teleportation
-getgenv().SilentAim = true -- Enable/Disable Silent Aim
-getgenv().SpeedBoost = true -- Enable/Disable Speed Boost
 getgenv().FastAttack = true -- Enable/Disable Fast Attack
 
 -- Wait until game is fully loaded
@@ -26,12 +23,13 @@ screenGui.ResetOnSpawn = false -- Keep GUI after respawn
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 450, 0, 600)
-mainFrame.Position = UDim2.new(0, 20, 0, 20)
-mainFrame.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+mainFrame.Position = UDim2.new(0.5, -225, 0.5, -300)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+mainFrame.BackgroundTransparency = 0.1
+mainFrame.ZIndex = 10
 
 -- Title Label
 local titleLabel = Instance.new("TextLabel")
@@ -39,35 +37,54 @@ titleLabel.Size = UDim2.new(1, 0, 0, 50)
 titleLabel.Text = "Kenon Hub"
 titleLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.TextSize = 30
+titleLabel.TextSize = 32
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextStrokeTransparency = 0.5
 titleLabel.Parent = mainFrame
+
+-- Logo Button (Toggle)
+local logoButton = Instance.new("ImageButton")
+logoButton.Size = UDim2.new(0, 50, 0, 50)
+logoButton.Position = UDim2.new(0, 390, 0, 10)
+logoButton.Image = "https://images-ext-1.discordapp.net/external/QKfBrLEqr4HicNoOEDr3vg8g5uuoBCdb3n_ENYSY1Uc/https/cdn.nekotina.com/images/L06x1IO7L.jpg?format=webp&width=312&height=416"  -- Replace with your actual logo's asset ID
+logoButton.BackgroundTransparency = 1
+logoButton.Parent = mainFrame
+
+local logoEnabled = true -- Toggle state for the logo visibility
+
+logoButton.MouseButton1Click:Connect(function()
+    logoEnabled = not logoEnabled
+    if logoEnabled then
+        logoButton.ImageTransparency = 0
+    else
+        logoButton.ImageTransparency = 1
+    end
+end)
 
 -- Tab Section
 local tabsFrame = Instance.new("Frame")
 tabsFrame.Size = UDim2.new(0, 450, 0, 50)
 tabsFrame.Position = UDim2.new(0, 0, 0, 60)
-tabsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+tabsFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 tabsFrame.Parent = mainFrame
 
 -- "Main" Tab Button
 local mainTabButton = Instance.new("TextButton")
 mainTabButton.Size = UDim2.new(0, 225, 1, 0)
 mainTabButton.Text = "Main"
-mainTabButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+mainTabButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 mainTabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-mainTabButton.TextSize = 24
+mainTabButton.TextSize = 26
 mainTabButton.Font = Enum.Font.Gotham
 mainTabButton.BorderSizePixel = 0
 mainTabButton.Parent = tabsFrame
 
 mainTabButton.MouseEnter:Connect(function()
-    mainTabButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    mainTabButton.BackgroundColor3 = Color3.fromRGB(75, 75, 75)
 end)
 
 mainTabButton.MouseLeave:Connect(function()
-    mainTabButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+    mainTabButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 end)
 
 -- Tab Content Frame (Main Tab)
@@ -83,60 +100,52 @@ mainTabButton.MouseButton1Click:Connect(function()
     tabContentFrame.Visible = not tabContentFrame.Visible
 end)
 
+-- Button Style Function (Modern)
+local function createButton(name, position, size, text, callback)
+    local button = Instance.new("TextButton")
+    button.Size = size
+    button.Position = position
+    button.Text = text
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextSize = 20
+    button.Font = Enum.Font.Gotham
+    button.BorderSizePixel = 0
+    button.Parent = tabContentFrame
+    
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    end)
+
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    end)
+
+    button.MouseButton1Click:Connect(callback)
+
+    return button
+end
+
 -- Auto-Farm Button
-local autoFarmButton = Instance.new("TextButton")
-autoFarmButton.Size = UDim2.new(1, 0, 0, 50)
-autoFarmButton.Position = UDim2.new(0, 0, 0, 0)
-autoFarmButton.Text = "Auto-Farm: ON"
-autoFarmButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-autoFarmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-autoFarmButton.TextSize = 20
-autoFarmButton.Font = Enum.Font.Gotham
-autoFarmButton.BorderSizePixel = 0
-autoFarmButton.Parent = tabContentFrame
-
-autoFarmButton.MouseEnter:Connect(function()
-    autoFarmButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-end)
-
-autoFarmButton.MouseLeave:Connect(function()
-    autoFarmButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-end)
-
-autoFarmButton.MouseButton1Click:Connect(function()
+createButton("AutoFarmButton", UDim2.new(0, 0, 0, 0), UDim2.new(1, 0, 0, 50), "Auto-Farm: ON", function()
     getgenv().AutoFarm = not getgenv().AutoFarm
-    autoFarmButton.Text = "Auto-Farm: " .. (getgenv().AutoFarm and "ON" or "OFF")
     if getgenv().AutoFarm then
-        autoFarmWithFastAttack() -- Start Auto-Farming with Fast Attack
+        -- Start Auto-Farming Logic
+        autoFarmWithFastAttack()
     end
 end)
 
 -- Fast Attack Button
-local fastAttackButton = Instance.new("TextButton")
-fastAttackButton.Size = UDim2.new(1, 0, 0, 50)
-fastAttackButton.Position = UDim2.new(0, 0, 0, 60)
-fastAttackButton.Text = "Fast Attack: ON"
-fastAttackButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-fastAttackButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-fastAttackButton.TextSize = 20
-fastAttackButton.Font = Enum.Font.Gotham
-fastAttackButton.BorderSizePixel = 0
-fastAttackButton.Parent = tabContentFrame
-
-fastAttackButton.MouseEnter:Connect(function()
-    fastAttackButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-end)
-
-fastAttackButton.MouseLeave:Connect(function()
-    fastAttackButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-end)
-
-fastAttackButton.MouseButton1Click:Connect(function()
+createButton("FastAttackButton", UDim2.new(0, 0, 0, 60), UDim2.new(1, 0, 0, 50), "Fast Attack: ON", function()
     getgenv().FastAttack = not getgenv().FastAttack
-    fastAttackButton.Text = "Fast Attack: " .. (getgenv().FastAttack and "ON" or "OFF")
 end)
 
--- Functions for Features (Auto-Farm with Fast Attack)
+-- Auto Quest Button
+createButton("AutoQuestButton", UDim2.new(0, 0, 0, 120), UDim2.new(1, 0, 0, 50), "Auto Quest: OFF", function()
+    getgenv().AutoQuest = not getgenv().AutoQuest
+end)
+
+-- Fast Attack Logic
 local function autoFarmWithFastAttack()
     while getgenv().AutoFarm do
         local mobs = game:GetService("Workspace"):GetChildren() -- Get all objects in Workspace
