@@ -44,7 +44,7 @@ ExecuteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ExecuteButton.TextSize = 16
 
 -- Set up the ToggleButton
-ToggleButton.Name = "ToggleButton"
+ToggleButton.Name = "Khoitongdz"
 ToggleButton.Parent = ScreenGui
 ToggleButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
 ToggleButton.Size = UDim2.new(0, 100, 0, 40)
