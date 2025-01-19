@@ -1,0 +1,1 @@
+loadstring(game:HttpGet("https://reviewphim.fun/Xero%20Hub/Blox%20Fruit/main.lua"))()
