@@ -1,163 +1,111 @@
-local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
-local TextBox = Instance.new("TextBox")
-local ExecuteButton = Instance.new("TextButton")
-local ToggleButton = Instance.new("TextButton")
-local LockScreenButton = Instance.new("TextButton")
-local AutoTradeButton = Instance.new("TextButton")
-local LockOverlay = Instance.new("Frame")
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local flying = false
 
--- Set up the ScreenGui
-ScreenGui.Name = "Khoitongdz"
-ScreenGui.Parent = game.CoreGui
+-- GUI Setup
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "FlyxMenu"
 
--- Set up the Frame
-Frame.Name = "MainFrame"
-Frame.Parent = ScreenGui
-Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Frame.Size = UDim2.new(0, 300, 0, 220)
-Frame.Position = UDim2.new(0.5, -150, 0.5, -110)
-Frame.AnchorPoint = Vector2.new(0.5, 0.5)
-Frame.BorderSizePixel = 0
+local logoButton = Instance.new("ImageButton")
+logoButton.Image = "rbxassetid://123456789" -- Replace with your logo's image ID
+logoButton.Size = UDim2.new(0, 50, 0, 50)
+logoButton.Position = UDim2.new(0, 100, 0, 100)
+logoButton.Parent = gui
 
--- Set up the TextBox
-TextBox.Name = "ScriptInput"
-TextBox.Parent = Frame
-TextBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-TextBox.Size = UDim2.new(0, 280, 0, 40)
-TextBox.Position = UDim2.new(0, 10, 0, 20)
-TextBox.Font = Enum.Font.SourceSans
-TextBox.PlaceholderText = "Enter script URL here"
-TextBox.Text = ""
-TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextBox.TextSize = 14
+local logoState = false
+local antiAfkEnabled = false
+local autoAttackEnabled = false
+local fastAttackEnabled = false
+local autoMonsterAttackEnabled = false
 
--- Set up the ExecuteButton
-ExecuteButton.Name = "ExecuteButton"
-ExecuteButton.Parent = Frame
-ExecuteButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
-ExecuteButton.Size = UDim2.new(0, 280, 0, 40)
-ExecuteButton.Position = UDim2.new(0, 10, 0, 80)
-ExecuteButton.Font = Enum.Font.SourceSans
-ExecuteButton.Text = "Execute Script"
-ExecuteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ExecuteButton.TextSize = 16
-
--- Set up the ToggleButton
-ToggleButton.Name = "Khoitongdz"
-ToggleButton.Parent = ScreenGui
-ToggleButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-ToggleButton.Size = UDim2.new(0, 100, 0, 40)
-ToggleButton.Position = UDim2.new(0, 10, 0, 10)
-ToggleButton.Font = Enum.Font.SourceSans
-ToggleButton.Text = "Toggle UI"
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextSize = 14
-
--- Set up the LockScreenButton
-LockScreenButton.Name = "LockScreenButton"
-LockScreenButton.Parent = Frame
-LockScreenButton.BackgroundColor3 = Color3.fromRGB(255, 69, 69)
-LockScreenButton.Size = UDim2.new(0, 280, 0, 40)
-LockScreenButton.Position = UDim2.new(0, 10, 0, 130)
-LockScreenButton.Font = Enum.Font.SourceSans
-LockScreenButton.Text = "Lock Screen"
-LockScreenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-LockScreenButton.TextSize = 16
-
--- Set up the AutoTradeButton
-AutoTradeButton.Name = "AutoTradeButton"
-AutoTradeButton.Parent = Frame
-AutoTradeButton.BackgroundColor3 = Color3.fromRGB(34, 139, 34)
-AutoTradeButton.Size = UDim2.new(0, 280, 0, 40)
-AutoTradeButton.Position = UDim2.new(0, 10, 0, 180)
-AutoTradeButton.Font = Enum.Font.SourceSans
-AutoTradeButton.Text = "Enable Auto Trade"
-AutoTradeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-AutoTradeButton.TextSize = 16
-
--- Set up the LockOverlay
-LockOverlay.Name = "LockOverlay"
-LockOverlay.Parent = ScreenGui
-LockOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-LockOverlay.BackgroundTransparency = 0.5
-LockOverlay.Size = UDim2.new(1, 0, 1, 0)
-LockOverlay.Position = UDim2.new(0, 0, 0, 0)
-LockOverlay.Visible = false
-
--- Toggle Frame Visibility
-ToggleButton.MouseButton1Click:Connect(function()
-    Frame.Visible = not Frame.Visible
+-- Toggle Fly Functionality
+logoButton.MouseButton1Click:Connect(function()
+    flying = not flying
+    logoButton.Image = flying and "rbxassetid://987654321" or "rbxassetid://123456789" -- Replace with on/off images
 end)
 
--- Function to Lock and Unlock Screen
-local isLocked = false
-LockScreenButton.MouseButton1Click:Connect(function()
-    isLocked = not isLocked
-    LockOverlay.Visible = isLocked
-    if isLocked then
-        LockScreenButton.Text = "Unlock Screen"
-    else
-        LockScreenButton.Text = "Lock Screen"
+-- Anti-AFK Button
+local antiAfkButton = Instance.new("TextButton")
+antiAfkButton.Text = "Anti AFK: OFF"
+antiAfkButton.Size = UDim2.new(0, 150, 0, 50)
+antiAfkButton.Position = UDim2.new(0, 200, 0, 100)
+antiAfkButton.Parent = gui
+
+antiAfkButton.MouseButton1Click:Connect(function()
+    antiAfkEnabled = not antiAfkEnabled
+    antiAfkButton.Text = antiAfkEnabled and "Anti AFK: ON" or "Anti AFK: OFF"
+    if antiAfkEnabled then
+        game:GetService("Players").LocalPlayer.Idled:Connect(function()
+            game:GetService("VirtualUser"):CaptureController()
+            game:GetService("VirtualUser"):ClickButton2(Vector2.new(0, 0))
+        end)
     end
 end)
 
--- Function to handle Auto Trade
-autoTradeEnabled = false
-local function enableAutoTrade()
-    autoTradeEnabled = not autoTradeEnabled
-    if autoTradeEnabled then
-        AutoTradeButton.Text = "Disable Auto Trade"
-        game:GetService("Players").LocalPlayer.PlayerGui.ChildAdded:Connect(function(child)
-            if child.Name == "TradeRequest" then
-                -- Lock the other player's screen
-                local otherPlayer = game.Players:FindFirstChild(child:GetAttribute("Sender"))
-                if otherPlayer then
-                    otherPlayer:Kick("Your screen has been locked by trade automation.")
-                end
+-- Auto Attack Button
+local autoAttackButton = Instance.new("TextButton")
+autoAttackButton.Text = "Auto Attack: OFF"
+autoAttackButton.Size = UDim2.new(0, 150, 0, 50)
+autoAttackButton.Position = UDim2.new(0, 400, 0, 100)
+autoAttackButton.Parent = gui
 
-                -- Auto accept the trade
-                wait(1) -- Delay to simulate player action
-                local acceptButton = child:FindFirstChild("AcceptButton")
-                if acceptButton then
-                    fireclickdetector(acceptButton.ClickDetector)
+local autoAttackLoop
+autoAttackButton.MouseButton1Click:Connect(function()
+    autoAttackEnabled = not autoAttackEnabled
+    autoAttackButton.Text = autoAttackEnabled and "Auto Attack: ON" or "Auto Attack: OFF"
+    if autoAttackEnabled then
+        autoAttackLoop = coroutine.create(function()
+            while autoAttackEnabled do
+                local target = workspace:FindFirstChild("Target") -- Replace "Target" with your game-specific logic
+                if target and target:FindFirstChild("Humanoid") then
+                    local attackAnimation = character.Humanoid:LoadAnimation(Instance.new("Animation", game.CoreGui))
+                    attackAnimation.AnimationId = "rbxassetid://AnimationID" -- Replace with valid animation ID
+                    attackAnimation:Play()
                 end
+                wait(1)
             end
         end)
-    else
-        AutoTradeButton.Text = "Enable Auto Trade"
+        coroutine.resume(autoAttackLoop)
     end
-end
+end)
 
-AutoTradeButton.MouseButton1Click:Connect(enableAutoTrade)
+-- Fast Attack Button
+local fastAttackButton = Instance.new("TextButton")
+fastAttackButton.Text = "Fast Attack: OFF"
+fastAttackButton.Size = UDim2.new(0, 150, 0, 50)
+fastAttackButton.Position = UDim2.new(0, 600, 0, 100)
+fastAttackButton.Parent = gui
 
--- Function to support all executors
-local function executeScript(scriptCode)
-    local executor = identifyexecutor and identifyexecutor() or "Unknown"
-    print("Executor detected: " .. executor)
+fastAttackButton.MouseButton1Click:Connect(function()
+    fastAttackEnabled = not fastAttackEnabled
+    fastAttackButton.Text = fastAttackEnabled and "Fast Attack: ON" or "Fast Attack: OFF"
+    character.Humanoid.WalkSpeed = fastAttackEnabled and 20 or 10
+    character.Humanoid.JumpPower = fastAttackEnabled and 50 or 20
+end)
 
-    local success, errorMessage = pcall(function()
-        loadstring(scriptCode)()
-    end)
+-- Auto Monster Attack Button
+local autoMonsterAttackButton = Instance.new("TextButton")
+autoMonsterAttackButton.Text = "Auto Monster Attack: OFF"
+autoMonsterAttackButton.Size = UDim2.new(0, 200, 0, 50)
+autoMonsterAttackButton.Position = UDim2.new(0, 800, 0, 100)
+autoMonsterAttackButton.Parent = gui
 
-    if not success then
-        warn("Error executing script: " .. errorMessage)
-    end
-end
-
--- Button Click Event
-ExecuteButton.MouseButton1Click:Connect(function()
-    local scriptUrl = TextBox.Text
-    if scriptUrl and scriptUrl ~= "" then
-        local success, scriptCode = pcall(function()
-            return game:HttpGet(scriptUrl)
+local autoMonsterAttackLoop
+autoMonsterAttackButton.MouseButton1Click:Connect(function()
+    autoMonsterAttackEnabled = not autoMonsterAttackEnabled
+    autoMonsterAttackButton.Text = autoMonsterAttackEnabled and "Auto Monster Attack: ON" or "Auto Monster Attack: OFF"
+    if autoMonsterAttackEnabled then
+        autoMonsterAttackLoop = coroutine.create(function()
+            while autoMonsterAttackEnabled do
+                local monster = workspace:FindFirstChild("Monster") -- Replace "Monster" with game-specific logic
+                if monster and monster:FindFirstChild("Humanoid") then
+                    local attackAnimation = character.Humanoid:LoadAnimation(Instance.new("Animation", game.CoreGui))
+                    attackAnimation.AnimationId = "rbxassetid://AnimationID" -- Replace with valid animation ID
+                    attackAnimation:Play()
+                end
+                wait(1)
+            end
         end)
-        if success then
-            executeScript(scriptCode)
-        else
-            warn("Error loading script: " .. scriptCode)
-        end
-    else
-        warn("Please enter a valid script URL!")
+        coroutine.resume(autoMonsterAttackLoop)
     end
 end)
