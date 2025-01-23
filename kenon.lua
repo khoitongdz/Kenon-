@@ -1,111 +1,28 @@
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local flying = false
+---[[[https://discord.gg/SFvsMJHXfc]]]---
+local a,b,c,d,e=game.Players.LocalPlayer,game.Players.LocalPlayer.Character,false,nil,game.CoreGui
+local f=Instance.new("ScreenGui",e)f.Name="FlyxMenu"local g=Instance.new("Frame")g.Size=UDim2.new(0,400,0,350)
+g.Position=UDim2.new(0.5,-200,0.5,-175)g.BackgroundColor3=Color3.fromRGB(30,30,30)g.BorderSizePixel=0
+g.Parent=f local h=Instance.new("UIGradient")h.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(45,45,45)),
+ColorSequenceKeypoint.new(1,Color3.fromRGB(25,25,25))}h.Rotation=90 h.Parent=g local i=Instance.new("TextButton")
+i.Size=UDim2.new(0,50,0,50)i.Position=UDim2.new(0,10,0,10)i.BackgroundColor3=Color3.fromRGB(50,50,50)
+i.Text="☰"i.TextSize=24 i.TextColor3=Color3.fromRGB(255,255,255)i.Parent=f local j=true
+i.MouseButton1Click:Connect(function()j=not j g.Visible=j end)local k=Instance.new("TextLabel")k.Size=UDim2.new(1,0,0,50)
+k.BackgroundColor3=Color3.fromRGB(40,40,40)k.Text="Flyx Menu"k.TextColor3=Color3.fromRGB(255,255,255)k.TextSize=20
+k.Font=Enum.Font.GothamBold k.Parent=g local l=Instance.new("Frame")l.Size=UDim2.new(1,0,0,2)l.Position=UDim2.new(0,0,0,50)
+l.BackgroundColor3=Color3.fromRGB(100,100,100)l.BorderSizePixel=0 l.Parent=g
 
--- GUI Setup
-local gui = Instance.new("ScreenGui", game.CoreGui)
-gui.Name = "FlyxMenu"
+local function m(n,o,p)local q=Instance.new("TextButton")q.Size=UDim2.new(0,350,0,50)
+q.Position=UDim2.new(0,25,0,50+(o*60))q.BackgroundColor3=Color3.fromRGB(50,50,50)q.Text=n..": OFF"
+q.TextColor3=Color3.fromRGB(255,255,255)q.TextSize=18 q.Font=Enum.Font.Gotham q.Parent=g local r=false
+q.MouseButton1Click:Connect(function()r=not r q.Text=n..(r and ": ON"or": OFF")p(r)end)end
 
-local logoButton = Instance.new("ImageButton")
-logoButton.Image = "rbxassetid://123456789" -- Replace with your logo's image ID
-logoButton.Size = UDim2.new(0, 50, 0, 50)
-logoButton.Position = UDim2.new(0, 100, 0, 100)
-logoButton.Parent = gui
+m("Fly",0,function(s)c=s;if s then b.HumanoidRootPart.Anchored=true else b.HumanoidRootPart.Anchored=false end end)
 
-local logoState = false
-local antiAfkEnabled = false
-local autoAttackEnabled = false
-local fastAttackEnabled = false
-local autoMonsterAttackEnabled = false
+m("Anti AFK",1,function(s)if s then game:GetService("Players").LocalPlayer.Idled:Connect(function()
+game:GetService("VirtualUser"):CaptureController()game:GetService("VirtualUser"):ClickButton2(Vector2.new(0,0))end)end end)
 
--- Toggle Fly Functionality
-logoButton.MouseButton1Click:Connect(function()
-    flying = not flying
-    logoButton.Image = flying and "rbxassetid://987654321" or "rbxassetid://123456789" -- Replace with on/off images
-end)
-
--- Anti-AFK Button
-local antiAfkButton = Instance.new("TextButton")
-antiAfkButton.Text = "Anti AFK: OFF"
-antiAfkButton.Size = UDim2.new(0, 150, 0, 50)
-antiAfkButton.Position = UDim2.new(0, 200, 0, 100)
-antiAfkButton.Parent = gui
-
-antiAfkButton.MouseButton1Click:Connect(function()
-    antiAfkEnabled = not antiAfkEnabled
-    antiAfkButton.Text = antiAfkEnabled and "Anti AFK: ON" or "Anti AFK: OFF"
-    if antiAfkEnabled then
-        game:GetService("Players").LocalPlayer.Idled:Connect(function()
-            game:GetService("VirtualUser"):CaptureController()
-            game:GetService("VirtualUser"):ClickButton2(Vector2.new(0, 0))
-        end)
-    end
-end)
-
--- Auto Attack Button
-local autoAttackButton = Instance.new("TextButton")
-autoAttackButton.Text = "Auto Attack: OFF"
-autoAttackButton.Size = UDim2.new(0, 150, 0, 50)
-autoAttackButton.Position = UDim2.new(0, 400, 0, 100)
-autoAttackButton.Parent = gui
-
-local autoAttackLoop
-autoAttackButton.MouseButton1Click:Connect(function()
-    autoAttackEnabled = not autoAttackEnabled
-    autoAttackButton.Text = autoAttackEnabled and "Auto Attack: ON" or "Auto Attack: OFF"
-    if autoAttackEnabled then
-        autoAttackLoop = coroutine.create(function()
-            while autoAttackEnabled do
-                local target = workspace:FindFirstChild("Target") -- Replace "Target" with your game-specific logic
-                if target and target:FindFirstChild("Humanoid") then
-                    local attackAnimation = character.Humanoid:LoadAnimation(Instance.new("Animation", game.CoreGui))
-                    attackAnimation.AnimationId = "rbxassetid://AnimationID" -- Replace with valid animation ID
-                    attackAnimation:Play()
-                end
-                wait(1)
-            end
-        end)
-        coroutine.resume(autoAttackLoop)
-    end
-end)
-
--- Fast Attack Button
-local fastAttackButton = Instance.new("TextButton")
-fastAttackButton.Text = "Fast Attack: OFF"
-fastAttackButton.Size = UDim2.new(0, 150, 0, 50)
-fastAttackButton.Position = UDim2.new(0, 600, 0, 100)
-fastAttackButton.Parent = gui
-
-fastAttackButton.MouseButton1Click:Connect(function()
-    fastAttackEnabled = not fastAttackEnabled
-    fastAttackButton.Text = fastAttackEnabled and "Fast Attack: ON" or "Fast Attack: OFF"
-    character.Humanoid.WalkSpeed = fastAttackEnabled and 20 or 10
-    character.Humanoid.JumpPower = fastAttackEnabled and 50 or 20
-end)
-
--- Auto Monster Attack Button
-local autoMonsterAttackButton = Instance.new("TextButton")
-autoMonsterAttackButton.Text = "Auto Monster Attack: OFF"
-autoMonsterAttackButton.Size = UDim2.new(0, 200, 0, 50)
-autoMonsterAttackButton.Position = UDim2.new(0, 800, 0, 100)
-autoMonsterAttackButton.Parent = gui
-
-local autoMonsterAttackLoop
-autoMonsterAttackButton.MouseButton1Click:Connect(function()
-    autoMonsterAttackEnabled = not autoMonsterAttackEnabled
-    autoMonsterAttackButton.Text = autoMonsterAttackEnabled and "Auto Monster Attack: ON" or "Auto Monster Attack: OFF"
-    if autoMonsterAttackEnabled then
-        autoMonsterAttackLoop = coroutine.create(function()
-            while autoMonsterAttackEnabled do
-                local monster = workspace:FindFirstChild("Monster") -- Replace "Monster" with game-specific logic
-                if monster and monster:FindFirstChild("Humanoid") then
-                    local attackAnimation = character.Humanoid:LoadAnimation(Instance.new("Animation", game.CoreGui))
-                    attackAnimation.AnimationId = "rbxassetid://AnimationID" -- Replace with valid animation ID
-                    attackAnimation:Play()
-                end
-                wait(1)
-            end
-        end)
-        coroutine.resume(autoMonsterAttackLoop)
-    end
-end)
+m("Auto Level Farm",2,function(s)if s then while s do wait(1)local t,u,v=nil,math.huge,b.HumanoidRootPart
+for w,x in ipairs(workspace:GetChildren())do if x:FindFirstChild("Humanoid")and x:FindFirstChild("HumanoidRootPart")then
+local y=(v.Position-x.HumanoidRootPart.Position).Magnitude if y<u then u=y t=x end end end if t then
+b.Humanoid:MoveTo(t.HumanoidRootPart.Position)wait(0.5)local z=b.Humanoid:LoadAnimation(Instance.new("Animation"))
+z.AnimationId="rbxassetid://AnimationID"z:Play()end end end end)
