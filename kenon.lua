@@ -1,4 +1,3 @@
----[[[https://discord.gg/SFvsMJHXfc]]]---
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source"))()
 
 local window = library:CreateWindow({
