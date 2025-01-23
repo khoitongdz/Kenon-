@@ -75,7 +75,7 @@ seaEventTab:CreateSection("Control Sea Events")
 seaEventTab:CreateDropdown({
     Name = "Select Boat",
     Options = {"Dinghy", "Sloop", "Galleon", "Brigantine"},
-    CurrentOption = "Sloop",
+    CurrentOption = "Dinghy",
     Callback = function(option)
         print("Selected Boat: " .. option)
         _G.SelectedBoat = option
@@ -168,8 +168,8 @@ miscTab:CreateToggle({
 -- CREDITS TAB
 local creditsTab = window:CreateTab("Credits", 4483362458)
 creditsTab:CreateSection("Developers")
-creditsTab:CreateLabel("Script by khoitongdz")
-creditsTab:CreateLabel("UI by khoitongdz")
+creditsTab:CreateLabel("Script by Flyx")
+creditsTab:CreateLabel("UI by Rayfield")
 creditsTab:CreateLabel("For Blox Fruits")
 
 -- Finalize
