@@ -1,165 +1,177 @@
 ---[[[https://discord.gg/SFvsMJHXfc]]]---
-local fxy = game.Players.LocalPlayer
-local a4j8 = fxy.Character or fxy.CharacterAdded:Wait()
-local qd = function() return true end
-local g7s = function(t) return t * 2 end
-local _x1 = Instance.new
-local a98s = "Flyx|Blox Fruits"
-local _3 = "Auto Farm"
-local _4 = "Auto Stats"
-local _5 = "ESP"
-local _6 = "Teleport"
-local _7 = "God Mode"
-local _8 = "Kill Aura"
-local _9 = "Auto Chest Farm"
-local _10 = "Auto Raid"
-local _11 = "Sea Beast Farm"
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/khoitongdz/Kenon-/refs/heads/main/message.txt"))()
 
-local o_gui = _x1("ScreenGui", game.CoreGui)
-o_gui.Name = "UI_" .. math.random(1, 9999)
+local window = library:CreateWindow({
+    Name = "Flyx Hub - Blox Fruits",
+    LoadingTitle = "Flyx Hub Loading...",
+    LoadingSubtitle = "Optimized for Blox Fruits",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "FlyxHubData",
+        FileName = "FlyxHubConfig"
+    },
+    KeySystem = false -- Không cần key để sử dụng script
+})
 
-local f_frame = _x1("Frame", o_gui)
-f_frame.Size = UDim2.new(0, 450, 0, 600)
-f_frame.Position = UDim2.new(0.5, -225, 0.5, -300)
-f_frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-f_frame.BorderSizePixel = 0
+-- MAIN TAB
+local mainTab = window:CreateTab("Main", 4483362458) -- Icon của Roblox
+mainTab:CreateSection("General Features")
 
-local u_grad = _x1("UIGradient", f_frame)
-u_grad.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 35)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 15))
-}
-
-local u_toggle = _x1("TextButton", o_gui)
-u_toggle.Text = "☰"
-u_toggle.Size = UDim2.new(0, 60, 0, 60)
-u_toggle.Position = UDim2.new(0, 20, 0, 20)
-u_toggle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-u_toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-local f_vis = true
-u_toggle.MouseButton1Click:Connect(function()
-    f_vis = not f_vis
-    f_frame.Visible = f_vis
-end)
-
-local function m_button(name, p_idx, callback)
-    local btn = _x1("TextButton", f_frame)
-    btn.Text = name .. ": OFF"
-    btn.Size = UDim2.new(0, 400, 0, 40)
-    btn.Position = UDim2.new(0, 25, 0, 50 + (p_idx * 50))
-    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    local state = false
-    btn.MouseButton1Click:Connect(function()
-        state = not state
-        btn.Text = name .. (state and ": ON" or ": OFF")
-        callback(state)
-    end)
-end
-
--- Features Setup
-m_button(_3, 0, function(v)
-    if v then
-        while wait(1) do
-            if not v then break end
-            for _, npc in pairs(game.Workspace.Enemies:GetChildren()) do
-                if npc:FindFirstChild("HumanoidRootPart") then
-                    a4j8.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-                    wait(0.5)
-                    a4j8.Humanoid:MoveTo(npc.HumanoidRootPart.Position)
-                end
-            end
+-- Auto Farm
+mainTab:CreateToggle({
+    Name = "Auto Farm",
+    CurrentValue = false,
+    Flag = "AutoFarm",
+    Callback = function(value)
+        _G.AutoFarm = value
+        while _G.AutoFarm do
+            wait()
+            -- Thêm logic Auto Farm
+            print("Auto Farming...")
         end
     end
-end)
+})
 
-m_button(_4, 1, function(v)
-    if v then
-        while wait(2) do
-            if not v then break end
-            local points = {"Melee", "Defense", "Sword", "Gun", "Blox Fruit"}
-            for _, stat in pairs(points) do
-                game:GetService("ReplicatedStorage").Remotes["StatPoint"]:FireServer(stat, 1)
-            end
+-- Auto Stats
+mainTab:CreateDropdown({
+    Name = "Auto Assign Stats",
+    Options = {"Melee", "Defense", "Sword", "Gun", "Fruit"},
+    CurrentOption = "Melee",
+    Callback = function(option)
+        _G.AutoStats = option
+        print("Auto Assigning Stats: " .. option)
+        while _G.AutoStats do
+            wait(5)
+            -- Thêm logic tự động tăng điểm stats
         end
     end
-end)
+})
 
-m_button(_5, 2, function(v)
-    while v do
-        wait(1)
-        for _, obj in pairs(game.Workspace:GetDescendants()) do
-            if obj:IsA("Model") and obj:FindFirstChild("Humanoid") then
-                if not obj:FindFirstChild("ESP") then
-                    local esp = _x1("BillboardGui", obj)
-                    esp.Size = UDim2.new(1, 0, 1, 0)
-                    esp.AlwaysOnTop = true
-                    local label = _x1("TextLabel", esp)
-                    label.Text = obj.Name
-                    label.Size = UDim2.new(1, 0, 1, 0)
-                    label.TextColor3 = Color3.new(1, 0, 0)
-                end
-            end
+-- Teleport TAB
+local teleportTab = window:CreateTab("Teleport", 4483362458)
+teleportTab:CreateSection("Islands & Locations")
+
+teleportTab:CreateDropdown({
+    Name = "Select Island",
+    Options = {"Starter Island", "Middle Town", "Pirate Village", "Skylands", "Magma Island", "Colosseum"},
+    CurrentOption = "Starter Island",
+    Callback = function(option)
+        _G.SelectedIsland = option
+        print("Selected Island: " .. option)
+    end
+})
+
+teleportTab:CreateButton({
+    Name = "Teleport Now",
+    Callback = function()
+        -- Logic Teleport
+        print("Teleporting to: " .. (_G.SelectedIsland or "Unknown"))
+    end
+})
+
+-- SEA EVENT TAB
+local seaEventTab = window:CreateTab("Sea Event", 4483362458)
+seaEventTab:CreateSection("Control Sea Events")
+
+seaEventTab:CreateDropdown({
+    Name = "Select Boat",
+    Options = {"Dinghy", "Sloop", "Galleon", "Brigantine"},
+    CurrentOption = "Dinghy",
+    Callback = function(option)
+        print("Selected Boat: " .. option)
+        _G.SelectedBoat = option
+    end
+})
+
+seaEventTab:CreateToggle({
+    Name = "Auto Sea Event",
+    CurrentValue = false,
+    Callback = function(value)
+        _G.AutoSeaEvent = value
+        while _G.AutoSeaEvent do
+            wait(10)
+            -- Logic Auto Sea Event
+            print("Auto Sea Event Running...")
         end
     end
-end)
+})
 
-m_button(_6, 3, function(v)
-    if v then
-        local islands = {
-            ["Starter Island"] = Vector3.new(0, 100, 0),
-            ["Pirate Village"] = Vector3.new(500, 100, 500)
-        }
-        for name, pos in pairs(islands) do
-            print("Teleporting to " .. name)
-            a4j8.HumanoidRootPart.CFrame = CFrame.new(pos)
-            wait(3)
+-- SAFE FARM SEA EVENT
+seaEventTab:CreateToggle({
+    Name = "Safe Farm Sea Event",
+    CurrentValue = false,
+    Callback = function(value)
+        _G.SafeSeaFarm = value
+        while _G.SafeSeaFarm do
+            wait(1)
+            -- Logic Safe Farm
+            print("Farming Safely...")
         end
     end
-end)
+})
 
-m_button(_7, 4, function(v)
-    if v then
-        a4j8.Humanoid.MaxHealth = math.huge
-        a4j8.Humanoid.Health = math.huge
-    else
-        a4j8.Humanoid.MaxHealth = 100
-        a4j8.Humanoid.Health = 100
-    end
-end)
+-- ITEM TAB
+local itemTab = window:CreateTab("Item", 4483362458)
+itemTab:CreateSection("Item Management")
 
-m_button(_8, 5, function(v)
-    while v do
-        wait(0.5)
-        for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
-            if enemy:FindFirstChild("HumanoidRootPart") then
-                local dist = (enemy.HumanoidRootPart.Position - a4j8.HumanoidRootPart.Position).Magnitude
-                if dist <= 20 then
-                    game:GetService("ReplicatedStorage").Remotes["Combat"]:FireServer(enemy)
-                end
-            end
+itemTab:CreateButton({
+    Name = "Auto Collect Chests",
+    Callback = function()
+        _G.AutoCollectChests = true
+        while _G.AutoCollectChests do
+            wait(1)
+            -- Logic Auto Collect Chests
+            print("Collecting Chests...")
         end
     end
-end)
+})
 
-m_button(_9, 6, function(v)
-    if v then
-        while wait(1) do
-            if not v then break end
-            for _, chest in pairs(game.Workspace:GetChildren()) do
-                if chest:IsA("Model") and chest.Name:lower():find("chest") then
-                    a4j8.HumanoidRootPart.CFrame = chest.PrimaryPart.CFrame
-                    wait(0.5)
-                end
-            end
+itemTab:CreateButton({
+    Name = "Auto Buy Fruits",
+    Callback = function()
+        -- Logic Auto Buy Fruits
+        print("Buying Fruits...")
+    end
+})
+
+-- MISC TAB
+local miscTab = window:CreateTab("Misc", 4483362458)
+miscTab:CreateSection("Extra Features")
+
+miscTab:CreateToggle({
+    Name = "Infinite Energy",
+    CurrentValue = false,
+    Callback = function(value)
+        _G.InfiniteEnergy = value
+        if value then
+            -- Logic Infinite Energy
+            print("Infinite Energy Activated!")
+        else
+            print("Infinite Energy Deactivated!")
         end
     end
-end)
+})
 
-m_button(_10, 7, function(v)
-    -- Auto Raid Logic Here
-end)
+miscTab:CreateToggle({
+    Name = "Walk on Water",
+    CurrentValue = false,
+    Callback = function(value)
+        _G.WalkOnWater = value
+        if value then
+            -- Logic Walk on Water
+            print("Walking on Water Enabled!")
+        else
+            print("Walking on Water Disabled!")
+        end
+    end
+})
 
-m_button(_11, 8, function(v)
-    -- Sea Beast Farm Logic Here
-end)
+-- CREDITS TAB
+local creditsTab = window:CreateTab("Credits", 4483362458)
+creditsTab:CreateSection("Developers")
+creditsTab:CreateLabel("Script by khoitongdz")
+creditsTab:CreateLabel("UI by khoitongdz")
+creditsTab:CreateLabel("For Blox Fruits")
+
+-- Finalize
+library:Notify("Flyx Hub Loaded Successfully", "Enjoy using Flyx Hub for Blox Fruits!")
