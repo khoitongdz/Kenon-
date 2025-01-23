@@ -75,7 +75,7 @@ seaEventTab:CreateSection("Control Sea Events")
 seaEventTab:CreateDropdown({
     Name = "Select Boat",
     Options = {"Dinghy", "Sloop", "Galleon", "Brigantine"},
-    CurrentOption = "Dinghy",
+    CurrentOption = "Sloop",
     Callback = function(option)
         print("Selected Boat: " .. option)
         _G.SelectedBoat = option
