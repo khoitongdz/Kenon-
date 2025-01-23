@@ -1,8 +1,8 @@
 ---[[[https://discord.gg/SFvsMJHXfc]]]---
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/khoitongdz/Kenon-/refs/heads/main/message.txt"))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source"))()
 
 local window = library:CreateWindow({
-    Name = "Flyx Hub - Blox Fruits",
+    Name = "Flyx Hub|Blox Fruits",
     LoadingTitle = "Flyx Hub Loading...",
     LoadingSubtitle = "Optimized for Blox Fruits",
     ConfigurationSaving = {
