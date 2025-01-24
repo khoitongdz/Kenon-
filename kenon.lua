@@ -1,14 +1,9 @@
 local _0x1A3 = --[[
 
 Rayfield Interface Suite
-by Sirius
-
-shlex | Designing + Programming
-iRay  | Programming
+by khoitongdz
 
 ]]
-
-
 
 local Release = "Beta 8"
 local NotificationDuration = 6.5
