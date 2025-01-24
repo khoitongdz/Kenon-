@@ -1,7 +1,7 @@
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
 
 local Window = OrionLib:MakeWindow({
-    Name = "Flyx Hub - Blox Fruits",
+    Name = "Flyx Hub | Blox Fruits",
     HidePremium = false,
     SaveConfig = true,
     ConfigFolder = "FlyxHubConfig",
