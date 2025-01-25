@@ -1,4 +1,4 @@
--- Flyx Hub Script for Blox Fruits with ESP
+-- Flyx Hub Script for Blox Fruits with All Features
 -- Created by khoitongdz
 
 local FlyxHub = {}
@@ -10,7 +10,7 @@ game:GetService("Players").LocalPlayer.Idled:Connect(function()
     vu:ClickButton2(Vector2.new())
 end)
 
--- UI Setup
+-- UI Setup (Using custom library for a better interface)
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
@@ -41,13 +41,13 @@ TabsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 TabsFrame.Parent = MainFrame
 
 -- Tab Buttons
-local FarmButton = Instance.new("TextButton")
-FarmButton.Size = UDim2.new(0.25, 0, 1, 0)
-FarmButton.Position = UDim2.new(0, 0, 0, 0)
-FarmButton.Text = "Auto Farm"
-FarmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-FarmButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-FarmButton.Parent = TabsFrame
+local AutoFarmButton = Instance.new("TextButton")
+AutoFarmButton.Size = UDim2.new(0.25, 0, 1, 0)
+AutoFarmButton.Position = UDim2.new(0, 0, 0, 0)
+AutoFarmButton.Text = "Auto Farm"
+AutoFarmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AutoFarmButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+AutoFarmButton.Parent = TabsFrame
 
 local TeleportButton = Instance.new("TextButton")
 TeleportButton.Size = UDim2.new(0.25, 0, 1, 0)
@@ -73,7 +73,28 @@ ESPButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 ESPButton.Parent = TabsFrame
 
--- ESP Tab
+-- Define UI Sections for each Tab
+local AutoFarmFrame = Instance.new("Frame")
+AutoFarmFrame.Size = UDim2.new(1, 0, 0.75, 0)
+AutoFarmFrame.Position = UDim2.new(0, 0, 0.25, 0)
+AutoFarmFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+AutoFarmFrame.Visible = false
+AutoFarmFrame.Parent = MainFrame
+
+local TeleportFrame = Instance.new("Frame")
+TeleportFrame.Size = UDim2.new(1, 0, 0.75, 0)
+TeleportFrame.Position = UDim2.new(0, 0, 0.25, 0)
+TeleportFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+TeleportFrame.Visible = false
+TeleportFrame.Parent = MainFrame
+
+local MiscFrame = Instance.new("Frame")
+MiscFrame.Size = UDim2.new(1, 0, 0.75, 0)
+MiscFrame.Position = UDim2.new(0, 0, 0.25, 0)
+MiscFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+MiscFrame.Visible = false
+MiscFrame.Parent = MainFrame
+
 local ESPFrame = Instance.new("Frame")
 ESPFrame.Size = UDim2.new(1, 0, 0.75, 0)
 ESPFrame.Position = UDim2.new(0, 0, 0.25, 0)
@@ -82,37 +103,11 @@ ESPFrame.Visible = false
 ESPFrame.Parent = MainFrame
 
 -- Toggle ESP
-local function createToggle(name, parent, position, action)
-    local toggle = Instance.new("TextButton")
-    toggle.Size = UDim2.new(0.9, 0, 0.1, 0)
-    toggle.Position = position
-    toggle.Text = name
-    toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    toggle.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-    toggle.Parent = parent
-
-    local enabled = false
-    toggle.MouseButton1Click:Connect(function()
-        enabled = not enabled
-        if enabled then
-            toggle.Text = name .. " [ON]"
-            toggle.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-            action(true)
-        else
-            toggle.Text = name .. " [OFF]"
-            toggle.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-            action(false)
-        end
-    end)
-
-    return toggle
-end
-
 local espEnabled = false
 local function toggleESP(state)
     espEnabled = state
     if espEnabled then
-        -- ESP logic: Show boxes/names of entities (like mobs, NPCs, players)
+        -- ESP logic: Show boxes/names of entities (like mobs, NPCs, or players)
         for _, v in pairs(game.Workspace:GetChildren()) do
             if v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
                 local espBox = Instance.new("BillboardGui")
@@ -146,28 +141,39 @@ local function toggleESP(state)
     end
 end
 
-createToggle("Enable ESP", ESPFrame, UDim2.new(0.05, 0, 0.05, 0), toggleESP)
+-- Button to Toggle ESP
+local ESPToggleButton = Instance.new("TextButton")
+ESPToggleButton.Size = UDim2.new(0.8, 0, 0.1, 0)
+ESPToggleButton.Position = UDim2.new(0.1, 0, 0.1, 0)
+ESPToggleButton.Text = "Toggle ESP"
+ESPToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ESPToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ESPToggleButton.Parent = ESPFrame
+
+ESPToggleButton.MouseButton1Click:Connect(function()
+    toggleESP(not espEnabled)
+end)
 
 -- Switch between Tabs
 local function switchTab(tab)
-    ESPFrame.Visible = false
     AutoFarmFrame.Visible = false
     TeleportFrame.Visible = false
     MiscFrame.Visible = false
+    ESPFrame.Visible = false
 
-    if tab == "ESP" then
-        ESPFrame.Visible = true
-    elseif tab == "Farm" then
+    if tab == "Auto Farm" then
         AutoFarmFrame.Visible = true
     elseif tab == "Teleport" then
         TeleportFrame.Visible = true
     elseif tab == "Misc" then
         MiscFrame.Visible = true
+    elseif tab == "ESP" then
+        ESPFrame.Visible = true
     end
 end
 
-FarmButton.MouseButton1Click:Connect(function()
-    switchTab("Farm")
+AutoFarmButton.MouseButton1Click:Connect(function()
+    switchTab("Auto Farm")
 end)
 
 TeleportButton.MouseButton1Click:Connect(function()
