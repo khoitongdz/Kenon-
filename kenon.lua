@@ -1,239 +1,151 @@
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
+-- Flyx Hub Script for Blox Fruits
+-- Created by khoitongdz
 
-local Window = OrionLib:MakeWindow({
-    Name = "Flyx Hub | Blox Fruits",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "FlyxHubConfig",
-    IntroText = "Welcome to Flyx Hub"
-})
+local FlyxHub = {}
 
--- Main Tab
-local MainTab = Window:MakeTab({
-    Name = "Main",
-    Icon = "rbxassetid://4483362458",
-    PremiumOnly = false
-})
-
-MainTab:AddToggle({
-    Name = "Auto Farm",
-    Default = false,
-    Callback = function(value)
-        _G.AutoFarm = value
-        while _G.AutoFarm do
-            wait()
-            -- Logic for Auto Farm
-            print("Auto Farming...")
-        end
-    end
-})
-
-MainTab:AddDropdown({
-    Name = "Auto Assign Stats",
-    Options = {"Melee", "Defense", "Sword", "Gun", "Fruit"},
-    Default = "Melee",
-    Callback = function(option)
-        _G.AutoStats = option
-        while _G.AutoStats do
-            wait(5)
-            -- Logic for Auto Assign Stats
-            print("Assigning stats to: " .. option)
-        end
-    end
-})
-
--- Teleport Tab
-local TeleportTab = Window:MakeTab({
-    Name = "Teleport",
-    Icon = "rbxassetid://4483362458",
-    PremiumOnly = false
-})
-
-TeleportTab:AddDropdown({
-    Name = "Select Island",
-    Options = {"Starter Island", "Middle Town", "Pirate Village", "Skylands", "Magma Island", "Colosseum"},
-    Default = "Starter Island",
-    Callback = function(option)
-        _G.SelectedIsland = option
-        print("Teleporting to: " .. option)
-    end
-})
-
-TeleportTab:AddButton({
-    Name = "Teleport Now",
-    Callback = function()
-        -- Teleport Logic
-        print("Teleported to: " .. (_G.SelectedIsland or "Unknown"))
-    end
-})
-
--- Sea Event Tab
-local SeaTab = Window:MakeTab({
-    Name = "Sea Events",
-    Icon = "rbxassetid://4483362458",
-    PremiumOnly = false
-})
-
-SeaTab:AddDropdown({
-    Name = "Select Boat",
-    Options = {"Dinghy", "Sloop", "Galleon", "Brigantine"},
-    Default = "Dinghy",
-    Callback = function(option)
-        _G.SelectedBoat = option
-        print("Boat selected: " .. option)
-    end
-})
-
-SeaTab:AddToggle({
-    Name = "Auto Sea Event",
-    Default = false,
-    Callback = function(value)
-        _G.AutoSeaEvent = value
-        while _G.AutoSeaEvent do
-            wait(10)
-            print("Auto Sea Event in progress...")
-        end
-    end
-})
-
-SeaTab:AddToggle({
-    Name = "Safe Farm Sea Event",
-    Default = false,
-    Callback = function(value)
-        _G.SafeSeaFarm = value
-        while _G.SafeSeaFarm do
-            wait(1)
-            print("Safe farming sea event...")
-        end
-    end
-})
-
--- Item Tab
-local ItemTab = Window:MakeTab({
-    Name = "Items",
-    Icon = "rbxassetid://4483362458",
-    PremiumOnly = false
-})
-
-ItemTab:AddButton({
-    Name = "Auto Collect Chests",
-    Callback = function()
-        _G.AutoCollectChests = true
-        while _G.AutoCollectChests do
-            wait(1)
-            print("Collecting chests...")
-        end
-    end
-})
-
-ItemTab:AddButton({
-    Name = "Auto Buy Fruits",
-    Callback = function()
-        print("Buying fruits...")
-    end
-})
-
--- Misc Tab
-local MiscTab = Window:MakeTab({
-    Name = "Miscellaneous",
-    Icon = "rbxassetid://4483362458",
-    PremiumOnly = false
-})
-
-MiscTab:AddToggle({
-    Name = "Infinite Energy",
-    Default = false,
-    Callback = function(value)
-        _G.InfiniteEnergy = value
-        if value then
-            print("Infinite Energy Enabled")
-        else
-            print("Infinite Energy Disabled")
-        end
-    end
-})
-
-MiscTab:AddToggle({
-    Name = "Walk on Water",
-    Default = false,
-    Callback = function(value)
-        _G.WalkOnWater = value
-        if value then
-            print("Walking on water enabled!")
-        else
-            print("Walking on water disabled!")
-        end
-    end
-})
-
--- Anti AFK
-MiscTab:AddLabel("Anti AFK Enabled by Default")
+-- Anti-AFK Protection
 local vu = game:GetService("VirtualUser")
 game:GetService("Players").LocalPlayer.Idled:Connect(function()
-    vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-    wait(1)
-    vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-    print("Anti AFK Triggered")
+    vu:CaptureController()
+    vu:ClickButton2(Vector2.new())
 end)
 
--- Fast Attack Toggle
-MiscTab:AddToggle({
-    Name = "Fast Attack",
-    Default = false,
-    Callback = function(value)
-        _G.FastAttack = value
-        if value then
-            print("Fast Attack Enabled")
-        else
-            print("Fast Attack Disabled")
-        end
+-- UI Setup
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/UI-Library/Source/main/Library.lua"))()
+local Window = Library:CreateWindow("Flyx Hub|Blox Fruits")
+
+local FarmTab = Window:CreateTab("Auto Farm")
+local TeleportTab = Window:CreateTab("Teleport")
+local MiscTab = Window:CreateTab("Misc")
+local VolcanoTab = Window:CreateTab("Volcano Event")
+
+-- Variables
+local autofarm = false
+local selectedMob = ""
+local autoCraft = false
+local autoFindIsland = false
+local selectedWeapon = "Melee"
+local selectedMethod = "Click M1"
+local selectedSea = "Sea 1"
+
+-- Function to Update Tabs Based on Sea
+local function updateTabsForSea(sea)
+    if sea == "Sea 1" then
+        FarmTab:UpdateDropdown("Select Mob", {"Bandit", "Monkey", "Pirate", "Brute"})
+        TeleportTab:UpdateDropdown("Select Location", {"Starter Island", "Jungle", "Pirate Village"})
+    elseif sea == "Sea 2" then
+        FarmTab:UpdateDropdown("Select Mob", {"Swan Pirate", "Factory Staff", "Marine Lieutenant"})
+        TeleportTab:UpdateDropdown("Select Location", {"Kingdom of Rose", "Green Zone", "Graveyard"})
+    elseif sea == "Sea 3" then
+        FarmTab:UpdateDropdown("Select Mob", {"Pirate Millionaire", "Fishman Raider", "Sea Soldier"})
+        TeleportTab:UpdateDropdown("Select Location", {"Port Town", "Hydra Island", "Great Tree"})
     end
-})
+end
 
--- Auto Fast Attack Near Enemies
-MiscTab:AddToggle({
-    Name = "Auto Fast Attack Near Enemies",
-    Default = false,
-    Callback = function(value)
-        _G.AutoFastAttack = value
-        while _G.AutoFastAttack do
-            wait(0.1)
-            local player = game.Players.LocalPlayer
-            local character = player.Character
-            if character and character:FindFirstChild("HumanoidRootPart") then
-                local root = character.HumanoidRootPart
-                local closestEnemy
-                local shortestDistance = math.huge
-
-                for _, enemy in pairs(workspace.Enemies:GetChildren()) do
-                    if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
-                        local distance = (root.Position - enemy.HumanoidRootPart.Position).Magnitude
-                        if distance < shortestDistance then
-                            shortestDistance = distance
-                            closestEnemy = enemy
-                        end
-                    end
-                end
-
-                if closestEnemy and shortestDistance < 50 then
-                    print("Attacking enemy: " .. closestEnemy.Name)
-                    -- Logic for fast attack goes here
-                end
+-- Auto Farm Section
+FarmTab:CreateToggle("Auto Farm", function(state)
+    autofarm = state
+    while autofarm do
+        pcall(function()
+            local mob = game:GetService("Workspace").Enemies:FindFirstChild(selectedMob)
+            if mob and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, -10, 0)
+                game:GetService("VirtualUser"):Button1Down(Vector2.new())
+            else
+                wait(0.5)
             end
-        end
+        end)
+        wait()
     end
+end)
+
+FarmTab:CreateDropdown("Select Mob", {"Bandit", "Monkey", "Pirate", "Brute"}, function(selected)
+    selectedMob = selected
+end)
+
+-- Teleport Section
+TeleportTab:CreateDropdown("Select Sea", {"Sea 1", "Sea 2", "Sea 3"}, function(sea)
+    selectedSea = sea
+    updateTabsForSea(sea)
+end)
+
+TeleportTab:CreateDropdown("Select Location", {"Starter Island", "Jungle", "Pirate Village"}, function(location)
+    local locations = {
+        ["Starter Island"] = CFrame.new(1159, 16, 1240),
+        ["Jungle"] = CFrame.new(-1178, 11, 3853),
+        ["Pirate Village"] = CFrame.new(-1121, 4, 3828),
+        ["Kingdom of Rose"] = CFrame.new(-394, 118, 1248),
+        ["Green Zone"] = CFrame.new(-2365, 72, -316),
+        ["Graveyard"] = CFrame.new(-5438, 48, -5934),
+        ["Port Town"] = CFrame.new(-290, 6, 5303),
+        ["Hydra Island"] = CFrame.new(5228, 604, 346),
+        ["Great Tree"] = CFrame.new(2175, 28, -6727)
+    }
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = locations[location]
+end)
+
+-- Volcano Event Section
+VolcanoTab:CreateToggle("Auto Crafting Volcanic Magnet", function(state)
+    autoCraft = state
+    while autoCraft do
+        pcall(function()
+            local blazeEmber = game:GetService("Workspace").Resources:FindFirstChild("Blaze Ember")
+            local scrapMetal = game:GetService("Workspace").Resources:FindFirstChild("Scrap Metal")
+            if blazeEmber then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = blazeEmber.CFrame
+                wait(1)
+            elseif scrapMetal then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = scrapMetal.CFrame
+                wait(1)
+            else
+                wait(0.5)
+            end
+        end)
+        wait()
+    end
+end)
+
+VolcanoTab:CreateToggle("Auto Find Prehistoric Island", function(state)
+    autoFindIsland = state
+    while autoFindIsland do
+        pcall(function()
+            local volcanicMagnet = game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Volcanic Magnet")
+            if volcanicMagnet then
+                -- Replace with Prehistoric Island teleport location
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1000, 100, 1000) -- Example
+            else
+                wait(0.5)
+            end
+        end)
+        wait()
+    end
+end)
+
+VolcanoTab:CreateDropdown("Select Weapon Kill Golem", {"Melee", "Sword", "Gun"}, function(weapon)
+    selectedWeapon = weapon
+end)
+
+VolcanoTab:CreateDropdown("Select Method Kill Golem", {"Click M1", "Skill"}, function(method)
+    selectedMethod = method
+end)
+
+-- Misc Section
+MiscTab:CreateButton("Redeem All Codes", function()
+    local codes = {"FUDD10", "BIGNEWS", "THEGREATACE"}
+    for _, code in pairs(codes) do
+        game:GetService("ReplicatedStorage").Remotes.Redeem:InvokeServer(code)
+    end
+end)
+
+MiscTab:CreateButton("Speed Hack", function()
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
+end)
+
+-- Load Notification
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "Flyx Hub Loaded",
+    Text = "Enjoy your gameplay with Flyx Hub!",
+    Duration = 5
 })
 
--- Credits Tab
-local CreditsTab = Window:MakeTab({
-    Name = "Credits",
-    Icon = "rbxassetid://4483362458",
-    PremiumOnly = false
-})
-
-CreditsTab:AddLabel("Script by khoitongdz")
-CreditsTab:AddLabel("UI by khoitongdz")
-CreditsTab:AddLabel("Specially Designed for Blox Fruits")
-
--- Initialization
-OrionLib:Init()
+return FlyxHub
