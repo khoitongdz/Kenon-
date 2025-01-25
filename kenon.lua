@@ -1,4 +1,4 @@
--- Flyx Hub Script for Blox Fruits with All Features
+-- Flyx Hub Script for Blox Fruits (UI giống Hoho Hub)
 -- Created by khoitongdz
 
 local FlyxHub = {}
@@ -10,104 +10,84 @@ game:GetService("Players").LocalPlayer.Idled:Connect(function()
     vu:ClickButton2(Vector2.new())
 end)
 
--- UI Setup (Using custom library for a better interface)
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+-- UI Setup (Using custom library for better UI)
+local Library = loadstring(game:HttpGet(" https://raw.githubusercontent.com/khoitongdz/ui/refs/heads/main/.gitignore"))()
 
--- Main Frame for UI
-local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0.5, 0, 0.7, 0)
-MainFrame.Position = UDim2.new(0.25, 0, 0.15, 0)
-MainFrame.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
-MainFrame.BackgroundTransparency = 0.8
-MainFrame.Parent = ScreenGui
+local Window = Library:CreateWindow("Flyx Hub | Blox Fruits")
 
--- Title Label
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0.1, 0)
-Title.Text = "Flyx Hub | Blox Fruits"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 26
-Title.TextStrokeTransparency = 0.8
-Title.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-Title.BackgroundTransparency = 1
-Title.Parent = MainFrame
+-- Create Tabs
+local AutoFarmTab = Window:CreateTab("Auto Farm")
+local TeleportTab = Window:CreateTab("Teleport")
+local MiscTab = Window:CreateTab("Misc")
+local ESPTab = Window:CreateTab("ESP")
+local SettingsTab = Window:CreateTab("Settings")
 
--- Tabs Layout
-local TabsFrame = Instance.new("Frame")
-TabsFrame.Size = UDim2.new(1, 0, 0.15, 0)
-TabsFrame.Position = UDim2.new(0, 0, 0.1, 0)
-TabsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-TabsFrame.Parent = MainFrame
-
--- Tab Buttons
-local AutoFarmButton = Instance.new("TextButton")
-AutoFarmButton.Size = UDim2.new(0.25, 0, 1, 0)
-AutoFarmButton.Position = UDim2.new(0, 0, 0, 0)
-AutoFarmButton.Text = "Auto Farm"
-AutoFarmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-AutoFarmButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-AutoFarmButton.Parent = TabsFrame
-
-local TeleportButton = Instance.new("TextButton")
-TeleportButton.Size = UDim2.new(0.25, 0, 1, 0)
-TeleportButton.Position = UDim2.new(0.25, 0, 0, 0)
-TeleportButton.Text = "Teleport"
-TeleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-TeleportButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-TeleportButton.Parent = TabsFrame
-
-local MiscButton = Instance.new("TextButton")
-MiscButton.Size = UDim2.new(0.25, 0, 1, 0)
-MiscButton.Position = UDim2.new(0.5, 0, 0, 0)
-MiscButton.Text = "Misc"
-MiscButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-MiscButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-MiscButton.Parent = TabsFrame
-
-local ESPButton = Instance.new("TextButton")
-ESPButton.Size = UDim2.new(0.25, 0, 1, 0)
-ESPButton.Position = UDim2.new(0.75, 0, 0, 0)
-ESPButton.Text = "ESP"
-ESPButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-ESPButton.Parent = TabsFrame
-
--- Define UI Sections for each Tab
-local AutoFarmFrame = Instance.new("Frame")
-AutoFarmFrame.Size = UDim2.new(1, 0, 0.75, 0)
-AutoFarmFrame.Position = UDim2.new(0, 0, 0.25, 0)
-AutoFarmFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-AutoFarmFrame.Visible = false
-AutoFarmFrame.Parent = MainFrame
-
-local TeleportFrame = Instance.new("Frame")
-TeleportFrame.Size = UDim2.new(1, 0, 0.75, 0)
-TeleportFrame.Position = UDim2.new(0, 0, 0.25, 0)
-TeleportFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-TeleportFrame.Visible = false
-TeleportFrame.Parent = MainFrame
-
-local MiscFrame = Instance.new("Frame")
-MiscFrame.Size = UDim2.new(1, 0, 0.75, 0)
-MiscFrame.Position = UDim2.new(0, 0, 0.25, 0)
-MiscFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-MiscFrame.Visible = false
-MiscFrame.Parent = MainFrame
-
-local ESPFrame = Instance.new("Frame")
-ESPFrame.Size = UDim2.new(1, 0, 0.75, 0)
-ESPFrame.Position = UDim2.new(0, 0, 0.25, 0)
-ESPFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-ESPFrame.Visible = false
-ESPFrame.Parent = MainFrame
-
--- Toggle ESP
+-- Variables
+local autofarm = false
+local selectedMob = "Bandit"
+local selectedLocation = "Starter Island"
 local espEnabled = false
+local speedHack = false
+
+-- Functions to Update Tabs Based on Sea
+local function updateTabsForSea(sea)
+    if sea == "Sea 1" then
+        AutoFarmTab:UpdateDropdown("Select Mob", {"Bandit", "Monkey", "Pirate", "Brute"})
+        TeleportTab:UpdateDropdown("Select Location", {"Starter Island", "Jungle", "Pirate Village"})
+    elseif sea == "Sea 2" then
+        AutoFarmTab:UpdateDropdown("Select Mob", {"Swan Pirate", "Factory Staff", "Marine Lieutenant"})
+        TeleportTab:UpdateDropdown("Select Location", {"Kingdom of Rose", "Green Zone", "Graveyard"})
+    elseif sea == "Sea 3" then
+        AutoFarmTab:UpdateDropdown("Select Mob", {"Pirate Millionaire", "Fishman Raider", "Sea Soldier"})
+        TeleportTab:UpdateDropdown("Select Location", {"Port Town", "Hydra Island", "Great Tree"})
+    end
+end
+
+-- Auto Farm Section
+AutoFarmTab:CreateToggle("Auto Farm", function(state)
+    autofarm = state
+    while autofarm do
+        pcall(function()
+            local mob = game:GetService("Workspace").Enemies:FindFirstChild(selectedMob)
+            if mob and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, -10, 0)
+                game:GetService("VirtualUser"):Button1Down(Vector2.new())
+            else
+                wait(0.5)
+            end
+        end)
+        wait()
+    end
+end)
+
+AutoFarmTab:CreateDropdown("Select Mob", {"Bandit", "Monkey", "Pirate", "Brute"}, function(selected)
+    selectedMob = selected
+end)
+
+-- Teleport Section
+TeleportTab:CreateDropdown("Select Sea", {"Sea 1", "Sea 2", "Sea 3"}, function(sea)
+    updateTabsForSea(sea)
+end)
+
+TeleportTab:CreateDropdown("Select Location", {"Starter Island", "Jungle", "Pirate Village"}, function(location)
+    local locations = {
+        ["Starter Island"] = CFrame.new(1159, 16, 1240),
+        ["Jungle"] = CFrame.new(-1178, 11, 3853),
+        ["Pirate Village"] = CFrame.new(-1121, 4, 3828),
+        ["Kingdom of Rose"] = CFrame.new(-394, 118, 1248),
+        ["Green Zone"] = CFrame.new(-2365, 72, -316),
+        ["Graveyard"] = CFrame.new(-5438, 48, -5934),
+        ["Port Town"] = CFrame.new(-290, 6, 5303),
+        ["Hydra Island"] = CFrame.new(5228, 604, 346),
+        ["Great Tree"] = CFrame.new(2175, 28, -6727)
+    }
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = locations[location]
+end)
+
+-- ESP Section
 local function toggleESP(state)
     espEnabled = state
     if espEnabled then
-        -- ESP logic: Show boxes/names of entities (like mobs, NPCs, or players)
         for _, v in pairs(game.Workspace:GetChildren()) do
             if v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
                 local espBox = Instance.new("BillboardGui")
@@ -128,7 +108,7 @@ local function toggleESP(state)
             end
         end
     else
-        -- Remove all ESP boxes
+        -- Remove ESP boxes
         for _, v in pairs(game.Workspace:GetChildren()) do
             if v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
                 for _, gui in pairs(v:GetChildren()) do
@@ -141,51 +121,35 @@ local function toggleESP(state)
     end
 end
 
--- Button to Toggle ESP
-local ESPToggleButton = Instance.new("TextButton")
-ESPToggleButton.Size = UDim2.new(0.8, 0, 0.1, 0)
-ESPToggleButton.Position = UDim2.new(0.1, 0, 0.1, 0)
-ESPToggleButton.Text = "Toggle ESP"
-ESPToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-ESPToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ESPToggleButton.Parent = ESPFrame
-
-ESPToggleButton.MouseButton1Click:Connect(function()
-    toggleESP(not espEnabled)
+ESPTab:CreateToggle("Enable ESP", function(state)
+    toggleESP(state)
 end)
 
--- Switch between Tabs
-local function switchTab(tab)
-    AutoFarmFrame.Visible = false
-    TeleportFrame.Visible = false
-    MiscFrame.Visible = false
-    ESPFrame.Visible = false
-
-    if tab == "Auto Farm" then
-        AutoFarmFrame.Visible = true
-    elseif tab == "Teleport" then
-        TeleportFrame.Visible = true
-    elseif tab == "Misc" then
-        MiscFrame.Visible = true
-    elseif tab == "ESP" then
-        ESPFrame.Visible = true
+-- Speed Hack Section
+MiscTab:CreateToggle("Speed Hack", function(state)
+    speedHack = state
+    if speedHack then
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
+    else
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
     end
-end
-
-AutoFarmButton.MouseButton1Click:Connect(function()
-    switchTab("Auto Farm")
 end)
 
-TeleportButton.MouseButton1Click:Connect(function()
-    switchTab("Teleport")
+-- Code Redeem Section
+MiscTab:CreateButton("Redeem All Codes", function()
+    local codes = {"FUDD10", "BIGNEWS", "THEGREATACE"}
+    for _, code in pairs(codes) do
+        game:GetService("ReplicatedStorage").Remotes.Redeem:InvokeServer(code)
+    end
 end)
 
-MiscButton.MouseButton1Click:Connect(function()
-    switchTab("Misc")
-end)
-
-ESPButton.MouseButton1Click:Connect(function()
-    switchTab("ESP")
+-- Settings Section
+SettingsTab:CreateButton("Reset Settings", function()
+    -- Reset all settings
+    autofarm = false
+    espEnabled = false
+    speedHack = false
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
 end)
 
 -- Load Notification
