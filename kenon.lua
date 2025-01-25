@@ -75,17 +75,21 @@ MobDropdown.Parent = AutoFarmFrame
 local function switchTab(tab)
     if tab == "Farm" then
         AutoFarmFrame.Visible = true
+        print("Switched to Auto Farm tab")  -- Debugging
     else
         AutoFarmFrame.Visible = false
+        print("Switched to another tab")  -- Debugging
     end
 end
 
 -- Button event handlers
 FarmButton.MouseButton1Click:Connect(function()
+    print("FarmButton clicked")  -- Debugging
     switchTab("Farm")
 end)
 
 TeleportButton.MouseButton1Click:Connect(function()
+    print("TeleportButton clicked")  -- Debugging
     switchTab("Teleport")
 end)
 
