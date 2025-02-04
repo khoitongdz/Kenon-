@@ -1,139 +1,93 @@
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
-local Window = OrionLib:MakeWindow({
-    Name = "Không Biết - Blox Fruits", 
-    HidePremium = false, 
-    SaveConfig = true, 
-    ConfigFolder = "BloxFruitsConfig"
-})
+--// Tạo UI
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local UIGradient = Instance.new("UIGradient")
+local Title = Instance.new("TextLabel")
+local FarmButton = Instance.new("TextButton")
+local TeleportButton = Instance.new("TextButton")
+local MiscButton = Instance.new("TextButton")
+local CloseButton = Instance.new("TextButton")
 
--- **Tab Auto Farm**
-local AutoFarmTab = Window:MakeTab({Name = "🌾 Auto Farm", Icon = "rbxassetid://4483345998", PremiumOnly = false})
-AutoFarmTab:AddToggle({
-    Name = "Tự động Farm",
-    Default = false,
-    Callback = function(state)
-        getgenv().AutoFarm = state
-        while getgenv().AutoFarm do
-            -- Code Auto Farm
-            wait()
-        end
-    end
-})
+--// Cài đặt UI
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-AutoFarmTab:AddButton({
-    Name = "Tăng Tốc Đánh",
-    Callback = function()
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
-    end
-})
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
+MainFrame.Size = UDim2.new(0, 400, 0, 250)
 
--- **Tab Auto Raid**
-local AutoRaidTab = Window:MakeTab({Name = "🔥 Auto Raid", Icon = "rbxassetid://4483345998", PremiumOnly = false})
-AutoRaidTab:AddDropdown({
-    Name = "Chọn Raid",
-    Default = "Flame",
-    Options = {"Flame", "Ice", "Quake", "Light", "Dark", "String", "Rumble"},
-    Callback = function(option)
-        getgenv().SelectedRaid = option
-    end
-})
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
 
-AutoRaidTab:AddButton({
-    Name = "Bắt đầu Raid",
-    Callback = function()
-        -- Code bắt đầu Raid
-    end
-})
-
--- **Tab Dịch Chuyển**
-local TeleportTab = Window:MakeTab({Name = "🚀 Dịch Chuyển (Sea 3)", Icon = "rbxassetid://4483345998", PremiumOnly = false})
-local Islands = {
-    ["Port Town"] = CFrame.new(-290, 44, 5453),
-    ["Hydra Island"] = CFrame.new(5228, 604, 345),
-    ["Great Tree"] = CFrame.new(2281, 25, -6481),
-    ["Floating Turtle"] = CFrame.new(-10200, 472, -880),
-    ["Haunted Castle"] = CFrame.new(-9506, 142, 5530),
-    ["Sea of Treats"] = CFrame.new(-2054, 200, -12308),
-    ["Castle on the Sea"] = CFrame.new(-5074, 315, -3161),
-    ["Tiki Outpost"] = CFrame.new(-16146, 21, -7548)
+UIGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 85, 85)), 
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(85, 85, 255))
 }
+UIGradient.Rotation = 90
+UIGradient.Parent = MainFrame
 
-TeleportTab:AddDropdown({
-    Name = "Chọn Đảo",
-    Default = "Castle on the Sea",
-    Options = {"Port Town", "Hydra Island", "Great Tree", "Floating Turtle", "Haunted Castle", "Sea of Treats", "Castle on the Sea", "Tiki Outpost"},
-    Callback = function(selectedIsland)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Islands[selectedIsland]
+Title.Parent = MainFrame
+Title.Text = "Không Biết - Blox Fruits"
+Title.Font = Enum.Font.GothamBold
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.BackgroundTransparency = 1
+
+--// Nút Auto Farm
+FarmButton.Parent = MainFrame
+FarmButton.Text = "🌾 Auto Farm"
+FarmButton.Size = UDim2.new(0, 180, 0, 40)
+FarmButton.Position = UDim2.new(0.05, 0, 0.2, 0)
+FarmButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+FarmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+FarmButton.Font = Enum.Font.GothamBold
+FarmButton.TextSize = 16
+FarmButton.MouseButton1Click:Connect(function()
+    getgenv().AutoFarm = not getgenv().AutoFarm
+    while getgenv().AutoFarm do
+        -- Code Auto Farm
+        wait()
     end
-})
+end)
 
--- **Tab Hack Khác**
-local MiscTab = Window:MakeTab({Name = "⚡ Khác", Icon = "rbxassetid://4483345998", PremiumOnly = false})
-MiscTab:AddButton({
-    Name = "Bật Bất Tử",
-    Callback = function()
-        game.Players.LocalPlayer.Character.Humanoid.Health = 999999
-    end
-})
+--// Nút Teleport
+TeleportButton.Parent = MainFrame
+TeleportButton.Text = "🚀 Dịch Chuyển"
+TeleportButton.Size = UDim2.new(0, 180, 0, 40)
+TeleportButton.Position = UDim2.new(0.05, 0, 0.5, 0)
+TeleportButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+TeleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TeleportButton.Font = Enum.Font.GothamBold
+TeleportButton.TextSize = 16
+TeleportButton.MouseButton1Click:Connect(function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-5074, 315, -3161) -- Castle on the Sea
+end)
 
-MiscTab:AddSlider({
-    Name = "Tốc Độ Chạy",
-    Min = 16,
-    Max = 200,
-    Default = 16,
-    Callback = function(value)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
-    end
-})
+--// Nút Hack Khác
+MiscButton.Parent = MainFrame
+MiscButton.Text = "⚡ Hack Khác"
+MiscButton.Size = UDim2.new(0, 180, 0, 40)
+MiscButton.Position = UDim2.new(0.5, 10, 0.2, 0)
+MiscButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+MiscButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MiscButton.Font = Enum.Font.GothamBold
+MiscButton.TextSize = 16
+MiscButton.MouseButton1Click:Connect(function()
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
+end)
 
-MiscTab:AddSlider({
-    Name = "Độ Cao Nhảy",
-    Min = 50,
-    Max = 500,
-    Default = 50,
-    Callback = function(value)
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
-    end
-})
-
--- **Tab ESP**
-local ESPTab = Window:MakeTab({Name = "👀 ESP", Icon = "rbxassetid://4483345998", PremiumOnly = false})
-ESPTab:AddButton({
-    Name = "Bật ESP Người Chơi",
-    Callback = function()
-        for _, v in pairs(game.Players:GetChildren()) do
-            if v ~= game.Players.LocalPlayer then
-                local esp = Instance.new("BoxHandleAdornment", v.Character.Head)
-                esp.Size = v.Character.Head.Size + Vector3.new(2, 2, 2)
-                esp.Color3 = Color3.fromRGB(255, 0, 0)
-                esp.Adornee = v.Character.Head
-                esp.AlwaysOnTop = true
-            end
-        end
-    end
-})
-
--- **Tab Trái Ác Quỷ**
-local FruitTab = Window:MakeTab({Name = "🍎 Trái Ác Quỷ", Icon = "rbxassetid://4483345998", PremiumOnly = false})
-FruitTab:AddToggle({
-    Name = "Nhặt Trái Ác Quỷ",
-    Default = false,
-    Callback = function(state)
-        getgenv().AutoFruit = state
-        while getgenv().AutoFruit do
-            -- Code nhặt trái ác quỷ
-            wait()
-        end
-    end
-})
-
-FruitTab:AddToggle({
-    Name = "Mua Trái Ác Quỷ Shop",
-    Default = false,
-    Callback = function(state)
-        -- Code tự mua trái ác quỷ
-    end
-})
-
--- **Khởi động UI**
-OrionLib:Init()
+--// Nút Đóng UI
+CloseButton.Parent = MainFrame
+CloseButton.Text = "❌"
+CloseButton.Size = UDim2.new(0, 40, 0, 40)
+CloseButton.Position = UDim2.new(0.85, 0, 0.05, 0)
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.TextSize = 16
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
