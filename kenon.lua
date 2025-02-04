@@ -1,126 +1,166 @@
--- Super Obfuscated Flyx Hub Script (Ultra Complex Version)
--- Developed by khoitongdz
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+local Window = Rayfield:CreateWindow({
+    Name = "Không Biết|Blox Fruits",
+    LoadingTitle = "Đang tải UI...",
+    LoadingSubtitle = "Vui lòng đợi...",
+    ConfigurationSaving = {Enabled = true, FolderName = "BloxFruitsConfig"},
+    Discord = {Enabled = false},
+    KeySystem = false
+})
 
-local _A = Instance.new("ScreenGui")
-local _B = Instance.new("Frame")
-local _C = Instance.new("TextLabel")
-local _D = Instance.new("Frame")
-local _E = Instance.new("ScrollingFrame")
-local _F = Instance.new("UIListLayout")
-
--- Executor Detection
-local __X__ = identifyexecutor and identifyexecutor() or "???"
-print("Running on: " .. tostring(__X__))
-
--- Fake Environment Check
-if not game or not game:IsLoaded() then while true do end end
-
--- Random Fake Variables
-local _RND = math.random(1000, 9999)
-local _JUNK = "Obfuscate" .. tostring(_RND)
-local _FAKE_TABLE = { ["x"] = _RND, ["y"] = _RND * 2, ["z"] = "FakeData" }
-
--- UI Setup
-_A.Name = "FxH"
-_A.Parent = game:GetService("CoreGui")
-
-_B.Name = "M_"
-_B.Parent = _A
-_B.BackgroundColor3 = Color3.fromRGB(10 + _RND % 20, 20, 30)
-_B.Position = UDim2.new(0.3, 0, 0.2, 0)
-_B.Size = UDim2.new(0, 400, 0, 500)
-_B.Active = true
-_B.Draggable = true
-
-_C.Name = "T_"
-_C.Parent = _B
-_C.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-_C.Size = UDim2.new(1, 0, 0, 30)
-_C.Text = "FLYX HUB " .. _RND
-_C.TextColor3 = Color3.fromRGB(255, 255, 255)
-_C.TextSize = 20
-
-_D.Name = "TBS"
-_D.Parent = _B
-_D.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-_D.Position = UDim2.new(0, 0, 0, 30)
-_D.Size = UDim2.new(0, 100, 1, -30)
-
-_E.Name = "SCROLL"
-_E.Parent = _B
-_E.Position = UDim2.new(0, 100, 0, 30)
-_E.Size = UDim2.new(1, -100, 1, -30)
-_E.CanvasSize = UDim2.new(0, 0, 5, 0)
-_E.ScrollBarThickness = 6
-
-_F.Parent = _E
-_F.SortOrder = Enum.SortOrder.LayoutOrder
-
--- Fake Functions for Obfuscation
-local function _X(a, b)
-    return (a * b + _RND) % 98765
-end
-
-local function _FAKE_LOOP()
-    for i = 1, 1000 do
-        local temp = _X(i, _RND)
-        if temp % 2 == 0 then
-            temp = temp / 2
-        else
-            temp = temp * 3 + 1
+-- **Tab Auto Farm**
+local AutoFarmTab = Window:CreateTab("Auto Farm", 4483362458)
+AutoFarmTab:CreateToggle({
+    Name = "Tự động Farm",
+    CurrentValue = false,
+    Callback = function(state)
+        getgenv().AutoFarm = state
+        while getgenv().AutoFarm do
+            -- Code Auto Farm
+            wait()
         end
     end
-end
+})
 
-local function _Y(z, idx)
-    local btn = Instance.new("TextButton")
-    btn.Name = z
-    btn.Parent = _D
-    btn.Size = UDim2.new(1, 0, 0, 40)
-    btn.Position = UDim2.new(0, 0, 0, idx * 40)
-    btn.Text = z .. tostring(_X(idx, _RND))
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    btn.MouseButton1Click:Connect(function()
-        print("Button " .. z .. " clicked!")
-        _FAKE_LOOP()
-    end)
-    return btn
-end
+AutoFarmTab:CreateToggle({
+    Name = "Farm Mastery",
+    CurrentValue = false,
+    Callback = function(state)
+        getgenv().AutoMastery = state
+        while getgenv().AutoMastery do
+            -- Code farm mastery
+            wait()
+        end
+    end
+})
 
-local tabs = {"F", "S", "I", "Q", "FR", "TP", "SH", "MS", "EXTRA", "HIDDEN", "DUMMY", "LOOP"}
-for i, v in ipairs(tabs) do
-    _Y(v, i)
-end
+AutoFarmTab:CreateToggle({
+    Name = "Tự động săn Boss",
+    CurrentValue = false,
+    Callback = function(state)
+        getgenv().AutoBoss = state
+        while getgenv().AutoBoss do
+            -- Code săn boss
+            wait()
+        end
+    end
+})
 
--- Auto-Attack Logic (Super Fast Mode)
-local function autoAttack()
-    while task.wait(0.01) do
-        pcall(function()
-            local enemies = workspace:FindFirstChild("Enemies")
-            if enemies then
-                for _, enemy in ipairs(enemies:GetChildren()) do
-                    if enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
-                        for i = 1, 5 do
-                            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):FindFirstChild("Attack"):FireServer(enemy)
-                        end
-                    end
-                end
+-- **Tab Auto Raid**
+local AutoRaidTab = Window:CreateTab("Auto Raid", 4483362458)
+AutoRaidTab:CreateDropdown({
+    Name = "Chọn Raid",
+    Options = {"Flame", "Ice", "Quake", "Light", "Dark", "String", "Rumble"},
+    CurrentOption = "Flame",
+    Callback = function(option)
+        getgenv().SelectedRaid = option
+    end
+})
+
+AutoRaidTab:CreateButton({
+    Name = "Bắt đầu Raid",
+    Callback = function()
+        -- Code bắt đầu Raid
+    end
+})
+
+-- **Tab Teleport**
+local TeleportTab = Window:CreateTab("Dịch Chuyển", 4483362458)
+local Islands = {
+    ["Port Town"] = CFrame.new(-290, 44, 5453),
+    ["Hydra Island"] = CFrame.new(5228, 604, 345),
+    ["Great Tree"] = CFrame.new(2281, 25, -6481),
+    ["Floating Turtle"] = CFrame.new(-10200, 472, -880),
+    ["Haunted Castle"] = CFrame.new(-9506, 142, 5530),
+    ["Sea of Treats"] = CFrame.new(-2054, 200, -12308),
+    ["Castle on the Sea"] = CFrame.new(-5074, 315, -3161),
+    ["Tiki Outpost"] = CFrame.new(-16146, 21, -7548)
+}
+
+TeleportTab:CreateDropdown({
+    Name = "Chọn Đảo",
+    Options = {"Port Town", "Hydra Island", "Great Tree", "Floating Turtle", "Haunted Castle", "Sea of Treats", "Castle on the Sea", "Tiki Outpost"},
+    CurrentOption = "Castle on the Sea",
+    Callback = function(selectedIsland)
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Islands[selectedIsland]
+    end
+})
+
+-- **Tab Hack Khác**
+local MiscTab = Window:CreateTab("Khác", 4483362458)
+MiscTab:CreateToggle({
+    Name = "Bật Bất Tử",
+    CurrentValue = false,
+    Callback = function(state)
+        game.Players.LocalPlayer.Character.Humanoid.Health = state and 999999 or 100
+    end
+})
+
+MiscTab:CreateSlider({
+    Name = "Tốc Độ Chạy",
+    Range = {16, 200},
+    Increment = 2,
+    CurrentValue = 16,
+    Callback = function(value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+    end
+})
+
+MiscTab:CreateSlider({
+    Name = "Độ Cao Nhảy",
+    Range = {50, 500},
+    Increment = 10,
+    CurrentValue = 50,
+    Callback = function(value)
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
+    end
+})
+
+-- **Tab ESP**
+local ESPTab = Window:CreateTab("ESP", 4483362458)
+ESPTab:CreateButton({
+    Name = "Bật ESP Người Chơi",
+    Callback = function()
+        for _, v in pairs(game.Players:GetChildren()) do
+            if v ~= game.Players.LocalPlayer then
+                local esp = Instance.new("BoxHandleAdornment", v.Character.Head)
+                esp.Size = v.Character.Head.Size + Vector3.new(2, 2, 2)
+                esp.Color3 = Color3.fromRGB(255, 0, 0)
+                esp.Adornee = v.Character.Head
+                esp.AlwaysOnTop = true
             end
-        end)
+        end
     end
-end
+})
 
-task.spawn(autoAttack)
-
--- Anti-Leak Fake Errors
-if not syn then error("Script Error: Incompatible Environment") end
-
--- Additional Fake Checks
-for i = 1, 100 do
-    if i % 7 == 0 then
-        print("Fake log: " .. tostring(_X(i, _RND)))
+ESPTab:CreateButton({
+    Name = "Bật ESP Trái Ác Quỷ",
+    Callback = function()
+        -- Code ESP Trái Ác Quỷ
     end
-end
+})
 
-print("Kenon Hub ULTRA ACTIVE " .. tostring(_RND))
+-- **Tab Trái Ác Quỷ**
+local FruitTab = Window:CreateTab("Trái Ác Quỷ", 4483362458)
+FruitTab:CreateToggle({
+    Name = "Nhặt Trái Ác Quỷ",
+    CurrentValue = false,
+    Callback = function(state)
+        getgenv().AutoFruit = state
+        while getgenv().AutoFruit do
+            -- Code nhặt trái ác quỷ
+            wait()
+        end
+    end
+})
+
+FruitTab:CreateToggle({
+    Name = "Mua Trái Ác Quỷ Shop",
+    CurrentValue = false,
+    Callback = function(state)
+        -- Code tự mua trái ác quỷ
+    end
+})
+
+-- **Khởi động UI**
+Rayfield:LoadConfiguration()
