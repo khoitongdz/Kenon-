@@ -1,18 +1,16 @@
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
-local Window = Rayfield:CreateWindow({
-    Name = "Không Biết|Blox Fruits",
-    LoadingTitle = "Đang tải UI...",
-    LoadingSubtitle = "Vui lòng đợi...",
-    ConfigurationSaving = {Enabled = true, FolderName = "BloxFruitsConfig"},
-    Discord = {Enabled = false},
-    KeySystem = false
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
+local Window = OrionLib:MakeWindow({
+    Name = "Không Biết - Blox Fruits", 
+    HidePremium = false, 
+    SaveConfig = true, 
+    ConfigFolder = "BloxFruitsConfig"
 })
 
 -- **Tab Auto Farm**
-local AutoFarmTab = Window:CreateTab("Auto Farm", 4483362458)
-AutoFarmTab:CreateToggle({
+local AutoFarmTab = Window:MakeTab({Name = "🌾 Auto Farm", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+AutoFarmTab:AddToggle({
     Name = "Tự động Farm",
-    CurrentValue = false,
+    Default = false,
     Callback = function(state)
         getgenv().AutoFarm = state
         while getgenv().AutoFarm do
@@ -22,50 +20,33 @@ AutoFarmTab:CreateToggle({
     end
 })
 
-AutoFarmTab:CreateToggle({
-    Name = "Farm Mastery",
-    CurrentValue = false,
-    Callback = function(state)
-        getgenv().AutoMastery = state
-        while getgenv().AutoMastery do
-            -- Code farm mastery
-            wait()
-        end
-    end
-})
-
-AutoFarmTab:CreateToggle({
-    Name = "Tự động săn Boss",
-    CurrentValue = false,
-    Callback = function(state)
-        getgenv().AutoBoss = state
-        while getgenv().AutoBoss do
-            -- Code săn boss
-            wait()
-        end
+AutoFarmTab:AddButton({
+    Name = "Tăng Tốc Đánh",
+    Callback = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
     end
 })
 
 -- **Tab Auto Raid**
-local AutoRaidTab = Window:CreateTab("Auto Raid", 4483362458)
-AutoRaidTab:CreateDropdown({
+local AutoRaidTab = Window:MakeTab({Name = "🔥 Auto Raid", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+AutoRaidTab:AddDropdown({
     Name = "Chọn Raid",
+    Default = "Flame",
     Options = {"Flame", "Ice", "Quake", "Light", "Dark", "String", "Rumble"},
-    CurrentOption = "Flame",
     Callback = function(option)
         getgenv().SelectedRaid = option
     end
 })
 
-AutoRaidTab:CreateButton({
+AutoRaidTab:AddButton({
     Name = "Bắt đầu Raid",
     Callback = function()
         -- Code bắt đầu Raid
     end
 })
 
--- **Tab Teleport**
-local TeleportTab = Window:CreateTab("Dịch Chuyển", 4483362458)
+-- **Tab Dịch Chuyển**
+local TeleportTab = Window:MakeTab({Name = "🚀 Dịch Chuyển (Sea 3)", Icon = "rbxassetid://4483345998", PremiumOnly = false})
 local Islands = {
     ["Port Town"] = CFrame.new(-290, 44, 5453),
     ["Hydra Island"] = CFrame.new(5228, 604, 345),
@@ -77,48 +58,47 @@ local Islands = {
     ["Tiki Outpost"] = CFrame.new(-16146, 21, -7548)
 }
 
-TeleportTab:CreateDropdown({
+TeleportTab:AddDropdown({
     Name = "Chọn Đảo",
+    Default = "Castle on the Sea",
     Options = {"Port Town", "Hydra Island", "Great Tree", "Floating Turtle", "Haunted Castle", "Sea of Treats", "Castle on the Sea", "Tiki Outpost"},
-    CurrentOption = "Castle on the Sea",
     Callback = function(selectedIsland)
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Islands[selectedIsland]
     end
 })
 
 -- **Tab Hack Khác**
-local MiscTab = Window:CreateTab("Khác", 4483362458)
-MiscTab:CreateToggle({
+local MiscTab = Window:MakeTab({Name = "⚡ Khác", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+MiscTab:AddButton({
     Name = "Bật Bất Tử",
-    CurrentValue = false,
-    Callback = function(state)
-        game.Players.LocalPlayer.Character.Humanoid.Health = state and 999999 or 100
+    Callback = function()
+        game.Players.LocalPlayer.Character.Humanoid.Health = 999999
     end
 })
 
-MiscTab:CreateSlider({
+MiscTab:AddSlider({
     Name = "Tốc Độ Chạy",
-    Range = {16, 200},
-    Increment = 2,
-    CurrentValue = 16,
+    Min = 16,
+    Max = 200,
+    Default = 16,
     Callback = function(value)
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
     end
 })
 
-MiscTab:CreateSlider({
+MiscTab:AddSlider({
     Name = "Độ Cao Nhảy",
-    Range = {50, 500},
-    Increment = 10,
-    CurrentValue = 50,
+    Min = 50,
+    Max = 500,
+    Default = 50,
     Callback = function(value)
         game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
     end
 })
 
 -- **Tab ESP**
-local ESPTab = Window:CreateTab("ESP", 4483362458)
-ESPTab:CreateButton({
+local ESPTab = Window:MakeTab({Name = "👀 ESP", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+ESPTab:AddButton({
     Name = "Bật ESP Người Chơi",
     Callback = function()
         for _, v in pairs(game.Players:GetChildren()) do
@@ -133,18 +113,11 @@ ESPTab:CreateButton({
     end
 })
 
-ESPTab:CreateButton({
-    Name = "Bật ESP Trái Ác Quỷ",
-    Callback = function()
-        -- Code ESP Trái Ác Quỷ
-    end
-})
-
 -- **Tab Trái Ác Quỷ**
-local FruitTab = Window:CreateTab("Trái Ác Quỷ", 4483362458)
-FruitTab:CreateToggle({
+local FruitTab = Window:MakeTab({Name = "🍎 Trái Ác Quỷ", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+FruitTab:AddToggle({
     Name = "Nhặt Trái Ác Quỷ",
-    CurrentValue = false,
+    Default = false,
     Callback = function(state)
         getgenv().AutoFruit = state
         while getgenv().AutoFruit do
@@ -154,13 +127,13 @@ FruitTab:CreateToggle({
     end
 })
 
-FruitTab:CreateToggle({
+FruitTab:AddToggle({
     Name = "Mua Trái Ác Quỷ Shop",
-    CurrentValue = false,
+    Default = false,
     Callback = function(state)
         -- Code tự mua trái ác quỷ
     end
 })
 
 -- **Khởi động UI**
-Rayfield:LoadConfiguration()
+OrionLib:Init()
