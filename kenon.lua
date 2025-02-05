@@ -1,148 +1,81 @@
--- Kenon Hub - Custom UI (Unique Design)
+-- Kenon Hub Discord Webhook Script
 
-local ScreenGui = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
-local TabFrame = Instance.new("Frame")
-local ScriptFrame = Instance.new("Frame")
-local CloseButton = Instance.new("TextButton")
-local ToggleButton = Instance.new("TextButton")
-local ToggleKey = Enum.KeyCode.RightControl
-local UIS = game:GetService("UserInputService")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local VirtualUser = game:GetService("VirtualUser")
-local RunService = game:GetService("RunService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TweenService = game:GetService("TweenService")
+-- Thêm URL webhook Discord của bạn vào đây
+local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o"
 
--- Chống AFK
-LocalPlayer.Idled:Connect(function()
-    VirtualUser:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-    wait(1)
-    VirtualUser:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-end)
+-- Hàm gửi dữ liệu lên Discord
+local function sendWebhook(message)
+    local httpService = game:GetService("HttpService")
+    local data = {
+        content = message
+    }
+    local jsonData = httpService:JSONEncode(data)
 
-ScreenGui.Name = "KenonHub"
-ScreenGui.Parent = game.CoreGui
+    httpService:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
+end
 
-MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 550, 0, 400)
-MainFrame.Position = UDim2.new(0.5, -275, 0.5, -200)
-MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-MainFrame.BorderSizePixel = 0
-MainFrame.Parent = ScreenGui
-MainFrame.Active = true
-MainFrame.Draggable = true
+-- Lấy Server ID
+local function getServerID()
+    return game.JobId or "Không xác định"
+end
 
-TabFrame.Name = "TabFrame"
-TabFrame.Size = UDim2.new(0, 160, 1, 0)
-TabFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-TabFrame.Parent = MainFrame
-
-ScriptFrame.Name = "ScriptFrame"
-ScriptFrame.Size = UDim2.new(1, -160, 1, 0)
-ScriptFrame.Position = UDim2.new(0, 160, 0, 0)
-ScriptFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-ScriptFrame.Parent = MainFrame
-
-CloseButton.Name = "CloseButton"
-CloseButton.Size = UDim2.new(0, 50, 0, 30)
-CloseButton.Position = UDim2.new(1, -55, 0, 5)
-CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-CloseButton.Text = "X"
-CloseButton.Parent = MainFrame
-
-CloseButton.MouseButton1Click:Connect(function()
-    ScreenGui.Enabled = false
-end)
-
-ToggleButton.Name = "ToggleButton"
-ToggleButton.Size = UDim2.new(0, 100, 0, 50)
-ToggleButton.Position = UDim2.new(0.5, -50, 0.9, 0)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-ToggleButton.Text = "Toggle UI"
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.Parent = ScreenGui
-
-ToggleButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = not MainFrame.Visible
-end)
-
-UIS.InputBegan:Connect(function(input)
-    if input.KeyCode == ToggleKey then
-        MainFrame.Visible = not MainFrame.Visible
+-- Lấy ping của server
+local function getPing()
+    local stats = game:GetService("Stats")
+    local network = stats:FindFirstChild("Network")
+    if network then
+        return math.floor(network.ServerStatsItem.DataPing:GetValue()) .. " ms"
+    else
+        return "Không xác định"
     end
+end
+
+-- Thông tin trái ác quỷ
+local function checkFruits()
+    for _, fruit in ipairs(game.Workspace:GetDescendants()) do
+        if fruit:IsA("Tool") and fruit.Name:find("Fruit") then
+            sendWebhook("📡 Ping: " .. getPing() .. " | 🍎 Trái ác quỷ: " .. fruit.Name .. "\n🔗 Server ID: " .. getServerID())
+        end
+    end
+end
+
+-- Thông tin các đảo trong server
+local function listIslands()
+    local islands = {}
+    for _, island in ipairs(game.Workspace.Islands:GetChildren()) do
+        table.insert(islands, island.Name)
+    end
+    sendWebhook("📡 Ping: " .. getPing() .. " | 🏝️ Các đảo: " .. table.concat(islands, ", ") .. "\n🔗 Server ID: " .. getServerID())
+}
+
+-- Thông tin tài khoản người dùng
+local function userInfo()
+    local player = game.Players.LocalPlayer
+    local stats = player:FindFirstChild("leaderstats")
+    if stats then
+        local level = stats:FindFirstChild("Level") and stats.Level.Value or "Không rõ"
+        local beli = stats:FindFirstChild("Beli") and stats.Beli.Value or "Không rõ"
+        local fruit = player.Backpack:FindFirstChildWhichIsA("Tool") and player.Backpack:FindFirstChildWhichIsA("Tool").Name or "Không có trái"
+
+        sendWebhook("📡 Ping: " .. getPing() .. " | 👤 Người dùng: " .. player.Name .. " | Cấp: " .. level .. " | Beli: " .. beli .. " | Trái: " .. fruit .. "\n🔗 Server ID: " .. getServerID())
+    end
+end
+
+-- Tự động kiểm tra và gửi thông báo ngay cả khi người chơi thoát game
+local function startMonitoring()
+    while true do
+        pcall(function()
+            checkFruits()
+            listIslands()
+            userInfo()
+        end)
+        wait(300) -- Kiểm tra mỗi 5 phút
+    end
+end
+
+-- Khởi động webhook và script chính
+pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua"))()
 end)
 
-function createTab(name, scriptFunction)
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0, 150, 0, 50)
-    button.Position = UDim2.new(0, 5, 0, (#TabFrame:GetChildren() - 1) * 55)
-    button.Text = name
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    button.Parent = TabFrame
-    
-    button.MouseButton1Click:Connect(function()
-        scriptFunction()
-    end)
-end
-
-function AutoFarm()
-    spawn(function()
-        while wait(0.5) do
-            for _, enemy in pairs(workspace:GetChildren()) do
-                if enemy:IsA("Model") and enemy:FindFirstChild("HumanoidRootPart") then
-                    LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-                    game:GetService("ReplicatedStorage").Remotes.Attack:FireServer()
-                end
-            end
-        end
-    end)
-end
-
-function AutoBoss()
-    spawn(function()
-        while wait(1) do
-            for _, boss in pairs(workspace:GetChildren()) do
-                if boss:IsA("Model") and boss:FindFirstChild("HumanoidRootPart") then
-                    LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-                    game:GetService("ReplicatedStorage").Remotes.Attack:FireServer()
-                end
-            end
-        end
-    end)
-end
-
-function BringMob()
-    spawn(function()
-        while wait(1) do
-            for _, mob in pairs(workspace:GetChildren()) do
-                if mob:IsA("Model") and mob:FindFirstChild("HumanoidRootPart") then
-                    mob.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -5)
-                end
-            end
-        end
-    end)
-end
-
-function MaxLevel()
-    spawn(function()
-        while wait(1) do
-            -- Logic lên cấp nhanh
-        end
-    end)
-end
-
-function OpenDiscord()
-    setclipboard("https://discord.gg/w26VGWmMPb")
-    print("Discord link copied to clipboard!")
-end
-
-createTab("Auto Farm", AutoFarm)
-createTab("Auto Boss", AutoBoss)
-createTab("Bring Mob", BringMob)
-createTab("Max Level", MaxLevel)
-createTab("Discord", OpenDiscord)
-
-print("Kenon Hub Loaded Successfully - Custom UI Version!")
+startMonitoring()
