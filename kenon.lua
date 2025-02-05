@@ -1,10 +1,11 @@
--- Kenon Hub - Script Blox Fruit Ultimate Version (Hoho Hub Inspired)
+-- Kenon Hub - Custom UI (Unique Design)
 
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local TabFrame = Instance.new("Frame")
 local ScriptFrame = Instance.new("Frame")
 local CloseButton = Instance.new("TextButton")
+local ToggleButton = Instance.new("TextButton")
 local ToggleKey = Enum.KeyCode.RightControl
 local UIS = game:GetService("UserInputService")
 local Players = game:GetService("Players")
@@ -25,23 +26,23 @@ ScreenGui.Name = "KenonHub"
 ScreenGui.Parent = game.CoreGui
 
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 500, 0, 350)
-MainFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.Size = UDim2.new(0, 550, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -275, 0.5, -200)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
 MainFrame.Active = true
 MainFrame.Draggable = true
 
 TabFrame.Name = "TabFrame"
-TabFrame.Size = UDim2.new(0, 140, 1, 0)
-TabFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+TabFrame.Size = UDim2.new(0, 160, 1, 0)
+TabFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 TabFrame.Parent = MainFrame
 
 ScriptFrame.Name = "ScriptFrame"
-ScriptFrame.Size = UDim2.new(1, -140, 1, 0)
-ScriptFrame.Position = UDim2.new(0, 140, 0, 0)
-ScriptFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+ScriptFrame.Size = UDim2.new(1, -160, 1, 0)
+ScriptFrame.Position = UDim2.new(0, 160, 0, 0)
+ScriptFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 ScriptFrame.Parent = MainFrame
 
 CloseButton.Name = "CloseButton"
@@ -55,19 +56,31 @@ CloseButton.MouseButton1Click:Connect(function()
     ScreenGui.Enabled = false
 end)
 
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0, 100, 0, 50)
+ToggleButton.Position = UDim2.new(0.5, -50, 0.9, 0)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ToggleButton.Text = "Toggle UI"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.Parent = ScreenGui
+
+ToggleButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
 UIS.InputBegan:Connect(function(input)
     if input.KeyCode == ToggleKey then
-        ScreenGui.Enabled = not ScreenGui.Enabled
+        MainFrame.Visible = not MainFrame.Visible
     end
 end)
 
 function createTab(name, scriptFunction)
     local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0, 130, 0, 50)
-    button.Position = UDim2.new(0, 10, 0, (#TabFrame:GetChildren() - 1) * 55)
+    button.Size = UDim2.new(0, 150, 0, 50)
+    button.Position = UDim2.new(0, 5, 0, (#TabFrame:GetChildren() - 1) * 55)
     button.Text = name
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     button.Parent = TabFrame
     
     button.MouseButton1Click:Connect(function()
@@ -132,4 +145,4 @@ createTab("Bring Mob", BringMob)
 createTab("Max Level", MaxLevel)
 createTab("Discord", OpenDiscord)
 
-print("Kenon Hub Loaded Successfully - Ultimate Version!")
+print("Kenon Hub Loaded Successfully - Custom UI Version!")
