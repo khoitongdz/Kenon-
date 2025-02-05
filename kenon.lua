@@ -1,5 +1,6 @@
--- Kenon Hub - Script Blox Fruit Ultimate Version (Hoho Hub Inspired)
-
+-- Kenon Hub - Script Blox Fruit Ultimate Version
+-- Dev:khoitongdz
+-- Discord:https://discord.gg/w26VGWmMPb
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local TabFrame = Instance.new("Frame")
@@ -18,11 +19,11 @@ local TweenService = game:GetService("TweenService")
 local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o"
 
 function sendWebhook(message)
-    local data = { ["content"] = Thông Tin}
+    local data = { ["content"] = message }
     HttpService:PostAsync(webhookURL, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson)
 end
 
-sendWebhook("Kenon Hub Script has been executed by khoitongdz " .. LocalPlayer.Name .. " (UserID: " .. LocalPlayer.UserId .. ")")
+sendWebhook("Kenon Hub Script has been executed by " .. LocalPlayer.Name .. " (UserID: " .. LocalPlayer.UserId .. ")")
 
 LocalPlayer.Idled:Connect(function()
     VirtualUser:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
@@ -30,7 +31,7 @@ LocalPlayer.Idled:Connect(function()
     VirtualUser:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
 end)
 
-ScreenGui.Name = "KenonHub|Bloxkib"
+ScreenGui.Name = "KenonHub"
 ScreenGui.Parent = game.CoreGui
 
 MainFrame.Name = "MainFrame"
@@ -70,10 +71,11 @@ end
 function AutoFarm()
     spawn(function()
         while wait(0.5) do
-            local enemy = game:GetService("Workspace"):FindFirstChild("Enemy")
-            if enemy and enemy:FindFirstChild("HumanoidRootPart") then
-                LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-                game:GetService("ReplicatedStorage").Remotes.Attack:FireServer()
+            for _, enemy in pairs(workspace:GetChildren()) do
+                if enemy:IsA("Model") and enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
+                    LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+                    ReplicatedStorage.Remotes.Attack:FireServer()
+                end
             end
         end
     end)
@@ -82,7 +84,7 @@ end
 function AutoRaid()
     spawn(function()
         while wait(1) do
-            -- Thêm logic tự động tham gia Raid và chiến đấu
+            ReplicatedStorage.Remotes.Raid:FireServer("Start")
         end
     end)
 end
@@ -93,8 +95,7 @@ function HuntPlayer()
             for _, v in pairs(Players:GetPlayers()) do
                 if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
                     LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
-                    game:GetService("ReplicatedStorage").Remotes.Attack:FireServer()
-                    break
+                    ReplicatedStorage.Remotes.Attack:FireServer()
                 end
             end
         end
@@ -104,7 +105,12 @@ end
 function AutoBoss()
     spawn(function()
         while wait(1) do
-            -- Logic tự động đánh boss hiệu quả
+            for _, boss in pairs(workspace:GetChildren()) do
+                if boss:IsA("Model") and boss:FindFirstChild("HumanoidRootPart") and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                    LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+                    ReplicatedStorage.Remotes.Attack:FireServer()
+                end
+            end
         end
     end)
 end
@@ -112,7 +118,11 @@ end
 function BringMob()
     spawn(function()
         while wait(1) do
-            -- Logic kéo quái lại gần nhân vật để farm nhanh hơn
+            for _, mob in pairs(workspace:GetChildren()) do
+                if mob:IsA("Model") and mob:FindFirstChild("HumanoidRootPart") then
+                    mob.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+                end
+            end
         end
     end)
 end
@@ -120,14 +130,17 @@ end
 function MaxLevel()
     spawn(function()
         while wait(1) do
-            -- Logic đạt cấp độ tối đa nhanh chóng
+            AutoFarm()
         end
     end)
 end
 
 function AntiBan()
-    print("Anti Ban Enabled!")
-    -- Logic chống ban hiệu quả
+    RunService.RenderStepped:Connect(function()
+        pcall(function()
+            game:GetService("GuiService"):ClearError()
+        end)
+    end)
 end
 
 function WebHookLogs()
