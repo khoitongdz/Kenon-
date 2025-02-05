@@ -1,4 +1,4 @@
--- Kenon Hub Discord Webhook Script
+-- Kenon Hub Discord Webhook Script (Đã sửa lỗi)
 
 -- Thêm URL webhook Discord của bạn vào đây
 local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o"
@@ -6,12 +6,16 @@ local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPA
 -- Hàm gửi dữ liệu lên Discord
 local function sendWebhook(message)
     local httpService = game:GetService("HttpService")
+    if not httpService then return end -- Kiểm tra HttpService
+
     local data = {
         content = message
     }
     local jsonData = httpService:JSONEncode(data)
 
-    httpService:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
+    pcall(function()
+        httpService:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
+    end)
 end
 
 -- Lấy Server ID
@@ -22,12 +26,16 @@ end
 -- Lấy ping của server
 local function getPing()
     local stats = game:GetService("Stats")
+    if not stats then return "Không xác định" end
+
     local network = stats:FindFirstChild("Network")
-    if network then
-        return math.floor(network.ServerStatsItem.DataPing:GetValue()) .. " ms"
-    else
-        return "Không xác định"
+    if network and network:FindFirstChild("ServerStatsItem") then
+        local pingValue = network.ServerStatsItem:FindFirstChild("DataPing")
+        if pingValue and pingValue:GetValue() then
+            return math.floor(pingValue:GetValue()) .. " ms"
+        end
     end
+    return "Không xác định"
 end
 
 -- Thông tin trái ác quỷ
@@ -42,8 +50,10 @@ end
 -- Thông tin các đảo trong server
 local function listIslands()
     local islands = {}
-    for _, island in ipairs(game.Workspace.Islands:GetChildren()) do
-        table.insert(islands, island.Name)
+    if game.Workspace:FindFirstChild("Islands") then
+        for _, island in ipairs(game.Workspace.Islands:GetChildren()) do
+            table.insert(islands, island.Name)
+        end
     end
     sendWebhook("📡 Ping: " .. getPing() .. " | 🏝️ Các đảo: " .. table.concat(islands, ", ") .. "\n🔗 Server ID: " .. getServerID())
 }
@@ -51,14 +61,14 @@ local function listIslands()
 -- Thông tin tài khoản người dùng
 local function userInfo()
     local player = game.Players.LocalPlayer
-    local stats = player:FindFirstChild("leaderstats")
-    if stats then
-        local level = stats:FindFirstChild("Level") and stats.Level.Value or "Không rõ"
-        local beli = stats:FindFirstChild("Beli") and stats.Beli.Value or "Không rõ"
-        local fruit = player.Backpack:FindFirstChildWhichIsA("Tool") and player.Backpack:FindFirstChildWhichIsA("Tool").Name or "Không có trái"
+    if not player then return end
 
-        sendWebhook("📡 Ping: " .. getPing() .. " | 👤 Người dùng: " .. player.Name .. " | Cấp: " .. level .. " | Beli: " .. beli .. " | Trái: " .. fruit .. "\n🔗 Server ID: " .. getServerID())
-    end
+    local stats = player:FindFirstChild("leaderstats")
+    local level = stats and stats:FindFirstChild("Level") and stats.Level.Value or "Không rõ"
+    local beli = stats and stats:FindFirstChild("Beli") and stats.Beli.Value or "Không rõ"
+    local fruit = player.Backpack:FindFirstChildWhichIsA("Tool") and player.Backpack:FindFirstChildWhichIsA("Tool").Name or "Không có trái"
+
+    sendWebhook("📡 Ping: " .. getPing() .. " | 👤 Người dùng: " .. player.Name .. " | Cấp: " .. level .. " | Beli: " .. beli .. " | Trái: " .. fruit .. "\n🔗 Server ID: " .. getServerID())
 end
 
 -- Tự động kiểm tra và gửi thông báo ngay cả khi người chơi thoát game
