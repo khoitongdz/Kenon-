@@ -3,15 +3,23 @@
 -- Thêm URL webhook Discord của bạn vào đây
 local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o"
 
+-- Kiểm tra và bật HttpEnabled
+pcall(function()
+    game:GetService("HttpService").HttpEnabled = true
+end)
+
 -- Hàm gửi dữ liệu lên Discord
 local function sendWebhook(message)
     local httpService = game:GetService("HttpService")
-    if not httpService then return end -- Kiểm tra HttpService
+    if not httpService then
+        warn("[Kenon Hub] HttpService không khả dụng.")
+        return
+    end
 
     local data = {
         content = message,
         username = "Kenon Hub Notification",
-        avatar_url = "https://i.imgur.com/your_avatar.png" -- Thay ảnh đại diện nếu muốn
+        avatar_url = "https://imgur.com/cirQMJC" -- Thay ảnh đại diện nếu muốn
     }
     local jsonData = httpService:JSONEncode(data)
 
@@ -19,7 +27,9 @@ local function sendWebhook(message)
         return httpService:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
     end)
 
-    if not success then
+    if success then
+        print("[Kenon Hub] Thông báo đã gửi thành công.")
+    else
         warn("[Kenon Hub] Lỗi gửi webhook: " .. tostring(response))
     end
 end
@@ -83,18 +93,25 @@ end
 -- Tự động kiểm tra và gửi thông báo ngay cả khi người chơi thoát game
 local function startMonitoring()
     while true do
-        pcall(function()
+        local success, err = pcall(function()
             checkFruits()
             listIslands()
             userInfo()
         end)
+        if not success then
+            warn("[Kenon Hub] Lỗi khi chạy script: " .. tostring(err))
+        end
         wait(300) -- Kiểm tra mỗi 5 phút
     end
 end
 
 -- Khởi động webhook và script chính
-pcall(function()
+local success, err = pcall(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua"))()
 end)
+
+if not success then
+    warn("[Kenon Hub] Lỗi khi tải script chính: " .. tostring(err))
+end
 
 startMonitoring()
