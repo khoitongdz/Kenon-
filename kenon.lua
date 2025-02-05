@@ -1,4 +1,4 @@
--- Kenon Hub Discord Webhook Script (Đã sửa lỗi)
+-- Kenon Hub Discord Webhook Script (Đã sửa lỗi MISSING PLAYER)
 
 -- Thêm URL webhook Discord của bạn vào đây
 local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o"
@@ -52,23 +52,26 @@ local function listIslands()
     local islands = {}
     if game.Workspace:FindFirstChild("Islands") then
         for _, island in ipairs(game.Workspace.Islands:GetChildren()) do
-            table.insert(islands, island.Name)
+            if island and island.Name then -- Kiểm tra đảo tồn tại
+                table.insert(islands, island.Name)
+            end
         end
     end
     sendWebhook("📡 Ping: " .. getPing() .. " | 🏝️ Các đảo: " .. table.concat(islands, ", ") .. "\n🔗 Server ID: " .. getServerID())
-}
+end
 
 -- Thông tin tài khoản người dùng
 local function userInfo()
-    local player = game.Players.LocalPlayer
-    if not player then return end
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        if player and player.Parent then -- Kiểm tra player tồn tại
+            local stats = player:FindFirstChild("leaderstats")
+            local level = stats and stats:FindFirstChild("Level") and stats.Level.Value or "Không rõ"
+            local beli = stats and stats:FindFirstChild("Beli") and stats.Beli.Value or "Không rõ"
+            local fruit = player.Backpack:FindFirstChildWhichIsA("Tool") and player.Backpack:FindFirstChildWhichIsA("Tool").Name or "Không có trái"
 
-    local stats = player:FindFirstChild("leaderstats")
-    local level = stats and stats:FindFirstChild("Level") and stats.Level.Value or "Không rõ"
-    local beli = stats and stats:FindFirstChild("Beli") and stats.Beli.Value or "Không rõ"
-    local fruit = player.Backpack:FindFirstChildWhichIsA("Tool") and player.Backpack:FindFirstChildWhichIsA("Tool").Name or "Không có trái"
-
-    sendWebhook("📡 Ping: " .. getPing() .. " | 👤 Người dùng: " .. player.Name .. " | Cấp: " .. level .. " | Beli: " .. beli .. " | Trái: " .. fruit .. "\n🔗 Server ID: " .. getServerID())
+            sendWebhook("📡 Ping: " .. getPing() .. " | 👤 Người dùng: " .. player.Name .. " | Cấp: " .. level .. " | Beli: " .. beli .. " | Trái: " .. fruit .. "\n🔗 Server ID: " .. getServerID())
+        end
+    end
 end
 
 -- Tự động kiểm tra và gửi thông báo ngay cả khi người chơi thoát game
