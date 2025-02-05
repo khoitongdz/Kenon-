@@ -1,4 +1,4 @@
--- Kenon Hub Discord Webhook Script (Đã sửa lỗi MISSING PLAYER)
+-- Kenon Hub Discord Webhook Script (Đã sửa lỗi và cải thiện báo cáo)
 
 -- Thêm URL webhook Discord của bạn vào đây
 local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o"
@@ -9,13 +9,19 @@ local function sendWebhook(message)
     if not httpService then return end -- Kiểm tra HttpService
 
     local data = {
-        content = message
+        content = message,
+        username = "Kenon Hub Notification",
+        avatar_url = "https://i.imgur.com/your_avatar.png" -- Thay ảnh đại diện nếu muốn
     }
     local jsonData = httpService:JSONEncode(data)
 
-    pcall(function()
-        httpService:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
+    local success, response = pcall(function()
+        return httpService:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
     end)
+
+    if not success then
+        warn("[Kenon Hub] Lỗi gửi webhook: " .. tostring(response))
+    end
 end
 
 -- Lấy Server ID
@@ -42,7 +48,7 @@ end
 local function checkFruits()
     for _, fruit in ipairs(game.Workspace:GetDescendants()) do
         if fruit:IsA("Tool") and fruit.Name:find("Fruit") then
-            sendWebhook("📡 Ping: " .. getPing() .. " | 🍎 Trái ác quỷ: " .. fruit.Name .. "\n🔗 Server ID: " .. getServerID())
+            sendWebhook("**🍎 Trái Ác Quỷ Tìm Thấy!**\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID() .. "\n**Trái:** " .. fruit.Name)
         end
     end
 end
@@ -57,7 +63,7 @@ local function listIslands()
             end
         end
     end
-    sendWebhook("📡 Ping: " .. getPing() .. " | 🏝️ Các đảo: " .. table.concat(islands, ", ") .. "\n🔗 Server ID: " .. getServerID())
+    sendWebhook("**🏝️ Danh Sách Đảo:** " .. table.concat(islands, ", ") .. "\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID())
 end
 
 -- Thông tin tài khoản người dùng
@@ -69,7 +75,7 @@ local function userInfo()
             local beli = stats and stats:FindFirstChild("Beli") and stats.Beli.Value or "Không rõ"
             local fruit = player.Backpack:FindFirstChildWhichIsA("Tool") and player.Backpack:FindFirstChildWhichIsA("Tool").Name or "Không có trái"
 
-            sendWebhook("📡 Ping: " .. getPing() .. " | 👤 Người dùng: " .. player.Name .. " | Cấp: " .. level .. " | Beli: " .. beli .. " | Trái: " .. fruit .. "\n🔗 Server ID: " .. getServerID())
+            sendWebhook("**👤 Thông Tin Người Dùng:**\n🔹 Tên: " .. player.Name .. "\n🔹 Cấp: " .. level .. "\n🔹 Beli: " .. beli .. "\n🔹 Trái: " .. fruit .. "\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID())
         end
     end
 end
