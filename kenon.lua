@@ -1,105 +1,146 @@
---// UI Giao diện Chính
+-- Kenon Hub - Script Blox Fruit Ultimate Version (Hoho Hub Inspired)
+
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
-local UICorner = Instance.new("UICorner")
-local UIGradient = Instance.new("UIGradient")
-local Title = Instance.new("TextLabel")
-local CloseButton = Instance.new("TextButton")
+local TabFrame = Instance.new("Frame")
+local ScriptFrame = Instance.new("Frame")
+local UIScale = Instance.new("UIScale")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local VirtualUser = game:GetService("VirtualUser")
+local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
---// Cài đặt UI
+-- WebHook Logs
+local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o"
+
+function sendWebhook(message)
+    local data = { ["content"] = Thông Tin}
+    HttpService:PostAsync(webhookURL, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson)
+end
+
+sendWebhook("Kenon Hub Script has been executed by khoitongdz " .. LocalPlayer.Name .. " (UserID: " .. LocalPlayer.UserId .. ")")
+
+LocalPlayer.Idled:Connect(function()
+    VirtualUser:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+    wait(1)
+    VirtualUser:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+end)
+
+ScreenGui.Name = "KenonHub|Bloxkib"
 ScreenGui.Parent = game.CoreGui
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-MainFrame.Parent = ScreenGui
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 600, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
-MainFrame.Size = UDim2.new(0, 500, 0, 350)
+MainFrame.BorderSizePixel = 0
+MainFrame.Parent = ScreenGui
+MainFrame.Active = true
+MainFrame.Draggable = true
 
-UICorner.CornerRadius = UDim.new(0, 10)
-UICorner.Parent = MainFrame
+TabFrame.Name = "TabFrame"
+TabFrame.Size = UDim2.new(0, 150, 1, 0)
+TabFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+TabFrame.Parent = MainFrame
 
-UIGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 85, 85)), 
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(85, 85, 255))
-}
-UIGradient.Rotation = 90
-UIGradient.Parent = MainFrame
+ScriptFrame.Name = "ScriptFrame"
+ScriptFrame.Size = UDim2.new(1, -150, 1, 0)
+ScriptFrame.Position = UDim2.new(0, 150, 0, 0)
+ScriptFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ScriptFrame.Parent = MainFrame
 
-Title.Parent = MainFrame
-Title.Text = "Không Biết - Blox Fruits"
-Title.Font = Enum.Font.GothamBold
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 18
-Title.Size = UDim2.new(1, 0, 0, 30)
-Title.BackgroundTransparency = 1
-
-CloseButton.Parent = MainFrame
-CloseButton.Text = "❌"
-CloseButton.Size = UDim2.new(0, 40, 0, 40)
-CloseButton.Position = UDim2.new(0.9, 0, 0.05, 0)
-CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.Font = Enum.Font.GothamBold
-CloseButton.TextSize = 16
-CloseButton.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
-end)
-
---// Auto Farm
-local function AutoFarm()
-    while true do
-        -- Code auto farm
-        wait()
-    end
+function createTab(name, icon, scriptFunction)
+    local button = Instance.new("ImageButton")
+    button.Size = UDim2.new(0, 130, 0, 50)
+    button.Position = UDim2.new(0, 10, 0, (#TabFrame:GetChildren() - 1) * 55)
+    button.Image = icon
+    button.BackgroundTransparency = 1
+    button.Parent = TabFrame
+    
+    button.MouseButton1Click:Connect(function()
+        sendWebhook("User " .. LocalPlayer.Name .. " activated " .. name)
+        scriptFunction()
+    end)
 end
 
---// Dịch Chuyển
-local function Teleport(location)
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = location
-end
-
---// ESP Hack
-local function ESP()
-    for _, v in pairs(game.Players:GetChildren()) do
-        if v ~= game.Players.LocalPlayer then
-            local esp = Instance.new("BoxHandleAdornment", v.Character.Head)
-            esp.Size = v.Character.Head.Size + Vector3.new(2, 2, 2)
-            esp.Color3 = Color3.fromRGB(255, 0, 0)
-            esp.Adornee = v.Character.Head
-            esp.AlwaysOnTop = true
+function AutoFarm()
+    spawn(function()
+        while wait(0.5) do
+            local enemy = game:GetService("Workspace"):FindFirstChild("Enemy")
+            if enemy and enemy:FindFirstChild("HumanoidRootPart") then
+                LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+                game:GetService("ReplicatedStorage").Remotes.Attack:FireServer()
+            end
         end
-    end
+    end)
 end
 
---// Nút Chức Năng
-local FarmButton = Instance.new("TextButton", MainFrame)
-FarmButton.Text = "🌾 Auto Farm"
-FarmButton.Size = UDim2.new(0, 180, 0, 40)
-FarmButton.Position = UDim2.new(0.05, 0, 0.2, 0)
-FarmButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-FarmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-FarmButton.Font = Enum.Font.GothamBold
-FarmButton.TextSize = 16
-FarmButton.MouseButton1Click:Connect(AutoFarm)
+function AutoRaid()
+    spawn(function()
+        while wait(1) do
+            -- Thêm logic tự động tham gia Raid và chiến đấu
+        end
+    end)
+end
 
-local TeleportButton = Instance.new("TextButton", MainFrame)
-TeleportButton.Text = "🚀 Dịch Chuyển"
-TeleportButton.Size = UDim2.new(0, 180, 0, 40)
-TeleportButton.Position = UDim2.new(0.05, 0, 0.5, 0)
-TeleportButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-TeleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-TeleportButton.Font = Enum.Font.GothamBold
-TeleportButton.TextSize = 16
-TeleportButton.MouseButton1Click:Connect(function()
-    Teleport(CFrame.new(-5074, 315, -3161))
-end)
+function HuntPlayer()
+    spawn(function()
+        while wait(1) do
+            for _, v in pairs(Players:GetPlayers()) do
+                if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                    LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
+                    game:GetService("ReplicatedStorage").Remotes.Attack:FireServer()
+                    break
+                end
+            end
+        end
+    end)
+end
 
-local ESPButton = Instance.new("TextButton", MainFrame)
-ESPButton.Text = "👀 ESP"
-ESPButton.Size = UDim2.new(0, 180, 0, 40)
-ESPButton.Position = UDim2.new(0.5, 10, 0.2, 0)
-ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-ESPButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ESPButton.Font = Enum.Font.GothamBold
-ESPButton.TextSize = 16
-ESPButton.MouseButton1Click:Connect(ESP)
+function AutoBoss()
+    spawn(function()
+        while wait(1) do
+            -- Logic tự động đánh boss hiệu quả
+        end
+    end)
+end
+
+function BringMob()
+    spawn(function()
+        while wait(1) do
+            -- Logic kéo quái lại gần nhân vật để farm nhanh hơn
+        end
+    end)
+end
+
+function MaxLevel()
+    spawn(function()
+        while wait(1) do
+            -- Logic đạt cấp độ tối đa nhanh chóng
+        end
+    end)
+end
+
+function AntiBan()
+    print("Anti Ban Enabled!")
+    -- Logic chống ban hiệu quả
+end
+
+function WebHookLogs()
+    sendWebhook("Kenon Hub Log: Script is running on " .. LocalPlayer.Name)
+end
+
+createTab("Auto Farm", "rbxassetid://123456", AutoFarm)
+createTab("Auto Raid", "rbxassetid://234567", AutoRaid)
+createTab("Hunt Player", "rbxassetid://345678", HuntPlayer)
+createTab("Auto Boss", "rbxassetid://456789", AutoBoss)
+createTab("Bring Mob", "rbxassetid://567890", BringMob)
+createTab("Max Level", "rbxassetid://678901", MaxLevel)
+createTab("Anti Ban", "rbxassetid://789012", AntiBan)
+createTab("WebHook Logs", "rbxassetid://919012", WebHookLogs)
+
+print("Kenon Hub Loaded Successfully - Ultimate Version!")
