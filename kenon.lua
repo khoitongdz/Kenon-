@@ -1,13 +1,13 @@
 -- Kenon Hub Webhook - Hoàn chỉnh 100%
 
-local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o" -- Thay bằng webhook Discord của bạn
+local webhookURL = "https://discord.com/api/webhooks/1336911910905315408/RcIx3pVog0jJqwUcfn2XpMqHWag6atynCjzCxp6fnyS2kBpjLfCTvayl-SOVIw6zSUEg" -- Thay bằng webhook Discord của bạn
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local Stats = game:GetService("Stats")
 
 -- Kiểm tra nếu HttpService bị chặn và thử gửi webhook
 local function sendWebhook(message)
-    if webhookURL == "" then
+    if webhookURL == "https://discord.com/api/webhooks/1336911910905315408/RcIx3pVog0jJqwUcfn2XpMqHWag6atynCjzCxp6fnyS2kBpjLfCTvayl-SOVIw6zSUEg" then
         warn("[Kenon Hub] Bạn chưa thay URL webhook! Hãy nhập webhook đúng.")
         return
     end
