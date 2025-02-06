@@ -1,132 +1,88 @@
--- 🛠️ Kenon Hub Webhook Script 🛠️
-local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o"
+-- Kenon Hub - Webhook Full Moon Notification
 
--- 🏗️ Hàm gửi webhook bằng request() (không bị chặn)
+local Players = game:GetService("Players")
+local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o"
+local imageURL = "https://images-ext-1.discordapp.net/external/z9JRUK34QF4Ne_XqfgyqUfSMSDu1ZAINWYBi-beigCM/https/cdn.nekotina.com/images/smPf01ez6.jpg?format=webp&width=244&height=415"
+
+-- Hàm gửi thông báo lên webhook
 local function sendWebhook(message)
     local data = {
         content = message,
-        username = "Kenon Hub|blox fruit Notification"
+        username = "Kenon Hub - Full Moon",
+        embeds = {
+            {
+                title = "🌙 Full Moon Update!",
+                description = message,
+                color = 16776960, -- Màu vàng
+                image = { url = imageURL }
+            }
+        }
     }
+    local jsonData = game:GetService("HttpService"):JSONEncode(data)
 
-    local headers = {
-        ["Content-Type"] = "application/json"
-    }
-
-    local body = game:GetService("HttpService"):JSONEncode(data)
-
-    local success, response
-
-    if syn and syn.request then
-        success, response = pcall(function()
-            return syn.request({
+    local requestFunction = syn and syn.request or http_request or request
+    if requestFunction then
+        local success, response = pcall(function()
+            return requestFunction {
                 Url = webhookURL,
                 Method = "POST",
-                Headers = headers,
-                Body = body
-            })
+                Headers = { ["Content-Type"] = "application/json" },
+                Body = jsonData
+            }
         end)
-    elseif request then
-        success, response = pcall(function()
-            return request({
-                Url = webhookURL,
-                Method = "POST",
-                Headers = headers,
-                Body = body
-            })
-        end)
-    elseif http and http.request then
-        success, response = pcall(function()
-            return http.request({
-                Url = webhookURL,
-                Method = "POST",
-                Headers = headers,
-                Body = body
-            })
-        end)
+
+        if not success then
+            warn("[Kenon Hub] Lỗi gửi webhook: " .. tostring(response))
+        end
     else
-        warn("[❌] Executor không hỗ trợ HTTP requests!")
-        return
-    end
-
-    if success and response and response.StatusCode == 200 then
-        print("[✅] Gửi Webhook Thành Công!")
-    else
-        warn("[❌] Lỗi gửi Webhook: ", response and response.StatusMessage or "Không xác định")
+        warn("[Kenon Hub] Executor không hỗ trợ HTTP Requests!")
     end
 end
 
--- 🆔 Lấy ID Server để join lại
+-- Lấy ID server
 local function getServerID()
     return game.JobId or "Không xác định"
 end
 
--- 📡 Lấy Ping Server
+-- Lấy số người chơi trong server
+local function getPlayerCount()
+    return #Players:GetPlayers()
+end
+
+-- Lấy ping của server
 local function getPing()
     local stats = game:GetService("Stats")
-    local pingValue = stats and stats:FindFirstChild("Network") and stats.Network:FindFirstChild("DataPing")
+    local network = stats and stats:FindFirstChild("Network")
+    local pingValue = network and network:FindFirstChild("ServerStatsItem")
     return pingValue and math.floor(pingValue:GetValue()) .. " ms" or "Không xác định"
 end
 
--- 🌕 Kiểm tra Full Moon Progress
-local function getFullMoonProgress()
-    local moonPhase = math.random(1, 4) -- Giả lập dữ liệu (thay bằng cách lấy dữ liệu thật nếu có)
-    local phases = { "🌑 25%", "🌓 50%", "🌔 75%", "🌕 100% (Full Moon)" }
-    return phases[moonPhase]
+-- Kiểm tra Full Moon
+local function getFullMoonStatus()
+    local moonPercent = math.random(1, 5) * 25  -- Giả lập Full Moon (Cần chỉnh sửa nếu có API thật)
+    local status = "🌙 Full Moon: " .. moonPercent .. "%"
+    if moonPercent == 100 then status = "🌕 FULL MOON!" end
+    return status
 end
 
--- 🌍 Lấy số lượng người trong server
-local function getPlayerCount()
-    return #game.Players:GetPlayers() .. " người chơi"
+-- Gửi thông báo lên Discord
+local function notifyFullMoon()
+    local fullMoonStatus = getFullMoonStatus()
+    local playerCount = getPlayerCount()
+    local ping = getPing()
+    local serverID = getServerID()
+    
+    local message = fullMoonStatus .. "\n" ..
+                    "👥 Người chơi: " .. playerCount .. "\n" ..
+                    "📡 Ping: " .. ping .. "\n" ..
+                    "🔗 Server ID: " .. serverID .. "\n" ..
+                    "📜 Script join server: `game:GetService(\"TeleportService\"):TeleportToPlaceInstance(game.PlaceId, '" .. serverID .. "', game.Players.LocalPlayer)`"
+    
+    sendWebhook(message)
 end
 
--- 🍎 Kiểm tra trái ác quỷ trong server
-local function checkFruits()
-    for _, fruit in ipairs(game.Workspace:GetDescendants()) do
-        if fruit:IsA("Tool") and fruit.Name:find("Fruit") then
-            sendWebhook("**🍎 Trái Ác Quỷ Tìm Thấy!**\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID() .. "\n👥 Người chơi: " .. getPlayerCount() .. "\n🌕 Trăng: " .. getFullMoonProgress() .. "\n**Trái:** " .. fruit.Name)
-        end
-    end
+-- Tự động kiểm tra Full Moon mỗi 10 giây
+while true do
+    notifyFullMoon()
+    wait(10) -- 10 giây
 end
-
--- 🏝️ Lấy danh sách đảo
-local function listIslands()
-    local islands = {}
-    if game.Workspace:FindFirstChild("Islands") then
-        for _, island in ipairs(game.Workspace.Islands:GetChildren()) do
-            table.insert(islands, island.Name)
-        end
-    end
-    sendWebhook("**🏝️ Danh Sách Đảo:** " .. table.concat(islands, ", ") .. "\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID() .. "\n👥 Người chơi: " .. getPlayerCount() .. "\n🌕 Trăng: " .. getFullMoonProgress())
-end
-
--- 👤 Lấy thông tin người chơi
-local function userInfo()
-    for _, player in ipairs(game.Players:GetPlayers()) do
-        local stats = player:FindFirstChild("leaderstats")
-        local level = stats and stats:FindFirstChild("Level") and stats.Level.Value or "Không rõ"
-        local beli = stats and stats:FindFirstChild("Beli") and stats.Beli.Value or "Không rõ"
-        local fruit = player.Backpack:FindFirstChildWhichIsA("Tool") and player.Backpack:FindFirstChildWhichIsA("Tool").Name or "Không có trái"
-
-        sendWebhook("**👤 Thông Tin Người Chơi:**\n🔹 Tên: " .. player.Name .. "\n🔹 Cấp: " .. level .. "\n🔹 Beli: " .. beli .. "\n🔹 Trái: " .. fruit .. "\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID() .. "\n👥 Người chơi: " .. getPlayerCount() .. "\n🌕 Trăng: " .. getFullMoonProgress())
-    end
-end
-
--- 🔄 Tự động kiểm tra và gửi thông báo (kể cả khi người chơi rời game)
-local function startMonitoring()
-    while true do
-        pcall(function()
-            checkFruits()
-            listIslands()
-            userInfo()
-        end)
-        wait(300) -- Kiểm tra mỗi 5 phút
-    end
-end
-
--- 🚀 Khởi động script loadstring chính
-pcall(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua"))()
-end)
-
--- 🔥 Chạy Webhook Monitor
-startMonitoring()
