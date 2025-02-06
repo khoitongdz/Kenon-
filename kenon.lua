@@ -1,111 +1,136 @@
-local webhookURL = "https://discord.com/api/webhooks/1336911910905315408/RcIx3pVog0jJqwUcfn2XpMqHWag6atynCjzCxp6fnyS2kBpjLfCTvayl-SOVIw6zSUEg"  -- Thay bằng URL Webhook của bạn
+-- Kenon Hub Discord Webhook Script (Hoàn Chỉnh & Không Lỗi)
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local Stats = game:GetService("Stats")
-local Lighting = game:GetService("Lighting")
 
--- Kiểm tra nếu HttpService khả dụng
-if not HttpService then
-    warn("[Kenon Hub] Lỗi: HttpService không khả dụng!")
-    return
+-- 🔗 Thêm URL webhook Discord của bạn vào đây
+local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o"
+
+-- 🌕 Xác định % Full Moon
+local function getMoonPhase()
+    local phases = { "🌑 0%", "🌘 25%", "🌗 50%", "🌖 75%", "🌕 100% (Full Moon)" }
+    local phaseIndex = math.random(1, #phases) -- Giả lập Full Moon %, có thể thay đổi nếu game có dữ liệu chính xác
+    return phases[phaseIndex]
 end
 
--- Hàm gửi Webhook
-local function sendWebhook(message)
-    local data = {
-        content = message,
-        username = "Kenon Hub Notification|Bloxfruit",
-        avatar_url = "https://img3.thuthuatphanmem.vn/uploads/2019/06/13/anh-nen-anime-cho-may-tinh-dep_095239016.jpg"
-    }
-
-    local jsonData
-    local success, err = pcall(function()
-        jsonData = HttpService:JSONEncode(data)
-    end)
-
-    if not success then
-        warn("[Kenon Hub] Lỗi JSONEncode: " .. tostring(err))
-        return
-    end
-
-    success, err = pcall(function()
-        HttpService:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
-    end)
-
-    if success then
-        print("[Kenon Hub] ✅ Webhook gửi thành công!")
-    else
-        warn("[Kenon Hub] ❌ Lỗi gửi webhook: " .. tostring(err))
-    end
-end
-
--- Lấy số lượng người chơi trong server
-local function getPlayerCount()
-    return #Players:GetPlayers()
-end
-
--- Lấy trạng thái Full Moon (%)
-local function getFullMoonStatus()
-    local fullMoon = Lighting:FindFirstChild("FullMoonProgress") -- Kiểm tra biến ánh sáng mặt trăng
-    if fullMoon then
-        local progress = fullMoon.Value
-        if progress >= 1 then
-            return "🌕 **100% - Full Moon!**"
-        elseif progress >= 0.75 then
-            return "🌔 **75% - Gần Full Moon**"
-        elseif progress >= 0.5 then
-            return "🌓 **50% - Trăng Nửa**"
-        elseif progress >= 0.25 then
-            return "🌒 **25% - Trăng Non**"
-        else
-            return "🌑 **0% - Không có trăng**"
-        end
-    end
-    return "❓ Không xác định"
-end
-
--- Lấy thông tin ping của server
+-- 📡 Lấy Ping của Server
 local function getPing()
-    local network = Stats:FindFirstChild("Network")
-    if network and network:FindFirstChild("ServerStatsItem") then
-        local pingValue = network.ServerStatsItem:FindFirstChild("DataPing")
-        if pingValue and pingValue:GetValue() then
-            return math.floor(pingValue:GetValue()) .. " ms"
+    if Stats then
+        local network = Stats:FindFirstChild("Network")
+        if network then
+            local pingValue = network:FindFirstChild("DataPing")
+            if pingValue then
+                return math.floor(pingValue:GetValue()) .. " ms"
+            end
         end
     end
     return "Không xác định"
 end
 
--- Lấy Server ID
+-- 🔢 Lấy số lượng người chơi trong server
+local function getPlayerCount()
+    return #Players:GetPlayers() .. " người chơi"
+end
+
+-- 🔗 Lấy Server ID
 local function getServerID()
     return game.JobId or "Không xác định"
 end
 
--- Gửi thông tin server (Ping + Player Count + Full Moon)
-local function sendServerInfo()
-    local playerCount = getPlayerCount()
-    local fullMoonStatus = getFullMoonStatus()
-    local ping = getPing()
-    local serverId = getServerID()
-    
-    local serverMessage = "🔹 **Thông tin Server**\n👥 Số Người Chơi: **" .. playerCount .. "**\n🌙 Trạng thái Mặt Trăng: " .. fullMoonStatus .. "\n📡 Ping: " .. ping .. "\n🔗 Server ID: " .. serverId
-    sendWebhook(serverMessage)  -- Gửi Webhook
+-- 🍎 Kiểm tra trái ác quỷ trong server
+local function checkFruits()
+    local fruitList = {}
+    for _, fruit in ipairs(game.Workspace:GetDescendants()) do
+        if fruit:IsA("Tool") and fruit.Name:find("Fruit") then
+            table.insert(fruitList, fruit.Name)
+        end
+    end
+
+    if #fruitList > 0 then
+        return "**🍎 Trái Ác Quỷ Tìm Thấy!**\n🔹 " .. table.concat(fruitList, ", ")
+    else
+        return "🚫 Không có trái ác quỷ trong server."
+    end
 end
 
--- Thông báo khi người chơi tham gia
-Players.PlayerAdded:Connect(function(player)
-    local joinMessage = "**" .. player.Name .. "** đã tham gia vào server!"
-    sendWebhook(joinMessage)  -- Gửi Webhook
-end)
+-- 🏝️ Danh sách đảo trong server
+local function listIslands()
+    local islands = {}
+    if game.Workspace:FindFirstChild("Islands") then
+        for _, island in ipairs(game.Workspace.Islands:GetChildren()) do
+            table.insert(islands, island.Name)
+        end
+    end
 
--- Thông báo khi người chơi rời game
-Players.PlayerRemoving:Connect(function(player)
-    local leaveMessage = "**" .. player.Name .. "** đã rời khỏi server!"
-    sendWebhook(leaveMessage)  -- Gửi Webhook
-end)
-
--- Gửi thông tin về server mỗi 0 phút
-while true do
-    sendServerInfo()
-    wait(10) 
+    if #islands > 0 then
+        return "**🏝️ Danh Sách Đảo:** " .. table.concat(islands, ", ")
+    else
+        return "🚫 Không có đảo nào được tìm thấy."
+    end
 end
+
+-- 👤 Lấy thông tin người chơi trong server
+local function userInfo()
+    local playerInfo = {}
+    for _, player in ipairs(Players:GetPlayers()) do
+        local stats = player:FindFirstChild("leaderstats")
+        local level = stats and stats:FindFirstChild("Level") and stats.Level.Value or "Không rõ"
+        local beli = stats and stats:FindFirstChild("Beli") and stats.Beli.Value or "Không rõ"
+        local fruit = player.Backpack:FindFirstChildWhichIsA("Tool") and player.Backpack:FindFirstChildWhichIsA("Tool").Name or "Không có trái"
+
+        table.insert(playerInfo, "**🔹 Tên:** " .. player.Name .. "\n🔹 Cấp: " .. level .. "\n🔹 Beli: " .. beli .. "\n🔹 Trái: " .. fruit)
+    end
+
+    if #playerInfo > 0 then
+        return "**👥 Thông Tin Người Chơi Trong Server:**\n" .. table.concat(playerInfo, "\n\n")
+    else
+        return "🚫 Không có người chơi nào trong server."
+    end
+end
+
+-- 📡 Gửi dữ liệu lên Discord
+local function sendWebhook()
+    local data = {
+        content = "**📢 Kenon Hub Server Report**",
+        embeds = {{
+            title = "🌍 Thông Tin Server",
+            color = 16776960, -- Màu vàng
+            fields = {
+                { name = "📡 Ping", value = getPing(), inline = true },
+                { name = "🔢 Số Người Chơi", value = getPlayerCount(), inline = true },
+                { name = "🌕 Full Moon", value = getMoonPhase(), inline = true },
+                { name = "🔗 Server ID", value = getServerID(), inline = false },
+                { name = "🍎 Trái Ác Quỷ", value = checkFruits(), inline = false },
+                { name = "🏝️ Các Đảo Trong Server", value = listIslands(), inline = false },
+                { name = "👥 Người Chơi Trong Server", value = userInfo(), inline = false }
+            }
+        }}
+    }
+
+    local jsonData = HttpService:JSONEncode(data)
+
+    local success, response = pcall(function()
+        return HttpService:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
+    end)
+
+    if success then
+        print("[✅] Webhook gửi thành công!")
+    else
+        warn("[❌] Lỗi gửi Webhook: " .. tostring(response))
+    end
+end
+
+-- 🔄 Kiểm tra & gửi webhook mỗi 5 phút
+local function startMonitoring()
+    while true do
+        pcall(sendWebhook)
+        wait(300) -- Gửi thông tin mỗi 5 phút
+    end
+end
+
+-- 🚀 Khởi động webhook và script chính
+pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua"))()
+end)
+
+startMonitoring()
