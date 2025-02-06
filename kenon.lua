@@ -3,24 +3,18 @@
 local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o" -- Thay bằng webhook Discord của bạn
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-local NetworkStatsService = game:GetService("NetworkStatsService")
+local Stats = game:GetService("Stats")
 
--- Kiểm tra nếu HttpService bị chặn
-if not HttpService then
-    warn("[Kenon Hub] Lỗi: HttpService không khả dụng!")
-    return
-end
-
--- Hàm gửi Webhook
+-- Kiểm tra nếu HttpService bị chặn và thử gửi webhook
 local function sendWebhook(message)
-    if webhookURL == "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o" then
+    if webhookURL == "" then
         warn("[Kenon Hub] Bạn chưa thay URL webhook! Hãy nhập webhook đúng.")
         return
     end
 
     local data = {
         content = message,
-        username = "Kenon Hub Notification|Bloxfruit",
+        username = "Kenon Hub Notification",
         avatar_url = "https://img3.thuthuatphanmem.vn/uploads/2019/06/13/anh-nen-anime-cho-may-tinh-dep_095239016.jpg"
     }
 
@@ -34,6 +28,7 @@ local function sendWebhook(message)
         return
     end
 
+    -- Thử gửi webhook nếu không có lỗi
     success, err = pcall(function()
         HttpService:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
     end)
@@ -52,7 +47,7 @@ end
 
 -- Lấy trạng thái Full Moon (%)
 local function getFullMoonStatus()
-    local fullMoon = game.Lighting:FindFirstChild("FullMoonProgress") -- Kiểm tra biến ánh sáng mặt trăng
+    local fullMoon = game.Lighting:FindFirstChild("FullMoonProgress")
     if fullMoon then
         local progress = fullMoon.Value
         if progress >= 1 then
@@ -72,11 +67,11 @@ end
 
 -- Lấy Ping của server
 local function getPing()
-    local network = NetworkStatsService:FindFirstChild("ServerStatsItem")
-    if network then
-        local pingValue = network:FindFirstChild("DataPing")
-        if pingValue then
-            return math.floor(pingValue.Value) .. " ms"
+    local network = Stats:FindFirstChild("Network")
+    if network and network:FindFirstChild("ServerStatsItem") then
+        local pingValue = network.ServerStatsItem:FindFirstChild("DataPing")
+        if pingValue and pingValue:GetValue() then
+            return math.floor(pingValue:GetValue()) .. " ms"
         end
     end
     return "Không xác định"
@@ -91,15 +86,14 @@ end
 local function sendServerInfo()
     local playerCount = getPlayerCount()
     local fullMoonStatus = getFullMoonStatus()
-    local serverID = getServerID()
-    sendWebhook("🔹 **Thông tin Server**\n👥 Số Người Chơi: **" .. playerCount .. "**\n🌙 Trạng thái Mặt Trăng: " .. fullMoonStatus .. "\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. serverID .. "\n💾 Script join server: ```lua\ngame:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, '" .. serverID .. "', game.Players.LocalPlayer)```")
+    sendWebhook("🔹 **Thông tin Server**\n👥 Số Người Chơi: **" .. playerCount .. "**\n🌙 Trạng thái Mặt Trăng: " .. fullMoonStatus .. "\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID() .. "\n💾 Script join server: ```lua\ngame:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, '" .. getServerID() .. "', game.Players.LocalPlayer)```")
 end
 
 -- Thông tin trái ác quỷ trong server
 local function checkFruits()
     for _, fruit in ipairs(game.Workspace:GetDescendants()) do
         if fruit:IsA("Tool") and fruit.Name:find("Fruit") then
-            sendWebhook("**🍎 Trái Ác Quỷ Tìm Thấy!**\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID() .. "\n**Trái:** " .. fruit.Name)
+            sendWebhook("**🍎 Trái Ác Quỷ Tìm Thấy!**\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID() .. "\n**Trái:** " .. fruit.Name .. "")
         end
     end
 end
@@ -114,24 +108,24 @@ local function listIslands()
             end
         end
     end
-    sendWebhook("**🏝️ Danh Sách Đảo:** " .. table.concat(islands, ", ") .. "\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID())
+    sendWebhook("**🏝️ Danh Sách Đảo:** " .. table.concat(islands, ", ") .. "\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID() .. "")
 end
 
 -- Thông tin tài khoản người chơi
 local function userInfo()
     for _, player in ipairs(Players:GetPlayers()) do
-        if player and player.Parent then -- Kiểm tra player tồn tại
+        if player and player.Parent then
             local stats = player:FindFirstChild("leaderstats")
             local level = stats and stats:FindFirstChild("Level") and stats.Level.Value or "Không rõ"
             local beli = stats and stats:FindFirstChild("Beli") and stats.Beli.Value or "Không rõ"
             local fruit = player.Backpack:FindFirstChildWhichIsA("Tool") and player.Backpack:FindFirstChildWhichIsA("Tool").Name or "Không có trái"
 
-            sendWebhook("**👤 Thông Tin Người Dùng:**\n🔹 Tên: **" .. player.Name .. "**\n🔹 Cấp: **" .. level .. "**\n🔹 Beli: **" .. beli .. "**\n🔹 Trái: **" .. fruit .. "**\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID())
+            sendWebhook("**👤 Thông Tin Người Dùng:**\n🔹 Tên: **" .. player.Name .. "**\n🔹 Cấp: **" .. level .. "**\n🔹 Beli: **" .. beli .. "**\n🔹 Trái: **" .. fruit .. "**\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID() .. "")
         end
     end
 end
 
--- Tự động kiểm tra và gửi thông báo mỗi 5 phút
+-- Tự động kiểm tra và gửi thông báo mỗi 5 giây
 local function startMonitoring()
     while true do
         pcall(function()
@@ -140,9 +134,16 @@ local function startMonitoring()
             listIslands()
             userInfo()
         end)
-        wait(300) -- Kiểm tra mỗi 5 phút
+        wait(5) -- Kiểm tra mỗi 5 giây
     end
 end
 
--- Khởi động webhook và script chính
-startMonitoring()
+-- Khởi động script và webhook
+pcall(function()
+    -- Kiểm tra tính tương thích với các executor
+    if not is_scripter_running then
+        warn("[Kenon Hub] Cần phải sử dụng một executor có hỗ trợ HttpService.")
+        return
+    end
+    startMonitoring()
+end)
