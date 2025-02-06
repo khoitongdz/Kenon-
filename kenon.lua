@@ -84,5 +84,5 @@ end
 -- Tự động kiểm tra Full Moon mỗi 10 giây
 while true do
     notifyFullMoon()
-    wait(10) -- 10 giây
+    wait(1) -- 10 giây
 end
