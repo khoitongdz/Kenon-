@@ -1,103 +1,80 @@
-local Players = game:GetService("Players")
-local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o"
-local imageURL = "https://images-ext-1.discordapp.net/external/z9JRUK34QF4Ne_XqfgyqUfSMSDu1ZAINWYBi-beigCM/https/cdn.nekotina.com/images/smPf01ez6.jpg?format=webp&width=244&height=415"
+-- ✅ Webhook Discord của bạn
+local webhookURL = "https://discord.com/api/webhooks/1336911910905315408/RcIx3pVog0jJqwUcfn2XpMqHWag6atynCjzCxp6fnyS2kBpjLfCTvayl-SOVIw6zSUEg"
 
--- Hàm gửi thông báo lên webhook
-local function sendWebhook(message)
+-- ✅ Proxy cho executor KHÔNG hỗ trợ HTTP Requests (dùng nếu cần)
+local proxyURL = "https://webhook.lewisakura.moe/api/webhooks"
+
+-- ✅ Kiểm tra Executor có hỗ trợ HTTP Requests không
+local http = game:GetService("HttpService")
+local supportsHttp = false
+
+local success, _ = pcall(function()
+    http:PostAsync("https://httpbin.org/post", "{}")
+end)
+
+if success then
+    supportsHttp = true
+end
+
+-- ✅ Hàm gửi dữ liệu lên Discord
+function sendToDiscord(title, description, color)
     local data = {
-        content = message,
-        username = "Kenon Hub - Full Moon",
-        embeds = {
-            {
-                title = "🌙 Full Moon Update!",
-                description = message,
-                color = 16776960, -- Màu vàng
-                image = { url = imageURL }
-            }
-        }
+        ["embeds"] = {{
+            ["title"] = title,
+            ["description"] = description,
+            ["color"] = color
+        }}
     }
-    local jsonData = game:GetService("HttpService"):JSONEncode(data)
 
-    local requestFunction = syn and syn.request or http_request or request
-    if requestFunction then
-        local success, response = pcall(function()
-            return requestFunction {
-                Url = webhookURL,
-                Method = "POST",
-                Headers = { ["Content-Type"] = "application/json" },
-                Body = jsonData
-            }
-        end)
-
-        if not success then
-            warn("[Kenon Hub] Lỗi gửi webhook: " .. tostring(response))
-        end
+    local jsonData = http:JSONEncode(data)
+    
+    if supportsHttp then
+        -- Nếu Executor hỗ trợ HTTP Requests, gửi trực tiếp
+        http:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
     else
-        warn("[Kenon Hub] Executor không hỗ trợ HTTP Requests!")
+        -- Nếu Executor KHÔNG hỗ trợ HTTP Requests, gửi qua Proxy
+        local proxyData = {
+            ["url"] = webhookURL,
+            ["embeds"] = data.embeds
+        }
+        http:PostAsync(proxyURL, http:JSONEncode(proxyData), Enum.HttpContentType.ApplicationJson)
     end
 end
 
--- Lấy ID server
-local function getServerID()
-    return game.JobId or "Không xác định"
+-- ✅ Kiểm tra trạng thái mặt trăng
+local function checkFullMoon()
+    local moonStatus = game:GetService("Lighting"):FindFirstChild("MoonStatus")
+    return moonStatus and moonStatus.Value == "FullMoon"
 end
 
--- Lấy số người chơi trong server
+-- ✅ Lấy thời gian trong game
+local function getTimeOfDay()
+    local lighting = game:GetService("Lighting")
+    return lighting and lighting.TimeOfDay or "Unknown"
+end
+
+-- ✅ Lấy số lượng người chơi trong server
 local function getPlayerCount()
-    return #Players:GetPlayers()
+    return #game.Players:GetPlayers()
 end
 
--- Lấy ping của server
-local function getPing()
-    local stats = game:GetService("Stats")
-    local network = stats and stats:FindFirstChild("Network")
-    local pingValue = network and network:FindFirstChild("ServerStatsItem")
-    return pingValue and math.floor(pingValue:GetValue()) .. " ms" or "Không xác định"
-end
-
--- Kiểm tra Full Moon
-local function getFullMoonStatus()
-    local moonPercent = math.random(1, 5) * 25  -- Giả lập Full Moon (Cần chỉnh sửa nếu có API thật)
-    local status = "🌙 Full Moon: " .. moonPercent .. "%"
-    if moonPercent == 100 then status = "🌕 FULL MOON!" end
-    return status
-end
-
--- Gửi thông báo lên Discord
-local function notifyFullMoon()
-    local fullMoonStatus = getFullMoonStatus()
-    local playerCount = getPlayerCount()
-    local ping = getPing()
-    local serverID = getServerID()
-    
-    local message = fullMoonStatus .. "\n" ..
-                    "👥 Người chơi: " .. playerCount .. "\n" ..
-                    "📡 Ping: " .. ping .. "\n" ..
-                    "🔗 Server ID: " .. serverID .. "\n" ..
-                    "📜 Script join server: `game:GetService(\"TeleportService\"):TeleportToPlaceInstance(game.PlaceId, '" .. serverID .. "', game.Players.LocalPlayer)`"
-    
-    sendWebhook(message)
-end
-
--- Kiểm tra các server Blox Fruit (giả định có thông tin về các server)
-local function getOtherServers()
-    -- Đây là giả lập, bạn sẽ cần tìm cách lấy thông tin các server khác từ API hoặc từ các phương pháp khác
-    return {
-        "ServerID_1", "ServerID_2", "ServerID_3", -- Các ID server khác
-    }
-end
-
--- Gửi thông báo Full Moon cho nhiều server
-local function notifyForMultipleServers()
-    local otherServers = getOtherServers()
-    for _, serverID in ipairs(otherServers) do
-        local message = "Full Moon Status in Server " .. serverID .. ":\n" .. getFullMoonStatus()
-        sendWebhook(message)
+-- ✅ Gửi thông báo khi có Trăng Tròn
+local function sendMoonNotification()
+    if checkFullMoon() then
+        sendToDiscord(
+            "🌕 Full Moon Detected!",
+            "**Moon Status:** Full Moon\n" ..
+            "**Player Count:** " .. getPlayerCount() .. "\n" ..
+            "**Time Of Day:** " .. getTimeOfDay(),
+            16776960 -- Màu vàng
+        )
     end
 end
 
--- Tự động gửi thông báo cho nhiều server mỗi 10 giây
-while true do
-    notifyForMultipleServers()
-    wait(10) -- Gửi thông báo mỗi 10 giây
+-- 🔄 Kiểm tra và gửi thông báo mỗi 1 giây
+while wait(1) do
+    sendMoonNotification()
 end
+
+-- 🚀 Chạy script Auto Farm mà bạn yêu cầu
+loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua"))()
