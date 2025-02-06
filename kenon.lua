@@ -3,7 +3,7 @@
 local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o" -- Thay bằng webhook Discord của bạn
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-local Stats = game:GetService("Stats")
+local NetworkStatsService = game:GetService("NetworkStatsService")
 
 -- Kiểm tra nếu HttpService bị chặn
 if not HttpService then
@@ -20,7 +20,7 @@ local function sendWebhook(message)
 
     local data = {
         content = message,
-        username = "Kenon Hub Notification",
+        username = "Kenon Hub Notification|Bloxfruit",
         avatar_url = "https://img3.thuthuatphanmem.vn/uploads/2019/06/13/anh-nen-anime-cho-may-tinh-dep_095239016.jpg"
     }
 
@@ -72,11 +72,11 @@ end
 
 -- Lấy Ping của server
 local function getPing()
-    local network = Stats:FindFirstChild("Network")
-    if network and network:FindFirstChild("ServerStatsItem") then
-        local pingValue = network.ServerStatsItem:FindFirstChild("DataPing")
-        if pingValue and pingValue:GetValue() then
-            return math.floor(pingValue:GetValue()) .. " ms"
+    local network = NetworkStatsService:FindFirstChild("ServerStatsItem")
+    if network then
+        local pingValue = network:FindFirstChild("DataPing")
+        if pingValue then
+            return math.floor(pingValue.Value) .. " ms"
         end
     end
     return "Không xác định"
@@ -91,16 +91,15 @@ end
 local function sendServerInfo()
     local playerCount = getPlayerCount()
     local fullMoonStatus = getFullMoonStatus()
-    sendWebhook("🔹 **Thông tin Server**\n👥 Số Người Chơi: **" .. playerCount .. "**\n🌙 Trạng thái Mặt Trăng: " .. fullMoonStatus .. "\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: `" .. getServerID() .. "`\n💾 Script join server: ```lua
-game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, '" .. getServerID() .. "', game.Players.LocalPlayer)
-```")
+    local serverID = getServerID()
+    sendWebhook("🔹 **Thông tin Server**\n👥 Số Người Chơi: **" .. playerCount .. "**\n🌙 Trạng thái Mặt Trăng: " .. fullMoonStatus .. "\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. serverID .. "\n💾 Script join server: ```lua\ngame:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, '" .. serverID .. "', game.Players.LocalPlayer)```")
 end
 
 -- Thông tin trái ác quỷ trong server
 local function checkFruits()
     for _, fruit in ipairs(game.Workspace:GetDescendants()) do
         if fruit:IsA("Tool") and fruit.Name:find("Fruit") then
-            sendWebhook("**🍎 Trái Ác Quỷ Tìm Thấy!**\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: `" .. getServerID() .. "`\n**Trái:** `" .. fruit.Name .. "`")
+            sendWebhook("**🍎 Trái Ác Quỷ Tìm Thấy!**\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID() .. "\n**Trái:** " .. fruit.Name)
         end
     end
 end
@@ -115,7 +114,7 @@ local function listIslands()
             end
         end
     end
-    sendWebhook("**🏝️ Danh Sách Đảo:** " .. table.concat(islands, ", ") .. "\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: `" .. getServerID() .. "`")
+    sendWebhook("**🏝️ Danh Sách Đảo:** " .. table.concat(islands, ", ") .. "\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID())
 end
 
 -- Thông tin tài khoản người chơi
@@ -127,7 +126,7 @@ local function userInfo()
             local beli = stats and stats:FindFirstChild("Beli") and stats.Beli.Value or "Không rõ"
             local fruit = player.Backpack:FindFirstChildWhichIsA("Tool") and player.Backpack:FindFirstChildWhichIsA("Tool").Name or "Không có trái"
 
-            sendWebhook("**👤 Thông Tin Người Dùng:**\n🔹 Tên: **" .. player.Name .. "**\n🔹 Cấp: **" .. level .. "**\n🔹 Beli: **" .. beli .. "**\n🔹 Trái: **" .. fruit .. "**\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: `" .. getServerID() .. "`")
+            sendWebhook("**👤 Thông Tin Người Dùng:**\n🔹 Tên: **" .. player.Name .. "**\n🔹 Cấp: **" .. level .. "**\n🔹 Beli: **" .. beli .. "**\n🔹 Trái: **" .. fruit .. "**\n📡 Ping: " .. getPing() .. "\n🔗 Server ID: " .. getServerID())
         end
     end
 end
@@ -146,8 +145,4 @@ local function startMonitoring()
 end
 
 -- Khởi động webhook và script chính
-pcall(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua"))()
-end)
-
 startMonitoring()
