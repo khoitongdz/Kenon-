@@ -1,5 +1,3 @@
--- Kenon Hub - Webhook Full Moon Notification
-
 local Players = game:GetService("Players")
 local webhookURL = "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o"
 local imageURL = "https://images-ext-1.discordapp.net/external/z9JRUK34QF4Ne_XqfgyqUfSMSDu1ZAINWYBi-beigCM/https/cdn.nekotina.com/images/smPf01ez6.jpg?format=webp&width=244&height=415"
@@ -81,8 +79,25 @@ local function notifyFullMoon()
     sendWebhook(message)
 end
 
--- Tự động kiểm tra Full Moon mỗi 10 giây
+-- Kiểm tra các server Blox Fruit (giả định có thông tin về các server)
+local function getOtherServers()
+    -- Đây là giả lập, bạn sẽ cần tìm cách lấy thông tin các server khác từ API hoặc từ các phương pháp khác
+    return {
+        "ServerID_1", "ServerID_2", "ServerID_3", -- Các ID server khác
+    }
+end
+
+-- Gửi thông báo Full Moon cho nhiều server
+local function notifyForMultipleServers()
+    local otherServers = getOtherServers()
+    for _, serverID in ipairs(otherServers) do
+        local message = "Full Moon Status in Server " .. serverID .. ":\n" .. getFullMoonStatus()
+        sendWebhook(message)
+    end
+end
+
+-- Tự động gửi thông báo cho nhiều server mỗi 10 giây
 while true do
-    notifyFullMoon()
-    wait(1) -- 10 giây
+    notifyForMultipleServers()
+    wait(10) -- Gửi thông báo mỗi 10 giây
 end
