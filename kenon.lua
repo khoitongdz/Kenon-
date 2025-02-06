@@ -13,7 +13,7 @@ end
 
 -- Hàm gửi Webhook
 local function sendWebhook(message)
-    if webhookURL == "YOUR_DISCORD_WEBHOOK_URL" then
+    if webhookURL == "https://discord.com/api/webhooks/1336566970463555675/bxljnPAj4PvekzWmVcz4CQ3wXocakH8FpfQMTjUL8ZEgfT9_xu6n0vr_RC3x7G3RwT3o" then
         warn("[Kenon Hub] Bạn chưa thay URL webhook! Hãy nhập webhook đúng.")
         return
     end
@@ -21,7 +21,7 @@ local function sendWebhook(message)
     local data = {
         content = message,
         username = "Kenon Hub Notification",
-        avatar_url = "https://i.imgur.com/your_avatar.png"
+        avatar_url = "https://img3.thuthuatphanmem.vn/uploads/2019/06/13/anh-nen-anime-cho-may-tinh-dep_095239016.jpg"
     }
 
     local jsonData
