@@ -1,4 +1,4 @@
--- Kenon Hub - Full Features (Updated with New UI)
+-- Kenon Hub - Full Features (Updated with New UI, Full Executor Support)
 
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -6,13 +6,13 @@ local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 
 -- Initialize UI (New UI Design with Lemon Logo)
-local UI = Instance.new("ScreenGui", CoreGui)
+local UI = Instance.new("ScreenGui")
 UI.Name = "KenonHubUI"
+UI.Parent = CoreGui
 
 local MainFrame = Instance.new("Frame", UI)
 MainFrame.Size = UDim2.new(0, 400, 0, 300)
@@ -34,56 +34,63 @@ Title.BackgroundTransparency = 1
 Title.TextSize = 20
 Title.Font = Enum.Font.SourceSansBold
 
--- Functions (Reintegrated with UI)
+-- Functions (Fixed Errors and Improved Compatibility)
 function AutoFarm()
-  while true do
-    local enemies = workspace:FindFirstChild("Enemies")
-    if enemies then
-      for _, enemy in ipairs(enemies:GetChildren()) do
-        if enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
-          LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-          ReplicatedStorage.Remotes:FindFirstChild("Attack"):InvokeServer()
+    spawn(function()
+        while wait(0.1) do
+            local enemies = workspace:FindFirstChild("Enemies")
+            if enemies then
+                for _, enemy in ipairs(enemies:GetChildren()) do
+                    if enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+                        ReplicatedStorage.Remotes:FindFirstChild("Attack"):FireServer()
+                    end
+                end
+            end
         end
-      end
-    end
-    wait(0.1)
-  end
+    end)
 end
 
 function AutoQuest()
-  local questGiver = workspace:FindFirstChild("QuestGiver")
-  if questGiver then
-    ReplicatedStorage.Remotes:FindFirstChild("AcceptQuest"):InvokeServer(questGiver)
-  end
+    spawn(function()
+        local questGiver = workspace:FindFirstChild("QuestGiver")
+        if questGiver then
+            ReplicatedStorage.Remotes:FindFirstChild("AcceptQuest"):FireServer(questGiver)
+        end
+    end)
 end
 
 function AutoBoss()
-  local bosses = workspace:FindFirstChild("Bosses")
-  if bosses then
-    for _, boss in ipairs(bosses:GetChildren()) do
-      if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-        LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-        ReplicatedStorage.Remotes:FindFirstChild("Attack"):InvokeServer()
-      end
-    end
-  end
+    spawn(function()
+        local bosses = workspace:FindFirstChild("Bosses")
+        if bosses then
+            for _, boss in ipairs(bosses:GetChildren()) do
+                if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                    LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+                    ReplicatedStorage.Remotes:FindFirstChild("Attack"):FireServer()
+                end
+            end
+        end
+    end)
 end
 
 function AutoChest()
-  local chests = workspace:FindFirstChild("Chests")
-  if chests then
-    for _, chest in ipairs(chests:GetChildren()) do
-      if chest:IsA("Model") then
-        LocalPlayer.Character.HumanoidRootPart.CFrame = chest.PrimaryPart.CFrame
-        ReplicatedStorage.Remotes:FindFirstChild("CollectChest"):InvokeServer(chest)
-      end
-    end
-  end
+    spawn(function()
+        local chests = workspace:FindFirstChild("Chests")
+        if chests then
+            for _, chest in ipairs(chests:GetChildren()) do
+                if chest:IsA("Model") and chest:FindFirstChild("PrimaryPart") then
+                    LocalPlayer.Character.HumanoidRootPart.CFrame = chest.PrimaryPart.CFrame
+                    ReplicatedStorage.Remotes:FindFirstChild("CollectChest"):FireServer(chest)
+                end
+            end
+        end
+    end)
 end
 
 function InfiniteEnergy()
-  LocalPlayer.Character.Humanoid.UseJumpPower = true
-  LocalPlayer.Character.Humanoid.JumpPower = 500
+    LocalPlayer.Character.Humanoid.UseJumpPower = true
+    LocalPlayer.Character.Humanoid.JumpPower = 500
 end
 
 -- Fully Functional Kenon Hub with UI
