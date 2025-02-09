@@ -42,8 +42,13 @@ function AutoFarm()
             if enemies then
                 for _, enemy in ipairs(enemies:GetChildren()) do
                     if enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-                        ReplicatedStorage.Remotes:FindFirstChild("Attack"):FireServer()
+                        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                            LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+                            local attackRemote = ReplicatedStorage.Remotes:FindFirstChild("Attack")
+                            if attackRemote then
+                                attackRemote:FireServer()
+                            end
+                        end
                     end
                 end
             end
@@ -55,7 +60,10 @@ function AutoQuest()
     spawn(function()
         local questGiver = workspace:FindFirstChild("QuestGiver")
         if questGiver then
-            ReplicatedStorage.Remotes:FindFirstChild("AcceptQuest"):FireServer(questGiver)
+            local acceptQuestRemote = ReplicatedStorage.Remotes:FindFirstChild("AcceptQuest")
+            if acceptQuestRemote then
+                acceptQuestRemote:FireServer(questGiver)
+            end
         end
     end)
 end
@@ -66,8 +74,13 @@ function AutoBoss()
         if bosses then
             for _, boss in ipairs(bosses:GetChildren()) do
                 if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                    LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-                    ReplicatedStorage.Remotes:FindFirstChild("Attack"):FireServer()
+                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+                        local attackRemote = ReplicatedStorage.Remotes:FindFirstChild("Attack")
+                        if attackRemote then
+                            attackRemote:FireServer()
+                        end
+                    end
                 end
             end
         end
@@ -80,8 +93,13 @@ function AutoChest()
         if chests then
             for _, chest in ipairs(chests:GetChildren()) do
                 if chest:IsA("Model") and chest:FindFirstChild("PrimaryPart") then
-                    LocalPlayer.Character.HumanoidRootPart.CFrame = chest.PrimaryPart.CFrame
-                    ReplicatedStorage.Remotes:FindFirstChild("CollectChest"):FireServer(chest)
+                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = chest.PrimaryPart.CFrame
+                        local collectChestRemote = ReplicatedStorage.Remotes:FindFirstChild("CollectChest")
+                        if collectChestRemote then
+                            collectChestRemote:FireServer(chest)
+                        end
+                    end
                 end
             end
         end
@@ -89,8 +107,10 @@ function AutoChest()
 end
 
 function InfiniteEnergy()
-    LocalPlayer.Character.Humanoid.UseJumpPower = true
-    LocalPlayer.Character.Humanoid.JumpPower = 500
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.UseJumpPower = true
+        LocalPlayer.Character.Humanoid.JumpPower = 500
+    end
 end
 
 -- Fully Functional Kenon Hub with UI
