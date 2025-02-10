@@ -69,7 +69,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 -- Webhook Notification
-local webhookURL = "YOUR_DISCORD_WEBHOOK"
+local webhookURL = "https://discord.com/api/webhooks/1337667957655994450/SjYmmvhkszUlpmSNZel7pwYnnKHhiV4QvQuvA3Iut-Hj0vfC3VeB6xqoipFVLRLqyZUy"
 local function sendWebhookMessage(content)
     local data = {
         ["content"] = content
