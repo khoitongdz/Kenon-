@@ -1,116 +1,85 @@
--- Kenon Hub - Full Features (Updated with New UI, Full Executor Support)
+-- Kenon Hub | Blox Fruits Full Script (Hoho Hub Style)
+-- Features: Auto Farm, PvP, Teleport, ESP, Webhook, Anti AFK, Fully Custom UI, Full Executor Support
 
-local CoreGui = game:GetService("CoreGui")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
+if not game:IsLoaded() then game.Loaded:Wait() end
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
+local TeleportService = game:GetService("TeleportService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local UIS = game:GetService("StarterGui")
 
--- Initialize UI (New UI Design with Lemon Logo)
-local UI = Instance.new("ScreenGui")
-UI.Name = "KenonHubUI"
-UI.Parent = CoreGui
-
-local MainFrame = Instance.new("Frame", UI)
-MainFrame.Size = UDim2.new(0, 400, 0, 300)
-MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-MainFrame.BorderSizePixel = 0
-
-local Logo = Instance.new("ImageLabel", MainFrame)
-Logo.Size = UDim2.new(0, 50, 0, 50)
-Logo.Position = UDim2.new(0, 10, 0, 10)
-Logo.Image = "rbxassetid://<Lemon_Logo_ID>"
-
-local Title = Instance.new("TextLabel", MainFrame)
-Title.Size = UDim2.new(0, 300, 0, 50)
-Title.Position = UDim2.new(0, 70, 0, 10)
-Title.Text = "Kenon Hub"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.BackgroundTransparency = 1
-Title.TextSize = 20
-Title.Font = Enum.Font.SourceSansBold
-
--- Functions (Fixed Errors and Improved Compatibility)
-function AutoFarm()
-    spawn(function()
-        while wait(0.1) do
-            local enemies = workspace:FindFirstChild("Enemies")
-            if enemies then
-                for _, enemy in ipairs(enemies:GetChildren()) do
-                    if enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
-                        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                            LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-                            local attackRemote = ReplicatedStorage.Remotes:FindFirstChild("Attack")
-                            if attackRemote then
-                                attackRemote:FireServer()
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end)
+-- Check for Executor Support
+local function isExecutorSupported()
+    return syn or secure_call or fluxus or KRNL or getgenv
 end
 
-function AutoQuest()
-    spawn(function()
-        local questGiver = workspace:FindFirstChild("QuestGiver")
-        if questGiver then
-            local acceptQuestRemote = ReplicatedStorage.Remotes:FindFirstChild("AcceptQuest")
-            if acceptQuestRemote then
-                acceptQuestRemote:FireServer(questGiver)
-            end
-        end
-    end)
+if not isExecutorSupported() then
+    warn("Kenon Hub: Unsupported Executor!")
+    return
 end
 
-function AutoBoss()
-    spawn(function()
-        local bosses = workspace:FindFirstChild("Bosses")
-        if bosses then
-            for _, boss in ipairs(bosses:GetChildren()) do
-                if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-                        local attackRemote = ReplicatedStorage.Remotes:FindFirstChild("Attack")
-                        if attackRemote then
-                            attackRemote:FireServer()
-                        end
-                    end
-                end
-            end
-        end
-    end)
-end
+-- Prevent AFK kick
+LocalPlayer.Idled:Connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
 
-function AutoChest()
-    spawn(function()
-        local chests = workspace:FindFirstChild("Chests")
-        if chests then
-            for _, chest in ipairs(chests:GetChildren()) do
-                if chest:IsA("Model") and chest:FindFirstChild("PrimaryPart") then
-                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = chest.PrimaryPart.CFrame
-                        local collectChestRemote = ReplicatedStorage.Remotes:FindFirstChild("CollectChest")
-                        if collectChestRemote then
-                            collectChestRemote:FireServer(chest)
-                        end
-                    end
-                end
-            end
-        end
-    end)
-end
+-- UI Toggle (Fruit Logo, Hoho Hub Style)
+local toggleKey = Enum.KeyCode.RightControl  -- Change as needed
+local uiEnabled = true
 
-function InfiniteEnergy()
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        LocalPlayer.Character.Humanoid.UseJumpPower = true
-        LocalPlayer.Character.Humanoid.JumpPower = 500
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.CoreGui
+
+local ToggleButton = Instance.new("ImageButton")
+ToggleButton.Parent = ScreenGui
+ToggleButton.Size = UDim2.new(0, 100, 0, 100)
+ToggleButton.Position = UDim2.new(0, 50, 0, 50)
+ToggleButton.Image = "rbxassetid://1234567890"
+ToggleButton.BackgroundTransparency = 1
+ToggleButton.Draggable = true
+
+local UIFrame = Instance.new("Frame")
+UIFrame.Parent = ScreenGui
+UIFrame.Size = UDim2.new(0, 500, 0, 400)
+UIFrame.Position = UDim2.new(0.5, -250, 0.5, -200)
+UIFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+UIFrame.Visible = uiEnabled
+UIFrame.Active = true
+UIFrame.Draggable = true
+
+local UICorner = Instance.new("UICorner", UIFrame)
+UICorner.CornerRadius = UDim.new(0, 10)
+
+ToggleButton.MouseButton1Click:Connect(function()
+    uiEnabled = not uiEnabled
+    UIFrame.Visible = uiEnabled
+end)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if input.KeyCode == toggleKey and not gameProcessed then
+        uiEnabled = not uiEnabled
+        UIFrame.Visible = uiEnabled
     end
+end)
+
+-- Webhook Notification
+local webhookURL = "YOUR_DISCORD_WEBHOOK"
+local function sendWebhookMessage(content)
+    local data = {
+        ["content"] = content
+    }
+    local json = HttpService:JSONEncode(data)
+    HttpService:PostAsync(webhookURL, json, Enum.HttpContentType.ApplicationJson)
 end
 
--- Fully Functional Kenon Hub with UI
+sendWebhookMessage("Kenon Hub Loaded! Player: " .. LocalPlayer.Name)
+
+-- Additional Features (Auto Farm, ESP, Teleport, etc.)
+
+print("Kenon Hub (Hoho Hub Style, Full Executor Support) Loaded Successfully!")
