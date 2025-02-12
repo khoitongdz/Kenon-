@@ -23,6 +23,13 @@ title.Parent = frame
 title.TextStrokeTransparency = 0.5
 title.TextScaled = true
 
+local scrollingFrame = Instance.new("ScrollingFrame")
+scrollingFrame.Size = UDim2.new(1, 0, 1, -50)
+scrollingFrame.Position = UDim2.new(0, 0, 0, 50)
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 300)
+scrollingFrame.BackgroundTransparency = 1
+scrollingFrame.Parent = frame
+
 local function createButton(name, parent, callback)
     local button = Instance.new("TextButton")
     button.Text = name
@@ -87,43 +94,26 @@ local function collectChestsSequentially()
     for _, chest in ipairs(chests) do
         if chest:FindFirstChild("ChestRoot") then
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = chest.ChestRoot.CFrame
-            wait(1.5)
+            wait(0.5)
+            game.Players.LocalPlayer.Character.Humanoid.Jump = true  -- Nhảy lên để nhặt rương
+            wait(1)
         end
     end
 end
 
-local farmFrame = Instance.new("Frame")
-farmFrame.Size = UDim2.new(0, 300, 0, 250)
-farmFrame.Position = UDim2.new(0, 110, 0, 60)
-farmFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-farmFrame.BorderSizePixel = 0
-farmFrame.Visible = true
-farmFrame.Parent = frame
-
-local farmTitle = Instance.new("TextLabel")
-farmTitle.Text = "Auto Farm"
-farmTitle.Size = UDim2.new(1, 0, 0, 30)
-farmTitle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-farmTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-farmTitle.Font = Enum.Font.GothamBold
-farmTitle.TextSize = 16
-farmTitle.Parent = farmFrame
-
-createButton("Enable Auto Farm", farmFrame, function()
+createButton("Enable Auto Farm", scrollingFrame, function()
     spawn(autoFarm)
 end)
-
-createButton("Teleport to Island", farmFrame, teleportToIsland)
-createButton("Enable ESP", farmFrame, enableESP)
-createButton("Speed Hack", farmFrame, speedHack)
-createButton("Collect Chests", farmFrame, collectChestsSequentially)
+createButton("Teleport to Island", scrollingFrame, teleportToIsland)
+createButton("Enable ESP", scrollingFrame, enableESP)
+createButton("Speed Hack", scrollingFrame, speedHack)
+createButton("Collect Chests", scrollingFrame, collectChestsSequentially)
 
 local toggleButton = Instance.new("ImageButton")
 toggleButton.Size = UDim2.new(0, 50, 0, 50)
 toggleButton.Position = UDim2.new(0, 10, 0, 10)
 toggleButton.Image = "rbxassetid://88170470130971"
 toggleButton.Parent = ui
-
 toggleButton.MouseButton1Click:Connect(function()
     frame.Visible = not frame.Visible
 end)
