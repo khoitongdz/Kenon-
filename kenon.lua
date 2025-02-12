@@ -99,8 +99,10 @@ local function collectChestsSequentially()
         if chest:FindFirstChild("HumanoidRootPart") then
             character.HumanoidRootPart.CFrame = chest.HumanoidRootPart.CFrame + Vector3.new(0, 2, 0)
             wait(0.5)
-            character.Humanoid.Jump = true
-            wait(0.7)
+            if chest.Parent ~= nil then  -- Kiểm tra nếu rương vẫn còn tồn tại
+                character.Humanoid.Jump = true
+                wait(0.7)
+            end
         end
     end
 end
