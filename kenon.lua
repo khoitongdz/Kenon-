@@ -9,6 +9,8 @@ frame.Position = UDim2.new(0.5, -225, 0.5, -275)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
 frame.Parent = ui
+frame.Active = true
+frame.Draggable = true
 
 local title = Instance.new("TextLabel")
 title.Text = "Kenon Hub - Blox Fruits"
@@ -21,12 +23,6 @@ title.Parent = frame
 title.TextStrokeTransparency = 0.5
 title.TextScaled = true
 
-local buttonContainer = Instance.new("Frame")
-buttonContainer.Size = UDim2.new(1, 0, 1, -50)
-buttonContainer.Position = UDim2.new(0, 0, 0, 50)
-buttonContainer.BackgroundTransparency = 1
-buttonContainer.Parent = frame
-
 local function createButton(name, parent, callback)
     local button = Instance.new("TextButton")
     button.Text = name
@@ -37,6 +33,7 @@ local function createButton(name, parent, callback)
     button.Font = Enum.Font.GothamBold
     button.TextSize = 14
     button.Parent = parent
+    button.AutoButtonColor = true
     button.MouseButton1Click:Connect(callback)
     return button
 end
@@ -95,20 +92,38 @@ local function collectChestsSequentially()
     end
 end
 
-createButton("Enable Auto Farm", buttonContainer, function()
+local farmFrame = Instance.new("Frame")
+farmFrame.Size = UDim2.new(0, 300, 0, 250)
+farmFrame.Position = UDim2.new(0, 110, 0, 60)
+farmFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+farmFrame.BorderSizePixel = 0
+farmFrame.Visible = true
+farmFrame.Parent = frame
+
+local farmTitle = Instance.new("TextLabel")
+farmTitle.Text = "Auto Farm"
+farmTitle.Size = UDim2.new(1, 0, 0, 30)
+farmTitle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+farmTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+farmTitle.Font = Enum.Font.GothamBold
+farmTitle.TextSize = 16
+farmTitle.Parent = farmFrame
+
+createButton("Enable Auto Farm", farmFrame, function()
     spawn(autoFarm)
 end)
 
-createButton("Teleport to Island", buttonContainer, teleportToIsland)
-createButton("Enable ESP", buttonContainer, enableESP)
-createButton("Speed Hack", buttonContainer, speedHack)
-createButton("Collect Chests", buttonContainer, collectChestsSequentially)
+createButton("Teleport to Island", farmFrame, teleportToIsland)
+createButton("Enable ESP", farmFrame, enableESP)
+createButton("Speed Hack", farmFrame, speedHack)
+createButton("Collect Chests", farmFrame, collectChestsSequentially)
 
 local toggleButton = Instance.new("ImageButton")
 toggleButton.Size = UDim2.new(0, 50, 0, 50)
 toggleButton.Position = UDim2.new(0, 10, 0, 10)
 toggleButton.Image = "rbxassetid://88170470130971"
 toggleButton.Parent = ui
+
 toggleButton.MouseButton1Click:Connect(function()
     frame.Visible = not frame.Visible
 end)
