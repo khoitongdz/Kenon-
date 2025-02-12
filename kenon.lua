@@ -84,19 +84,23 @@ local function speedHack()
 end
 
 local function collectChestsSequentially()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+    
     local chests = {}
     for _, chest in pairs(workspace:GetChildren()) do
-        if chest:IsA("Model") and chest:FindFirstChild("HumanoidRootPart") then
+        if chest:IsA("Model") and chest:FindFirstChild("HumanoidRootPart") and chest:FindFirstChild("TouchInterest") then
             table.insert(chests, chest)
         end
     end
     
     for _, chest in ipairs(chests) do
         if chest:FindFirstChild("HumanoidRootPart") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = chest.HumanoidRootPart.CFrame
+            character.HumanoidRootPart.CFrame = chest.HumanoidRootPart.CFrame + Vector3.new(0, 2, 0)
             wait(0.5)
-            game.Players.LocalPlayer.Character.Humanoid.Jump = true  -- Nhảy lên để nhặt rương
-            wait(1)
+            character.Humanoid.Jump = true
+            wait(0.7)
         end
     end
 end
