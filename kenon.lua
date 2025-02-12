@@ -21,6 +21,12 @@ title.Parent = frame
 title.TextStrokeTransparency = 0.5
 title.TextScaled = true
 
+local buttonContainer = Instance.new("Frame")
+buttonContainer.Size = UDim2.new(1, 0, 1, -50)
+buttonContainer.Position = UDim2.new(0, 0, 0, 50)
+buttonContainer.BackgroundTransparency = 1
+buttonContainer.Parent = frame
+
 local function createButton(name, parent, callback)
     local button = Instance.new("TextButton")
     button.Text = name
@@ -41,7 +47,7 @@ local function autoFarm()
         local character = player.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
             for _, enemy in pairs(workspace.Enemies:GetChildren()) do
-                if enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") and enemy.Humanoid.Health > 0 then
+                if enemy:FindFirstChild("HumanoidRootPart") and enemy.Humanoid.Health > 0 then
                     character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
                     game:GetService("VirtualUser"):Button1Down(Vector2.new())
                     enemy.HumanoidRootPart.Size = Vector3.new(20, 20, 20)
@@ -83,53 +89,26 @@ local function collectChestsSequentially()
     
     for _, chest in ipairs(chests) do
         if chest:FindFirstChild("ChestRoot") then
-            local character = game.Players.LocalPlayer.Character
-            if character and character:FindFirstChild("HumanoidRootPart") then
-                character.HumanoidRootPart.CFrame = chest.ChestRoot.CFrame
-                wait(1.5)  -- Đợi để thu thập rương
-                character.Humanoid.Jump = true -- Nhảy lên để thu thập
-            end
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = chest.ChestRoot.CFrame
+            wait(1.5)
         end
     end
 end
 
-local farmFrame = Instance.new("Frame")
-farmFrame.Size = UDim2.new(0, 300, 0, 250)
-farmFrame.Position = UDim2.new(0, 110, 0, 60)
-farmFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-farmFrame.BorderSizePixel = 0
-farmFrame.Visible = false
-farmFrame.Parent = frame
-
-local farmTitle = Instance.new("TextLabel")
-farmTitle.Text = "Auto Farm"
-farmTitle.Size = UDim2.new(1, 0, 0, 30)
-farmTitle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-farmTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-farmTitle.Font = Enum.Font.GothamBold
-farmTitle.TextSize = 16
-farmTitle.Parent = farmFrame
-
-createButton("Enable Auto Farm", farmFrame, function()
-    farmFrame.Visible = not farmFrame.Visible
-end)
-
-createButton("Enable Level Farm", farmFrame, function()
-    farmFrame.Visible = true
+createButton("Enable Auto Farm", buttonContainer, function()
     spawn(autoFarm)
 end)
 
-createButton("Teleport to Island", farmFrame, teleportToIsland)
-createButton("Enable ESP", farmFrame, enableESP)
-createButton("Speed Hack", farmFrame, speedHack)
-createButton("Collect Chests", farmFrame, collectChestsSequentially)
+createButton("Teleport to Island", buttonContainer, teleportToIsland)
+createButton("Enable ESP", buttonContainer, enableESP)
+createButton("Speed Hack", buttonContainer, speedHack)
+createButton("Collect Chests", buttonContainer, collectChestsSequentially)
 
 local toggleButton = Instance.new("ImageButton")
 toggleButton.Size = UDim2.new(0, 50, 0, 50)
 toggleButton.Position = UDim2.new(0, 10, 0, 10)
 toggleButton.Image = "rbxassetid://88170470130971"
 toggleButton.Parent = ui
-
 toggleButton.MouseButton1Click:Connect(function()
     frame.Visible = not frame.Visible
 end)
