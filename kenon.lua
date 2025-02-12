@@ -86,14 +86,14 @@ end
 local function collectChestsSequentially()
     local chests = {}
     for _, chest in pairs(workspace:GetChildren()) do
-        if chest:IsA("Model") and chest:FindFirstChild("TouchInterest") then
+        if chest:IsA("Model") and chest:FindFirstChild("HumanoidRootPart") then
             table.insert(chests, chest)
         end
     end
     
     for _, chest in ipairs(chests) do
-        if chest:FindFirstChild("TouchInterest") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = chest.PrimaryPart.CFrame
+        if chest:FindFirstChild("HumanoidRootPart") then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = chest.HumanoidRootPart.CFrame
             wait(0.5)
             game.Players.LocalPlayer.Character.Humanoid.Jump = true  -- Nhảy lên để nhặt rương
             wait(1)
