@@ -69,12 +69,12 @@ local function enableESP()
     for _, player in pairs(game.Players:GetPlayers()) do
         if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             local highlight = Instance.new("BoxHandleAdornment")
-            highlight.Size = player.Character.HumanoidRootPart.Size + Vector3.new(1, 1, 1)
+            highlight.Size = Vector3.new(4, 6, 4)
             highlight.Adornee = player.Character.HumanoidRootPart
             highlight.Color3 = Color3.fromRGB(255, 0, 0)
             highlight.AlwaysOnTop = true
             highlight.ZIndex = 5
-            highlight.Parent = player.Character
+            highlight.Parent = game.CoreGui
         end
     end
 end
@@ -90,7 +90,7 @@ local function collectChestsSequentially()
     
     local chests = {}
     for _, chest in pairs(workspace:GetChildren()) do
-        if chest:IsA("Model") and chest:FindFirstChild("HumanoidRootPart") and chest:FindFirstChild("TouchInterest") then
+        if chest:IsA("Model") and chest:FindFirstChild("HumanoidRootPart") then
             table.insert(chests, chest)
         end
     end
@@ -116,7 +116,7 @@ createButton("Collect Chests", scrollingFrame, collectChestsSequentially)
 local toggleButton = Instance.new("ImageButton")
 toggleButton.Size = UDim2.new(0, 50, 0, 50)
 toggleButton.Position = UDim2.new(0, 10, 0, 10)
-toggleButton.Image = "rbxassetid://88170470130971"
+toggleButton.Image = "rbxassetid://15325884228"
 toggleButton.Parent = ui
 toggleButton.MouseButton1Click:Connect(function()
     frame.Visible = not frame.Visible
