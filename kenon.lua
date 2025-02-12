@@ -41,7 +41,7 @@ local function autoFarm()
         local character = player.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
             for _, enemy in pairs(workspace.Enemies:GetChildren()) do
-                if enemy:FindFirstChild("HumanoidRootPart") and enemy.Humanoid.Health > 0 then
+                if enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") and enemy.Humanoid.Health > 0 then
                     character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
                     game:GetService("VirtualUser"):Button1Down(Vector2.new())
                     enemy.HumanoidRootPart.Size = Vector3.new(20, 20, 20)
@@ -73,15 +73,6 @@ local function speedHack()
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
 end
 
-local function collectChests()
-    for _, chest in pairs(workspace:GetChildren()) do
-        if chest:IsA("Model") and chest:FindFirstChild("ChestRoot") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = chest.ChestRoot.CFrame
-            wait(1.5)  -- Chờ để đảm bảo rương được nhặt
-        end
-    end
-end
-
 local function collectChestsSequentially()
     local chests = {}
     for _, chest in pairs(workspace:GetChildren()) do
@@ -92,8 +83,12 @@ local function collectChestsSequentially()
     
     for _, chest in ipairs(chests) do
         if chest:FindFirstChild("ChestRoot") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = chest.ChestRoot.CFrame
-            wait(1.5)  -- Đợi để thu thập rương
+            local character = game.Players.LocalPlayer.Character
+            if character and character:FindFirstChild("HumanoidRootPart") then
+                character.HumanoidRootPart.CFrame = chest.ChestRoot.CFrame
+                wait(1.5)  -- Đợi để thu thập rương
+                character.Humanoid.Jump = true -- Nhảy lên để thu thập
+            end
         end
     end
 end
@@ -140,4 +135,3 @@ toggleButton.MouseButton1Click:Connect(function()
 end)
 
 return ui
-
