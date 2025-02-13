@@ -1,4 +1,4 @@
--- Kenon Hub - Optimized Auto Chest Collector
+-- Kenon Hub - Optimized Auto Chest Collector 
 if not game:IsLoaded() then game.Loaded:Wait() end
 
 local Players = game:GetService("Players")
@@ -48,7 +48,7 @@ end)
 local LoadingText = Instance.new("TextLabel", ScreenGui)
 LoadingText.Size = UDim2.new(0,200,0,50)
 LoadingText.Position = UDim2.new(0.5,-100,0.4,0)
-LoadingText.Text = "mèo béo Loading..."
+LoadingText.Text = "Kenon Loading..."
 LoadingText.TextColor3 = Color3.fromRGB(255,255,255)
 LoadingText.BackgroundTransparency = 1
 
@@ -58,7 +58,7 @@ LoadingText:Destroy()
 -- Function to get chests in the current Sea
 local function GetChests()
     local chests = {}
-    for _, obj in ipairs(workspace:GetDescendants()) do
+    for _, obj in ipairs(workspace:GetChildren()) do
         if obj:IsA("Model") and obj:FindFirstChild("HumanoidRootPart") and obj.Name:lower():find("chest") then
             table.insert(chests, obj)
         end
@@ -71,11 +71,8 @@ local function MoveToChest(chest)
     if chest and chest:FindFirstChild("HumanoidRootPart") then
         local Character = LocalPlayer.Character
         if Character and Character:FindFirstChild("HumanoidRootPart") then
-            local tweenInfo = TweenInfo.new((Character.HumanoidRootPart.Position - chest.HumanoidRootPart.Position).magnitude / 200, Enum.EasingStyle.Linear)
-            local tween = TweenService:Create(Character.HumanoidRootPart, tweenInfo, {CFrame = chest.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)})
-            tween:Play()
-            tween.Completed:Wait()
-            wait(0.2)
+            Character.HumanoidRootPart.CFrame = chest.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+            wait(0.3)
         end
     end
 end
@@ -90,6 +87,7 @@ local function CollectChest(chest)
             firetouchinterest(Character.HumanoidRootPart, chest.HumanoidRootPart, 1)
             ChestCount = ChestCount + 1
             ChestLabel.Text = "Chests Collected: " .. ChestCount
+            wait(0.5)
         end
     end
 end
@@ -101,7 +99,6 @@ spawn(function()
         for _, chest in ipairs(chests) do
             MoveToChest(chest)
             CollectChest(chest)
-            wait(0.3)
         end
     end
 end)
