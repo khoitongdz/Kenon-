@@ -66,13 +66,16 @@ local function GetChests()
     return chests
 end
 
--- Function to teleport to chest
-local function TeleportToChest(chest)
+-- Function to smoothly move player to chest
+local function MoveToChest(chest)
     if chest and chest:FindFirstChild("HumanoidRootPart") then
         local Character = LocalPlayer.Character
         if Character and Character:FindFirstChild("HumanoidRootPart") then
-            Character.HumanoidRootPart.CFrame = chest.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
-            wait(0.3)
+            local tweenInfo = TweenInfo.new((Character.HumanoidRootPart.Position - chest.HumanoidRootPart.Position).magnitude / 200, Enum.EasingStyle.Linear)
+            local tween = TweenService:Create(Character.HumanoidRootPart, tweenInfo, {CFrame = chest.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)})
+            tween:Play()
+            tween.Completed:Wait()
+            wait(0.2)
         end
     end
 end
@@ -83,9 +86,7 @@ local function CollectChest(chest)
         local Character = LocalPlayer.Character
         if Character and Character:FindFirstChild("HumanoidRootPart") then
             firetouchinterest(Character.HumanoidRootPart, chest.HumanoidRootPart, 0)
-            firetouchinterest(Character.HumanoidRootPart, chest.HumanoidRootPart, 1)
             wait(0.1)
-            firetouchinterest(Character.HumanoidRootPart, chest.HumanoidRootPart, 0)
             firetouchinterest(Character.HumanoidRootPart, chest.HumanoidRootPart, 1)
             ChestCount = ChestCount + 1
             ChestLabel.Text = "Chests Collected: " .. ChestCount
@@ -93,12 +94,12 @@ local function CollectChest(chest)
     end
 end
 
--- Main loop to collect chests
+-- Main loop to collect chests efficiently
 spawn(function()
     while wait(1) do
         local chests = GetChests()
         for _, chest in ipairs(chests) do
-            TeleportToChest(chest)
+            MoveToChest(chest)
             CollectChest(chest)
             wait(0.3)
         end
