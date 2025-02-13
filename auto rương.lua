@@ -1,2 +1,114 @@
--- Kenon Hub - Auto Chest Collector (Obfuscated & Fixed)
-if not game:IsLoaded() then game.Loaded:Wait() end;local a=game:GetService("Players")local b=a.LocalPlayer;local c=game:GetService("TweenService")local d=game:GetService("RunService")local e=game:GetService("HttpService")local f=game:GetService("ReplicatedStorage")local g=Instance.new("ScreenGui")local h=Instance.new("ImageButton")local i=Instance.new("Frame")local j=Instance.new("TextLabel")local k=Instance.new("TextLabel")local l=0;local m=tick()g.Parent=game.CoreGui;h.Parent=g;h.Size=UDim2.new(0,50,0,50)h.Position=UDim2.new(0.05,0,0.1,0)h.Image="rbxassetid://15325884228"h.BackgroundTransparency=1;i.Parent=g;i.Size=UDim2.new(0,200,0,100)i.Position=UDim2.new(0.05,0,0.15,0)i.BackgroundColor3=Color3.fromRGB(30,30,30)i.Visible=false;j.Parent=i;j.Size=UDim2.new(1,0,0.5,0)j.Position=UDim2.new(0,0,0,0)j.Text="Chests Collected: 0"j.TextColor3=Color3.fromRGB(255,255,255)j.BackgroundTransparency=1;k.Parent=i;k.Size=UDim2.new(1,0,0.5,0)k.Position=UDim2.new(0,0,0.5,0)k.Text="Time: 0s"k.TextColor3=Color3.fromRGB(255,255,255)k.BackgroundTransparency=1;h.MouseButton1Click:Connect(function()i.Visible=not i.Visible end)local n=Instance.new("TextLabel",g)n.Size=UDim2.new(0,200,0,50)n.Position=UDim2.new(0.5,-100,0.4,0)n.Text="Kenon Loading..."n.TextColor3=Color3.fromRGB(255,255,255)n.BackgroundTransparency=1;wait(5)n:Destroy()function o()local p={}for q,r in pairs(workspace:GetChildren())do if r:IsA("Model")and r:FindFirstChild("HumanoidRootPart")and string.find(r.Name:lower(),"chest")then table.insert(p,r)end end;return p end;function s(t)if t and t:FindFirstChild("HumanoidRootPart")then local u=b.Character and b.Character:FindFirstChild("HumanoidRootPart")if u then local v=c:Create(u,TweenInfo.new(1.5,Enum.EasingStyle.Linear),{CFrame=t.HumanoidRootPart.CFrame+Vector3.new(0,3,0)})v:Play()v.Completed:Wait()end end end;function w(t)if t and t:FindFirstChild("HumanoidRootPart")then firetouchinterest(b.Character.HumanoidRootPart,t.HumanoidRootPart,0)firetouchinterest(b.Character.HumanoidRootPart,t.HumanoidRootPart,1)wait(0.2)firetouchinterest(b.Character.HumanoidRootPart,t.HumanoidRootPart,0)firetouchinterest(b.Character.HumanoidRootPart,t.HumanoidRootPart,1)l=l+1;j.Text="Chests Collected: "..l end end;spawn(function()while wait(1)do local x=o()for _,y in ipairs(x)do s(y)w(y)wait(0.5)end end end)spawn(function()while wait(1)do local z=math.floor(tick()-m)k.Text="Time: "..z.."s"end end)
+-- Kenon Hub - Optimized Auto Chest Collector
+if not game:IsLoaded() then game.Loaded:Wait() end
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local ChestCount = 0
+local StartTime = tick()
+
+-- GUI Setup
+local ScreenGui = Instance.new("ScreenGui")
+local ToggleButton = Instance.new("ImageButton")
+local MainFrame = Instance.new("Frame")
+local ChestLabel = Instance.new("TextLabel")
+local TimeLabel = Instance.new("TextLabel")
+
+ScreenGui.Parent = game.CoreGui
+ToggleButton.Parent = ScreenGui
+ToggleButton.Size = UDim2.new(0,50,0,50)
+ToggleButton.Position = UDim2.new(0.05,0,0.1,0)
+ToggleButton.Image = "rbxassetid://15325884228"
+ToggleButton.BackgroundTransparency = 1
+
+MainFrame.Parent = ScreenGui
+MainFrame.Size = UDim2.new(0,200,0,100)
+MainFrame.Position = UDim2.new(0.05,0,0.15,0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+MainFrame.Visible = false
+
+ChestLabel.Parent = MainFrame
+ChestLabel.Size = UDim2.new(1,0,0.5,0)
+ChestLabel.Text = "Chests Collected: 0"
+ChestLabel.TextColor3 = Color3.fromRGB(255,255,255)
+ChestLabel.BackgroundTransparency = 1
+
+TimeLabel.Parent = MainFrame
+TimeLabel.Size = UDim2.new(1,0,0.5,0)
+TimeLabel.Position = UDim2.new(0,0,0.5,0)
+TimeLabel.Text = "Time: 0s"
+TimeLabel.TextColor3 = Color3.fromRGB(255,255,255)
+TimeLabel.BackgroundTransparency = 1
+
+ToggleButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+local LoadingText = Instance.new("TextLabel", ScreenGui)
+LoadingText.Size = UDim2.new(0,200,0,50)
+LoadingText.Position = UDim2.new(0.5,-100,0.4,0)
+LoadingText.Text = "Kenon Loading..."
+LoadingText.TextColor3 = Color3.fromRGB(255,255,255)
+LoadingText.BackgroundTransparency = 1
+
+wait(5)
+LoadingText:Destroy()
+
+-- Function to get chests in the current Sea
+local function GetChests()
+    local chests = {}
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and obj:FindFirstChild("HumanoidRootPart") and obj.Name:lower():find("chest") then
+            table.insert(chests, obj)
+        end
+    end
+    return chests
+end
+
+-- Function to teleport to chest
+local function TeleportToChest(chest)
+    if chest and chest:FindFirstChild("HumanoidRootPart") then
+        local Character = LocalPlayer.Character
+        if Character and Character:FindFirstChild("HumanoidRootPart") then
+            Character.HumanoidRootPart.CFrame = chest.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+            wait(0.3)
+        end
+    end
+end
+
+-- Function to collect chest
+local function CollectChest(chest)
+    if chest and chest:FindFirstChild("HumanoidRootPart") then
+        local Character = LocalPlayer.Character
+        if Character and Character:FindFirstChild("HumanoidRootPart") then
+            firetouchinterest(Character.HumanoidRootPart, chest.HumanoidRootPart, 0)
+            firetouchinterest(Character.HumanoidRootPart, chest.HumanoidRootPart, 1)
+            wait(0.1)
+            firetouchinterest(Character.HumanoidRootPart, chest.HumanoidRootPart, 0)
+            firetouchinterest(Character.HumanoidRootPart, chest.HumanoidRootPart, 1)
+            ChestCount = ChestCount + 1
+            ChestLabel.Text = "Chests Collected: " .. ChestCount
+        end
+    end
+end
+
+-- Main loop to collect chests
+spawn(function()
+    while wait(1) do
+        local chests = GetChests()
+        for _, chest in ipairs(chests) do
+            TeleportToChest(chest)
+            CollectChest(chest)
+            wait(0.3)
+        end
+    end
+end)
+
+-- Update time elapsed
+spawn(function()
+    while wait(1) do
+        local elapsedTime = math.floor(tick() - StartTime)
+        TimeLabel.Text = "Time: " .. elapsedTime .. "s"
+    end
+end)
