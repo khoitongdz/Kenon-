@@ -48,7 +48,7 @@ end)
 local LoadingText = Instance.new("TextLabel", ScreenGui)
 LoadingText.Size = UDim2.new(0,200,0,50)
 LoadingText.Position = UDim2.new(0.5,-100,0.4,0)
-LoadingText.Text = "Kenon Loading..."
+LoadingText.Text = "mèo béo Loading..."
 LoadingText.TextColor3 = Color3.fromRGB(255,255,255)
 LoadingText.BackgroundTransparency = 1
 
