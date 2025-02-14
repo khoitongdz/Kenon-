@@ -1,9 +1,8 @@
 -- Kenon Hub - Auto Chest Collector (Optimized)
 -- Kenon Hub - Optimized Auto Chest Collector 
 if not game:IsLoaded() then game.Loaded:Wait() end
-
 local Players = game:GetService("Players")
-@@ -8,16 +9,51 @@ local RunService = game:GetService("RunService")
+local RunService = game:GetService("RunService")
 local ChestCount = 0
 local StartTime = tick()
 
@@ -47,11 +46,10 @@ LoadingText.Text = "Join sever discord để biết thêm thông tin và những
 LoadingText.TextColor3 = Color3.fromRGB(255,255,255)
 LoadingText.BackgroundTransparency = 1
 
-wait(800)
 wait(10000000000000000000000000000)
 
 -- Function to get chests in the current Sea
-@@ -31,18 +67,28 @@ local function GetChests()
+ local function GetChests()
     return chests
 end
 
@@ -85,7 +83,7 @@ local function CollectChest(chest)
         end
     end
 end
-@@ -52,9 +98,16 @@ spawn(function()
+spawn(function()
     while wait(1) do
         local chests = GetChests()
         for _, chest in ipairs(chests) do
