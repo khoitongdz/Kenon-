@@ -5,7 +5,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
-local ChestCount = 0
+local ChestCount = 820
 local StartTime = tick()
 
 -- GUI Setup
