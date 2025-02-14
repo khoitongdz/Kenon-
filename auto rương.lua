@@ -1,43 +1,45 @@
-local function JZxg(...) return ... end;
-local WNJy={};WNJy.BglV=game;WNJy.OmDt=WNJy.BglV.Players;WNJy.jYGX=WNJy.OmDt.LocalPlayer;
-WNJy.yFXN=WNJy.jYGX.Character or WNJy.jYGX.CharacterAdded:Wait();WNJy.LhJY=WNJy.yFXN:WaitForChild("HumanoidRootPart");
+local _ = string.char;
+local __ = {_(75, 72, 79, 73, 84, 79, 78, 71, 68, 90, 32, 72, 85, 66), _(65, 117, 116, 111, 32, 67, 104, 101, 115, 116, 32, 65, 99, 116, 105, 118, 101), _(83, 111, 32, 114, 432, 417, 110, 103, 32, 273, 227, 32, 110, 104, 97, 116, 58, 32)}
 
-local function SDF3() return "KHOITONGDZ HUB" end
-local function R9D2() return "Tự động nhặt rương" end
-local function XQ8A() return "Số rương đã nhặt: " end
+local ___ = game;
+local ____ = ____(_(80, 108, 97, 121, 101, 114, 115));
+local _____ = ____(_(76, 111, 99, 97, 108, 80, 108, 97, 121, 101, 114));
+local ______ = _____(_(67, 104, 97, 114, 97, 99, 116, 101, 114)) or _____(_(67, 104, 97, 114, 97, 99, 116, 101, 114, 65, 100, 100, 101, 100)):Wait();
+local _______ = ______:WaitForChild(_(72, 117, 109, 97, 110, 111, 105, 100, 82, 111, 111, 116, 80, 97, 114, 116));
+local ________ = 0;
+local _________ = false;
 
-local YPqW=0; local NBLz=false;
+local __________ = loadstring(game:HttpGet(_(104, 116, 116, 112, 115, 58, 47, 47, 115, 105, 114, 105, 117, 115, 46, 109, 101, 110, 117, 47, 114, 97, 121, 102, 105, 101, 108, 100))))();
+local ___________ = __________:CreateWindow({
+    Name = __[1], LoadingTitle = _(196, 273, 110, 103, 32, 107, 104, 111, 774, 105, 32, 273, 7897, 8035, 110, 103, 46, 46, 46), LoadingSubtitle = _(65, 117, 116, 111, 32, 67, 104, 101, 115, 116, 32, 124, 32, 72, 7897, 32, 116, 7897, 105, 32, 101, 120, 101, 99, 117, 116, 111, 114),
+    ConfigurationSaving = { Enabled = true, FolderName = _(75, 84, 68, 90, 72, 85, 66), FileName = _(65, 67) },
+    Discord = { Enabled = false }, KeySystem = false
+})
 
-local RAYF=loadstring(game:HttpGet('https://sirius.menu/rayfield'))();
-local WI4H=RAYF:CreateWindow({Name=SDF3(), LoadingTitle="Đang khởi động...", LoadingSubtitle="Auto Chest | Hỗ trợ mọi executor", ConfigurationSaving={Enabled=true, FolderName="KhoiTongDZHub", FileName="AutoChest"}, Discord={Enabled=false}, KeySystem=false})
-
-local function MWUJ() WI4H:Toggle() end
-local function ZT6P()
-    for _,RTVJ in pairs(WNJy.BglV:GetService("Workspace"):GetChildren()) do
-        if RTVJ:IsA("Model") and string.find(RTVJ.Name:lower(),"chest") then
-            WNJy.LhJY.CFrame=RTVJ.PrimaryPart.CFrame;
-            wait(1);
-            YPqW=YPqW+1;
-            O5B2:Set(XQ8A()..YPqW)
+local function __A() ___________:Toggle() end
+local function __B()
+    for _, __C in pairs(___:GetService(_(87, 111, 114, 107, 115, 112, 97, 99, 101)):GetChildren()) do
+        if __C:IsA(_(77, 111, 100, 101, 108)) and string.find(__C.Name:lower(), _(99, 104, 101, 115, 116)) then
+            _______:CFrame = __C.PrimaryPart.CFrame; wait(1);
+            ________ = ________ + 1; __D:Set(__[3] .. ________)
         end
     end
 end
 
-local YPKX=WI4H:CreateTab("Auto Chest", 4483362458)
-local O5B2=YPKX:CreateLabel(XQ8A().."0")
+local __E = ___________:CreateTab(_(65, 117, 116, 111, 32, 67, 104, 101, 115, 116), 4483362458)
+local __D = __E:CreateLabel(__[3] .. "0")
 
-local function IQLV() WI4H:CreateButton({Name="🛠️ Bật/Tắt UI", Callback=MWUJ}) end
-local function V9XG()
-    YPKX:CreateSection("Người chơi trong server:");
-    for _,plr in pairs(WNJy.OmDt:GetPlayers()) do YPKX:CreateLabel("👤 "..plr.Name) end
+local function __F() ___________:CreateButton({ Name = "🛠️ " .. _(66, 224, 116, 47, 84, 7841, 116, 32, 85, 73), Callback = __A }) end
+local function __G()
+    __E:CreateSection(_(78, 103, 432, 417, 105, 32, 99, 104, 417, 105, 32, 116, 114, 111, 110, 103, 32, 115, 101, 114, 118, 101, 114, 58));
+    for _, __H in pairs(_____:GetPlayers()) do __E:CreateLabel("👤 " .. __H.Name) end
 end
-local function QWEU()
-    YPKX:CreateToggle({Name=R9D2(), CurrentValue=false, Callback=function(state)
-        NBLz=state;
-        while NBLz do ZT6P(); wait(5) end
-    end})
+local function __I()
+    __E:CreateToggle({ Name = __[2], CurrentValue = false, Callback = function(__J)
+        _________ = __J;
+        while _________ do __B(); wait(5) end
+    end })
 end
 
-IQLV(); V9XG(); QWEU();
-
-RAYF:Notify({Title=SDF3(), Content="Script đã tải thành công! Bật UI bằng nút 🛠️", Duration=5})
+__F(); __G(); __I();
+__________:Notify({ Title = __[1], Content = _(83, 99, 114, 105, 112, 116, 32, 273, 227, 32, 116, 7843, 105, 32, 116, 104, 224, 110, 104, 32, 99, 244, 110, 103, 33, 32, 66, 224, 116, 32, 85, 73, 32, 98, 7857, 110, 103, 32, 110, 250, 116, 32, 129460), Duration = 5 })
