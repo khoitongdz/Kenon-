@@ -1,31 +1,104 @@
--- Script Auto Nhặt Rương - Hỗ trợ tất cả Executor
-local Players = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
-local LocalPlayer = Players.LocalPlayer
-local TweenService = game:GetService("TweenService")
+-- Kenon Hub - Auto Chest Collector (Optimized)
+-- Kenon Hub - Optimized Auto Chest Collector 
+if not game:IsLoaded() then game.Loaded:Wait() end
 
-local function teleportToChest(chest)
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and chest:FindFirstChild("PrimaryPart") then
-        local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear)
-        local goal = {CFrame = chest.PrimaryPart.CFrame}
-        local tween = TweenService:Create(LocalPlayer.Character.HumanoidRootPart, tweenInfo, goal)
-        tween:Play()
-        wait(0.6) -- Đợi để chắc chắn nhặt rương
-    end
+local Players = game:GetService("Players")
+@@ -8,16 +9,51 @@ local RunService = game:GetService("RunService")
+local ChestCount = 0
+local StartTime = tick()
+
+-- Display Loading Message
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+-- GUI Setup
+local ScreenGui = Instance.new("ScreenGui")
+local ToggleButton = Instance.new("ImageButton")
+local MainFrame = Instance.new("Frame")
+local ChestLabel = Instance.new("TextLabel")
+local TimeLabel = Instance.new("TextLabel")
+ScreenGui.Parent = game.CoreGui
+ToggleButton.Parent = ScreenGui
+ToggleButton.Size = UDim2.new(0,50,0,50)
+ToggleButton.Position = UDim2.new(0.05,0,0.1,0)
+ToggleButton.Image = "rbxassetid://15325758947"
+ToggleButton.BackgroundTransparency = 1
+MainFrame.Parent = ScreenGui
+MainFrame.Size = UDim2.new(0,200,0,100)
+MainFrame.Position = UDim2.new(0.05,0,0.15,0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+MainFrame.Visible = false
+ChestLabel.Parent = MainFrame
+ChestLabel.Size = UDim2.new(1,0,0.5,0)
+ChestLabel.Text = "Chests Collected: 0"
+ChestLabel.TextColor3 = Color3.fromRGB(255,255,255)
+ChestLabel.BackgroundTransparency = 1
+TimeLabel.Parent = MainFrame
+TimeLabel.Size = UDim2.new(1,0,0.5,0)
+TimeLabel.Position = UDim2.new(0,0,0.5,0)
+TimeLabel.Text = "Time: 0s"
+TimeLabel.TextColor3 = Color3.fromRGB(255,255,255)
+TimeLabel.BackgroundTransparency = 1
+ToggleButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+local LoadingText = Instance.new("TextLabel", ScreenGui)
+LoadingText.Size = UDim2.new(0,200,0,50)
+LoadingText.Position = UDim2.new(0.5,-100,0.4,0)
+LoadingText.Text = "Join sever discord để biết thêm thông tin và những thông báo update script mới nhất nhé:>:https://discord.gg/w26VGWmMPb"
+LoadingText.TextColor3 = Color3.fromRGB(255,255,255)
+LoadingText.BackgroundTransparency = 1
+
+wait(800)
+wait(10000000000000000000000000000)
+
+-- Function to get chests in the current Sea
+@@ -31,18 +67,28 @@ local function GetChests()
+    return chests
 end
 
-local function collectChests()
-    for _, obj in pairs(Workspace:GetChildren()) do
-        if obj:IsA("Model") and obj:FindFirstChild("PrimaryPart") and string.find(obj.Name:lower(), "chest") then
-            pcall(function()
-                teleportToChest(obj)
-            end)
+-- Move to and collect chest
+local function CollectChest(chest)
+-- Function to smoothly move player to chest
+local function MoveToChest(chest)
+    if chest and chest:FindFirstChild("HumanoidRootPart") then
+        local Character = LocalPlayer.Character
+        if Character and Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = Character.HumanoidRootPart
+            hrp.CFrame = chest.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+            Character.HumanoidRootPart.CFrame = chest.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+            wait(0.3)
+            firetouchinterest(hrp, chest.HumanoidRootPart, 0)
         end
     end
 end
-
-while wait(2) do -- Giảm thời gian giữa mỗi lần quét rương
-    pcall(function()
-        collectChests()
-    end)
+-- Function to collect chest
+local function CollectChest(chest)
+    if chest and chest:FindFirstChild("HumanoidRootPart") then
+        local Character = LocalPlayer.Character
+        if Character and Character:FindFirstChild("HumanoidRootPart") then
+            firetouchinterest(Character.HumanoidRootPart, chest.HumanoidRootPart, 0)
+            wait(0.1)
+            firetouchinterest(hrp, chest.HumanoidRootPart, 1)
+            firetouchinterest(Character.HumanoidRootPart, chest.HumanoidRootPart, 1)
+            ChestCount = ChestCount + 1
+            ChestLabel.Text = "Chests Collected: " .. ChestCount
+            wait(0.5)
+        end
+    end
 end
+@@ -52,9 +98,16 @@ spawn(function()
+    while wait(1) do
+        local chests = GetChests()
+        for _, chest in ipairs(chests) do
+            MoveToChest(chest)
+            CollectChest(chest)
+        end
+    end
+end)
+
+-- Update time elapsed
+spawn(function()
+    while wait(1) do
+        local elapsedTime = math.floor(tick() - StartTime)
+        TimeLabel.Text = "Time: " .. elapsedTime .. "s"
+    end
+end)
