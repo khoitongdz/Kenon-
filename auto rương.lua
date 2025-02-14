@@ -1,4 +1,4 @@
--- Kenon Hub - Optimized Auto Chest Collector 
+-- Kenon Hub - Optimized Auto Chest Collector
 if not game:IsLoaded() then game.Loaded:Wait() end
 
 local Players = game:GetService("Players")
@@ -52,7 +52,7 @@ LoadingText.Text = "Join sever discord để biết thêm thông tin và những
 LoadingText.TextColor3 = Color3.fromRGB(255,255,255)
 LoadingText.BackgroundTransparency = 1
 
-wait(5)
+wait(100000000000000000000000000000000000000000000000000000000000)
 LoadingText:Destroy()
 
 -- Function to get chests in the current Sea
