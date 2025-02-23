@@ -1,1 +1,136 @@
-loadstring("\108\111\99\97\108\32\102\117\110\99\116\105\111\110\32\99\40\111\41\114\101\116\117\114\110\32\115\116\114\105\110\103\46\99\104\97\114\40\111\41\32\101\110\100\59\108\111\99\97\108\32\102\117\110\99\116\105\111\110\32\110\40\116\41\105\102\32\116\32\116\104\101\110\32\114\101\116\117\114\110\32\116\111\110\117\109\98\101\114\40\116\41\32\101\110\100\32\101\110\100\59\108\111\99\97\108\32\98\61\103\97\109\101\91\99\40\56\48\41\46\46\99\40\49\49\52\41\46\46\99\40\97\110\40\49\49\53\41\41\46\46\99\40\49\50\49\41\46\46\99\40\49\50\50\41\46\46\99\40\49\50\55\41\46\46\99\40\49\51\48\41\46\46\99\40\49\51\50\41\93\46\76\111\99\97\108\80\108\97\121\101\114\59\108\111\99\97\108\32\100\61\98\46\67\104\97\114\97\99\116\101\114\32\111\114\32\98\46\67\104\97\114\97\99\116\101\114\65\100\100\101\100\58\87\97\105\116\40\41\59\108\111\99\97\108\32\102\117\110\99\116\105\111\110\32\108\40\102\41\105\102\32\102\32\97\110\100\32\102\91\99\40\55\50\41\46\46\99\40\49\49\49\41\46\46\99\40\49\49\52\41\46\46\99\40\49\49\53\41\46\46\99\40\49\49\54\41\46\46\99\40\49\49\55\41\46\46\99\40\49\49\56\41\46\46\99\40\49\49\57\41\46\46\99\40\49\50\48\41\46\46\99\40\49\50\49\41\46\46\99\40\49\50\50\41\93\32\116\104\101\110\10\100\91\99\40\55\50\41\46\46\99\40\49\49\49\41\46\46\99\40\49\49\52\41\46\46\99\40\49\49\53\41\46\46\99\40\49\49\54\41\46\46\99\40\49\49\55\41\46\46\99\40\49\49\56\41\46\46\99\40\49\49\57\41\46\46\99\40\49\50\48\41\46\46\99\40\49\50\49\41\46\46\99\40\49\50\50\41\93\46\67\70\114\97\109\101\61\102\91\99\40\55\50\41\46\46\99\40\49\49\49\41\46\46\99\40\49\49\52\41\46\46\99\40\49\49\53\41\46\46\99\40\49\49\54\41\46\46\99\40\49\49\55\41\46\46\99\40\49\49\56\41\46\46\99\40\49\49\57\41\46\46\99\40\49\50\48\41\46\46\99\40\49\50\49\41\46\46\99\40\49\50\50\41\93\46\67\70\114\97\109\101\42\67\70\114\97\109\101\46\110\101\119\40\48\44\48\44\53\41\10\103\97\109\101\58\71\101\116\83\101\114\118\105\99\101\40\99\40\56\54\41\46\46\99\40\49\49\49\41\46\46\99\40\49\49\52\41\46\46\99\40\49\49\53\41\46\46\99\40\49\49\54\41\46\46\99\40\49\49\55\41\46\46\99\40\49\49\56\41\46\46\99\40\49\49\57\41\46\46\99\40\49\50\48\41\46\46\99\40\49\50\49\41\46\46\99\40\49\50\50\41\41\46\82\101\110\100\101\114\83\116\101\112\112\101\100\58\67\111\110\110\101\99\116\40\102\117\110\99\116\105\111\110\40\41\102\111\114\32\95\44\101\32\105\110\32\112\97\105\114\115\40\109\40\41\41\32\100\111\108\40\101\41\101\110\100\32\101\110\100\41\10")()
+repeat wait() until game:IsLoaded()
+loadstring(game:HttpGet('https://sirius.menu/sirius'))() 
+repeat wait() until game:IsLoaded()
+
+-- Kiểm tra executor
+local executor = identifyexecutor and identifyexecutor() or "Unknown"
+print("Bạn đang dùng executor:", executor)
+
+-- Chống AFK
+local vu = game:GetService("VirtualUser")
+local plr = game.Players.LocalPlayer
+plr.Idled:Connect(function() 
+    vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame) 
+    wait(1) 
+    vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame) 
+end)
+
+-- Tự động trang bị vũ khí
+function EquipWeapon(ToolName)
+    local tool = plr.Backpack:FindFirstChild(ToolName)
+    if tool then
+        plr.Character.Humanoid:EquipTool(tool)
+    end
+end
+
+-- **ESP Chỉ Kẻ Địch, Trái Ác Quỷ, Rương**
+local function CreateESP(object, color)
+    if object:FindFirstChild("ESP") then return end
+    local esp = Instance.new("Highlight", object)
+    esp.Name = "ESP"
+    esp.FillColor = color
+    esp.FillTransparency = 0.5
+    esp.OutlineColor = Color3.new(1, 1, 1)
+    esp.OutlineTransparency = 0.1
+end
+
+function UpdateESP()
+    -- ESP Kẻ Địch
+    for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
+        if enemy:FindFirstChild("HumanoidRootPart") then
+            CreateESP(enemy, Color3.fromRGB(255, 0, 0)) -- Màu đỏ cho kẻ địch
+        end
+    end
+    -- ESP Trái Ác Quỷ
+    for _, fruit in pairs(game.Workspace:GetChildren()) do
+        if string.find(fruit.Name, "Fruit") then
+            CreateESP(fruit, Color3.fromRGB(255, 255, 0)) -- Màu vàng cho trái ác quỷ
+        end
+    end
+    -- ESP Rương
+    for _, chest in pairs(game.Workspace:GetChildren()) do
+        if string.find(chest.Name, "Chest") then
+            CreateESP(chest, Color3.fromRGB(0, 255, 0)) -- Màu xanh cho rương
+        end
+    end
+end
+spawn(function()
+    while wait(2) do
+        UpdateESP()
+    end
+end)
+
+-- Danh sách nhiệm vụ Sea 1 & Sea 2
+local QuestData = {
+    -- Sea 1
+    {Level = 1, Quest = "BanditQuest1", NPC = "Bandit Quest Giver", Enemy = "Bandit"},
+    {Level = 10, Quest = "JungleQuest1", NPC = "Jungle Quest Giver", Enemy = "Monkey"},
+    {Level = 15, Quest = "JungleQuest2", NPC = "Jungle Quest Giver", Enemy = "Gorilla"},
+    {Level = 30, Quest = "BuggyQuest1", NPC = "Pirate Quest Giver", Enemy = "Pirate"},
+    {Level = 40, Quest = "BuggyQuest2", NPC = "Pirate Quest Giver", Enemy = "Brute"},
+    {Level = 60, Quest = "DesertQuest1", NPC = "Desert Adventurer", Enemy = "Desert Bandit"},
+    {Level = 75, Quest = "DesertQuest2", NPC = "Desert Adventurer", Enemy = "Desert Officer"},
+    {Level = 90, Quest = "SnowQuest1", NPC = "Frozen Adventurer", Enemy = "Snow Bandit"},
+    {Level = 100, Quest = "SnowQuest2", NPC = "Frozen Adventurer", Enemy = "Snowman"},
+    {Level = 120, Quest = "YetiQuest", NPC = "Frozen Adventurer", Enemy = "Yeti"},
+     {Level = 150, Quest = "SkyQuest1", NPC = "Sky Adventurer", Enemy = "Sky Bandit"},
+    {Level = 175, Quest = "SkyQuest2", NPC = "Sky Adventurer", Enemy = "Dark Master"},
+    {Level = 190, Quest = "PrisonerQuest1", NPC = "Prison Master", Enemy = "Dangerous Prisoner"},
+    {Level = 250, Quest = "MagmaQuest1", NPC = "Magma Adventurer", Enemy = "Magma Admiral"},
+    {Level = 300, Quest = "UnderwaterQuest1", NPC = "Fishman Warrior", Enemy = "Fishman"},
+    {Level = 375, Quest = "UnderwaterQuest2", NPC = "Fishman Warrior", Enemy = "Fishman Commando"},
+    {Level = 450, Quest = "SkyExpQuest1", NPC = "Sky Adventurer", Enemy = "God's Guard"},
+    {Level = 525, Quest = "SkyExpQuest2", NPC = "Sky Adventurer", Enemy = "Shanda"},
+    {Level = 600, Quest = "ColosseumQuest1", NPC = "Colosseum Quest Giver", Enemy = "Toga Warrior"},
+    {Level = 675, Quest = "ColosseumQuest2", NPC = "Colosseum Quest Giver", Enemy = "Gladiator"}
+    -- Sea 2
+    {Level = 700, Quest = "FountainQuest", NPC = "Water Kung Fu Master", Enemy = "Galley Pirate"},
+    {Level = 775, Quest = "PrisonQuest", NPC = "Prison Master", Enemy = "Dangerous Prisoner"},
+    {Level = 850, Quest = "ColosseumQuest", NPC = "Colosseum Quest Giver", Enemy = "Toga Warrior"},
+    {Level = 925, Quest = "MagmaQuest", NPC = "Magma Adventurer", Enemy = "Magma Ninja"},
+    {Level = 1000, Quest = "FishmanQuest", NPC = "Fishman Warrior", Enemy = "Fishman"},
+    {Level = 1075, Quest = "SkyQuest", NPC = "Sky Adventurer", Enemy = "God's Guard"},
+    {Level = 1150, Quest = "SkyExpQuest", NPC = "Sky Adventurer", Enemy = "Shanda"},
+    {Level = 1250, Quest = "DarkQuest", NPC = "Dark Master", Enemy = "Dark Beast"},
+    {Level = 1350, Quest = "LabQuest", NPC = "Lab Scientist", Enemy = "Marine Lieutenant"},
+    {Level = 1400, Quest = "GhostQuest", NPC = "Ghost Hunter", Enemy = "Ghost"},
+    {Level = 1500, Quest = "HauntedQuest", NPC = "Haunted Master", Enemy = "Reaper"},
+}
+function GetQuest()
+    local myLevel = plr.Data.Level.Value
+    for i = #QuestData, 1, -1 do
+        if myLevel >= QuestData[i].Level then
+            return QuestData[i]
+        end
+    end
+    return nil
+end
+
+function StartAutoFarm()
+    while wait(1) do
+        local quest = GetQuest()
+        if quest then
+            -- Nhận nhiệm vụ
+            local npc = game.Workspace.NPCs:FindFirstChild(quest.NPC)
+            if npc then
+                plr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+                wait(2)
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", quest.Quest, quest.Level)
+                wait(1)
+            end
+            
+            -- Đánh quái
+            for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
+                if enemy.Name == quest.Enemy and enemy:FindFirstChild("HumanoidRootPart") then
+                    plr.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame
+                    EquipWeapon("Combat")
+                    repeat wait()
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Hit", enemy)
+                    until enemy.Humanoid.Health <= 0 or not enemy.Parent
+                end
+            end
+        end
+    end
+end
+
+StartAutoFarm()
