@@ -1,4 +1,4 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/sirius'))()
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Sirius/request/source.lua'))()
 
 local Window = Rayfield:CreateWindow({
     Name = "Kenon Hub | Blox Fruits",
