@@ -1,17 +1,19 @@
+----[[[combo script auto đảo núi lửa và auto tial draco v4 siêu ngon]]]----
 ----[[[edit script khoitongdz]]]----
 ---[[[Discord:https://discord.gg/w26VGWmMPb]]]---
-spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua"))()
-end)
 
-spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/khoitongdz/Pls-Donate.lua/refs/heads/main/stus.lua"))()
-end)
+local function obf(x) return string.char(x:byte() + 1) end
+local function deobf(x) return string.char(x:byte() - 1) end
 
-spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Xero2409/XeroHub/refs/heads/main/main.lua"))()
-end)
+local urls = {
+    "https://raw.githubusercontent.com/Xero2409/XeroHub/refs/heads/main/main.lua",
+    "https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua",
+    "https://raw.githubusercontent.com/khoitongdz/Pls-Donate.lua/refs/heads/main/stus.lua",
+    "https://raw.githubusercontent.com/TurboLite/Script/refs/heads/main/Fly.lua"
+}
 
-spawn(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/refs/heads/main/Fly.lua"))()
+for _, url in ipairs(urls) do
+    spawn(function()
+        loadstring(game:HttpGet(url))()
     end)
+end
