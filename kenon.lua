@@ -1,4 +1,5 @@
 ----[[[edit script khoitongdz]]]----
+---[[[Discord:https://discord.gg/w26VGWmMPb]]]---
 spawn(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua"))()
 end)
