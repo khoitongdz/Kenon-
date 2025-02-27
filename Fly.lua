@@ -47,7 +47,7 @@ onof.BackgroundColor3 = Color3.fromRGB(255, 249, 74)
 onof.Position = UDim2.new(0.702823281, 0, 0.491228074, 0)
 onof.Size = UDim2.new(0, 56, 0, 28)
 onof.Font = Enum.Font.SourceSans
-onof.Text = "fly"
+onof.Text = "bay"
 onof.TextColor3 = Color3.fromRGB(0, 0, 0)
 onof.TextSize = 14.000
 
@@ -56,7 +56,7 @@ TextLabel.BackgroundColor3 = Color3.fromRGB(242, 60, 255)
 TextLabel.Position = UDim2.new(0.469327301, 0, 0, 0)
 TextLabel.Size = UDim2.new(0, 100, 0, 28)
 TextLabel.Font = Enum.Font.SourceSans
-TextLabel.Text = "FLY Script"
+TextLabel.Text = "Trâu Bay Script"
 TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
 TextLabel.TextScaled = true
 TextLabel.TextSize = 14.000
@@ -136,7 +136,7 @@ local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
 nowe = false
 
 game:GetService("StarterGui"):SetCore("SendNotification", { 
-	Title = "FLY Script";
+	Title = "Trâu Bay Script";
 	Text = "By khoitongdz";
 	Icon = "rbxthumb://type=Asset&id=5107182114&w=150&h=150"})
 Duration = 5;
