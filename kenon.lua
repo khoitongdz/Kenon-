@@ -8,7 +8,6 @@ local function deobf(x) return string.char(x:byte() - 1) end
 local urls = {
     "https://raw.githubusercontent.com/Xero2409/XeroHub/refs/heads/main/main.lua",
     "https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua",
-    "https://raw.githubusercontent.com/khoitongdz/Pls-Donate.lua/refs/heads/main/stus.lua",
     "https://raw.githubusercontent.com/khoitongdz/Kenon-/refs/heads/main/Fly.lua"
 }
 
