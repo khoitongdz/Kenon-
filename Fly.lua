@@ -22,22 +22,22 @@ Frame.BorderColor3 = Color3.fromRGB(103, 221, 213)
 Frame.Position = UDim2.new(0.100320168, 0, 0.379746825, 0)
 Frame.Size = UDim2.new(0, 190, 0, 57)
 
-up.Name = "Up"
+up.Name = "Lên"
 up.Parent = Frame
 up.BackgroundColor3 = Color3.fromRGB(79, 255, 152)
 up.Size = UDim2.new(0, 44, 0, 28)
 up.Font = Enum.Font.SourceSans
-up.Text = "Up"
+up.Text = "Lên"
 up.TextColor3 = Color3.fromRGB(0, 0, 0)
 up.TextSize = 14.000
 
-down.Name = "down"
+down.Name = "Xuống"
 down.Parent = Frame
 down.BackgroundColor3 = Color3.fromRGB(215, 255, 121)
 down.Position = UDim2.new(0, 0, 0.491228074, 0)
 down.Size = UDim2.new(0, 44, 0, 28)
 down.Font = Enum.Font.SourceSans
-down.Text = "DOWN"
+down.Text = "Xuống"
 down.TextColor3 = Color3.fromRGB(0, 0, 0)
 down.TextSize = 14.000
 
@@ -56,7 +56,7 @@ TextLabel.BackgroundColor3 = Color3.fromRGB(242, 60, 255)
 TextLabel.Position = UDim2.new(0.469327301, 0, 0, 0)
 TextLabel.Size = UDim2.new(0, 100, 0, 28)
 TextLabel.Font = Enum.Font.SourceSans
-TextLabel.Text = "Trâu Bay Script"
+TextLabel.Text = " Script Trâu Bay"
 TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
 TextLabel.TextScaled = true
 TextLabel.TextSize = 14.000
@@ -136,7 +136,7 @@ local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
 nowe = false
 
 game:GetService("StarterGui"):SetCore("SendNotification", { 
-	Title = "Trâu Bay Script";
+	Title = " Script Trâu Bay";
 	Text = "By khoitongdz";
 	Icon = "rbxthumb://type=Asset&id=5107182114&w=150&h=150"})
 Duration = 5;
