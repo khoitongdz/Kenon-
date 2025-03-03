@@ -1,7 +1,4 @@
-----[[[combo script auto đảo núi lửa và auto trial draco v4]]]----
-----[[[edit script khoitongdz]]]----
----[[[Discord:https://discord.gg/w26VGWmMPb]]]---
-
+---[[[combo script auto đảo núi lửa và auto trial draco v4]]]---
 local function obf(x) return string.char(x:byte() + 1) end
 local function deobf(x) return string.char(x:byte() - 1) end
 
