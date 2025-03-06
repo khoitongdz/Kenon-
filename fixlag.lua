@@ -1,36 +1,36 @@
---discord.gg//w26VGWmMPb
-
+-- 🛠️ Tạo GUI và Logo
 local gui = Instance.new("ScreenGui")
 gui.Parent = game.CoreGui
 gui.Name = "FixLagUI"
 
 local toggleButton = Instance.new("ImageButton", gui)
-toggleButton.Size = UDim2.new(0, 60, 0, 60)
-toggleButton.Position = UDim2.new(0.05, 0, 0.05, 0)
+toggleButton.Size = UDim2.new(0, 80, 0, 80) -- Mở rộng kích thước
+
+toggleButton.Position = UDim2.new(0.02, 0, 0.02, 0) -- Đẩy sát góc
+
 toggleButton.Image = "rbxassetid://126229665034471"
 toggleButton.BackgroundTransparency = 1
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 200, 0, 160)
-frame.Position = UDim2.new(0.5, -100, 0.4, -80)
+frame.Size = UDim2.new(0, 250, 0, 300) -- Mở rộng UI
+frame.Position = UDim2.new(0.5, -125, 0.4, -150)
 frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 frame.Active, frame.Draggable, frame.Visible = true, true, false
 
-local function createButton(parent, text, position)
-    local btn = Instance.new("TextButton", parent)
-    btn.Size, btn.Position = UDim2.new(0, 180, 0, 40), position
-    btn.Text, btn.BackgroundColor3, btn.TextColor3 = text, Color3.fromRGB(100, 100, 100), Color3.fromRGB(255, 255, 255)
-    return btn
-end
-
-local btnFixLag = createButton(frame, "Fix Lag Max", UDim2.new(0, 10, 0, 10))
-local btnJump = createButton(frame, "Nhảy Cao", UDim2.new(0, 10, 0, 60))
-local btnSpeed = createButton(frame, "Chạy Nhanh", UDim2.new(0, 10, 0, 110))
-
-local FPSLabel = Instance.new("TextLabel", gui)
-FPSLabel.Size, FPSLabel.Position = UDim2.new(0, 100, 0, 30), UDim2.new(0.02, 0, 0.02, 0)
+local FPSLabel = Instance.new("TextLabel", frame)
+FPSLabel.Size, FPSLabel.Position = UDim2.new(0, 230, 0, 30), UDim2.new(0, 10, 0, 260)
 FPSLabel.TextColor3, FPSLabel.BackgroundTransparency = Color3.fromRGB(255, 255, 255), 1
 FPSLabel.Text = "FPS: Calculating..."
+FPSLabel.Font = Enum.Font.SourceSansBold
+FPSLabel.TextSize = 18
+
+local function createButton(parent, text, position, callback)
+    local btn = Instance.new("TextButton", parent)
+    btn.Size, btn.Position = UDim2.new(0, 230, 0, 45), position -- Nút lớn hơn
+    btn.Text, btn.BackgroundColor3, btn.TextColor3 = text, Color3.fromRGB(100, 100, 100), Color3.fromRGB(255, 255, 255)
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
 
 local function FixLag()
     settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
@@ -44,26 +44,43 @@ local function FixLag()
         if v:IsA("BasePart") then v.Material = Enum.Material.SmoothPlastic end
         if v:IsA("MeshPart") then v.TextureID = "" end
     end
-    print("✅ Fix Lag Cấp Độ Max thành công!")
+    print("✅ Fix Lag hoàn tất!")
 end
 
-local function ModifyCharacter(property, value, message)
+local speedEnabled = false
+local function ToggleSpeed()
     local player = game.Players.LocalPlayer
     if player and player.Character then
         local humanoid = player.Character:FindFirstChild("Humanoid")
-        if humanoid then humanoid[property] = value print(message) end
+        if humanoid then
+            speedEnabled = not speedEnabled
+            humanoid.WalkSpeed = speedEnabled and 300 or 16
+            print("✅ Chạy nhanh: " .. tostring(speedEnabled))
+        end
     end
+end
+
+local jumpEnabled = false
+local function ToggleInfiniteJump()
+    jumpEnabled = not jumpEnabled
+    game:GetService("UserInputService").JumpRequest:Connect(function()
+        if jumpEnabled then game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping") end
+    end)
+    print("✅ Nhảy cao: " .. tostring(jumpEnabled))
+end
+
+local function ToggleNoclip()
+    print("🛸 Xuyên tường chưa được tích hợp!")
 end
 
 FixLag()
 
-spawn(function()
-    while true do
-        ModifyCharacter("JumpPower", 200, "✅ Đã bật Nhảy Cao!")
-        ModifyCharacter("WalkSpeed", 250, "✅ Đã bật Chạy Nhanh!")
-        wait(2)
-    end
-end)
+local btnFixLag = createButton(frame, "🛠️ Fix Lag", UDim2.new(0, 10, 0, 10), FixLag)
+local btnSpeed = createButton(frame, "⚡ Chạy Nhanh", UDim2.new(0, 10, 0, 60), ToggleSpeed)
+local btnJump = createButton(frame, "🔥 Nhảy Cao", UDim2.new(0, 10, 0, 110), ToggleInfiniteJump)
+local btnNoclip = createButton(frame, "🛸 Xuyên Tường", UDim2.new(0, 10, 0, 160), ToggleNoclip)
+
+toggleButton.MouseButton1Click:Connect(function() frame.Visible = not frame.Visible end)
 
 local RunService = game:GetService("RunService")
 local fps = 0
@@ -75,9 +92,3 @@ spawn(function()
         fps = 0
     end
 end)
-
-toggleButton.MouseButton1Click:Connect(function() frame.Visible = not frame.Visible end)
-
-btnFixLag.MouseButton1Click:Connect(FixLag)
-btnJump.MouseButton1Click:Connect(function() ModifyCharacter("JumpPower", 200, "✅ Đã bật Nhảy Cao!") end)
-btnSpeed.MouseButton1Click:Connect(function() ModifyCharacter("WalkSpeed", 500, "✅ Đã bật Chạy Nhanh!") end)
