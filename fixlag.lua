@@ -8,6 +8,7 @@ local PingLabel = Instance.new("TextLabel")
 local SliderFrame = Instance.new("Frame")
 local Slider = Instance.new("TextButton")
 local PercentageLabel = Instance.new("TextLabel")
+local UserInputService = game:GetService("UserInputService")
 
 -- Cấu hình UI
 ScreenGui.Name = "KenonFixLagUI"
@@ -17,7 +18,7 @@ ToggleButton.Name = "ToggleButton"
 ToggleButton.Parent = ScreenGui
 ToggleButton.Size = UDim2.new(0, 50, 0, 50)
 ToggleButton.Position = UDim2.new(0, 10, 0, 10)
-ToggleButton.Image = "rbxassetid://84122944038358" -- Thay bằng ID logo của bạn
+ToggleButton.Image = "rbxassetid://12345678" -- Thay bằng ID logo của bạn
 ToggleButton.BackgroundTransparency = 1
 
 PingLabel.Name = "PingLabel"
@@ -78,19 +79,24 @@ ToggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
+local function updateSlider(input)
+    local relativeX = math.clamp(input.Position.X - SliderFrame.AbsolutePosition.X, 0, SliderFrame.AbsoluteSize.X)
+    Slider.Position = UDim2.new(0, relativeX, 0, 0)
+    fixLagPercentage = math.floor(15 + (relativeX / SliderFrame.AbsoluteSize.X) * 85)
+    PercentageLabel.Text = "Fix Lag: " .. fixLagPercentage .. "%"
+end
+
 Slider.MouseButton1Down:Connect(function()
-    local inputConnection
-    inputConnection = game:GetService("UserInputService").InputChanged:Connect(function(input)
+    local moveConnection, releaseConnection
+    moveConnection = UserInputService.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement then
-            local relativeX = math.clamp(input.Position.X - SliderFrame.AbsolutePosition.X, 0, SliderFrame.AbsoluteSize.X)
-            Slider.Position = UDim2.new(0, relativeX, 0, 0)
-            fixLagPercentage = math.floor(15 + (relativeX / SliderFrame.AbsoluteSize.X) * 85)
-            PercentageLabel.Text = "Fix Lag: " .. fixLagPercentage .. "%"
+            updateSlider(input)
         end
     end)
-    game:GetService("UserInputService").InputEnded:Connect(function(input)
+    releaseConnection = UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            inputConnection:Disconnect()
+            moveConnection:Disconnect()
+            releaseConnection:Disconnect()
         end
     end)
 end)
@@ -98,7 +104,7 @@ end)
 -- Cập nhật ping
 spawn(function()
     while true do
-        local stats = game:GetService("Stats"):FindFirstChild("PerformanceStats")
+        local stats = game:GetService("Stats")
         if stats then
             local ping = stats:FindFirstChild("Ping")
             if ping then
