@@ -1,4 +1,3 @@
---// UI Fix Lag Roblox
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local ToggleButton = Instance.new("TextButton")
@@ -8,16 +7,14 @@ local FPSText = Instance.new("TextLabel")
 ScreenGui.Parent = game.CoreGui
 ScreenGui.Name = "FixLagUI"
 
--- UI chính
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.Position = UDim2.new(0.05, 0, 0.1, 0)
 MainFrame.Size = UDim2.new(0, 150, 0, 100)
 MainFrame.Active = true
 MainFrame.Draggable = true
-MainFrame.Visible = false -- Ẩn UI ban đầu
+MainFrame.Visible = false 
 
--- Nút bật/tắt fix lag
 ToggleButton.Parent = MainFrame
 ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 ToggleButton.Size = UDim2.new(0, 130, 0, 40)
