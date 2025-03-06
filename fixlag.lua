@@ -3,6 +3,7 @@ local ui = Instance.new("ScreenGui")
 local frame = Instance.new("Frame")
 local buttons = {}
 local levels = {"Đã Bật X1", "Đã Bật X2", "Đã Bật X3", "Tắt"}
+local toggleButton = Instance.new("ImageButton") -- Nút logo
 
 -- UI Setup
 ui.Parent = game.CoreGui
@@ -24,6 +25,17 @@ for i, text in ipairs(levels) do
     button.TextSize = 20
     table.insert(buttons, button)
 end
+
+-- Toggle UI Button
+toggleButton.Parent = ui
+toggleButton.Size = UDim2.new(0, 50, 0, 50)
+toggleButton.Position = UDim2.new(0.05, 0, 0.1, 0)
+toggleButton.Image = "rbxassetid://84122944038358" -- Thay bằng ID hình ảnh logo
+toggleButton.BackgroundTransparency = 1
+
+toggleButton.MouseButton1Click:Connect(function()
+    frame.Visible = not frame.Visible
+end)
 
 -- Function to adjust lag settings
 local function fixLag(level)
