@@ -29,7 +29,7 @@ ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 LogoButton.Parent = ScreenGui
 LogoButton.Size = UDim2.new(0, 60, 0, 60)
 LogoButton.Position = UDim2.new(0.05, 0, 0.05, 0)
-LogoButton.Image = "rbxassetid://12345678" -- 🔴 Thay ID ảnh của bạn vào đây!
+LogoButton.Image = "rbxassetid://84122944038358" -- 🔴 Thay ID ảnh của bạn vào đây!
 LogoButton.BackgroundTransparency = 1
 
 -- Hiển thị FPS
