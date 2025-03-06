@@ -3,14 +3,12 @@ local gui = Instance.new("ScreenGui")
 gui.Parent = game.CoreGui
 gui.Name = "FixLagUI"
 
--- Tạo nút logo bật/tắt UI
 local toggleButton = Instance.new("ImageButton", gui)
 toggleButton.Size = UDim2.new(0, 60, 0, 60)
 toggleButton.Position = UDim2.new(0.05, 0, 0.05, 0)
 toggleButton.Image = "rbxassetid://126229665034471"
 toggleButton.BackgroundTransparency = 1
 
--- Tạo Frame chính
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 200, 0, 160)
 frame.Position = UDim2.new(0.5, -100, 0.4, -80)
@@ -19,7 +17,6 @@ frame.Active = true
 frame.Draggable = true
 frame.Visible = false
 
--- Nút Fix Lag
 local ButtonFixLag = Instance.new("TextButton", frame)
 ButtonFixLag.Size = UDim2.new(0, 180, 0, 40)
 ButtonFixLag.Position = UDim2.new(0, 10, 0, 10)
@@ -27,7 +24,6 @@ ButtonFixLag.Text = "Fix Lag"
 ButtonFixLag.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 ButtonFixLag.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- Nút Nhảy Cao
 local ButtonJump = Instance.new("TextButton", frame)
 ButtonJump.Size = UDim2.new(0, 180, 0, 40)
 ButtonJump.Position = UDim2.new(0, 10, 0, 60)
@@ -35,7 +31,6 @@ ButtonJump.Text = "Nhảy Cao"
 ButtonJump.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 ButtonJump.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- Nút Chạy Nhanh
 local ButtonSpeed = Instance.new("TextButton", frame)
 ButtonSpeed.Size = UDim2.new(0, 180, 0, 40)
 ButtonSpeed.Position = UDim2.new(0, 10, 0, 110)
@@ -43,15 +38,13 @@ ButtonSpeed.Text = "Chạy Nhanh"
 ButtonSpeed.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 ButtonSpeed.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- Hiển thị FPS
 local FPSLabel = Instance.new("TextLabel", gui)
 FPSLabel.Size = UDim2.new(0, 100, 0, 30)
 FPSLabel.Position = UDim2.new(0.02, 0, 0.02, 0)
 FPSLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 FPSLabel.BackgroundTransparency = 1
-FPSLabel.Text = "FPS: Calculating..."
+FPSLabel.Text = "FPS: đang tải..."
 
--- Hàm Fix Lag
 local function FixLag()
     settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
     game.Lighting.GlobalShadows = false
@@ -75,7 +68,6 @@ local function FixLag()
     print("✅ Đã Fix Lag thành công!")
 end
 
--- Hàm Nhảy Cao
 local function JumpBoost()
     local player = game.Players.LocalPlayer
     if player and player.Character then
@@ -84,7 +76,6 @@ local function JumpBoost()
     end
 end
 
--- Hàm Chạy Nhanh
 local function SpeedBoost()
     local player = game.Players.LocalPlayer
     if player and player.Character then
@@ -93,7 +84,6 @@ local function SpeedBoost()
     end
 end
 
--- Tính FPS
 local RunService = game:GetService("RunService")
 local fps = 0
 RunService.RenderStepped:Connect(function()
@@ -108,14 +98,12 @@ spawn(function()
     end
 end)
 
--- Ẩn / Hiện UI bằng logo
 local uiVisible = false
 toggleButton.MouseButton1Click:Connect(function()
     uiVisible = not uiVisible
     frame.Visible = uiVisible
 end)
 
--- Gán sự kiện cho nút bấm
 ButtonFixLag.MouseButton1Click:Connect(FixLag)
 ButtonJump.MouseButton1Click:Connect(JumpBoost)
 ButtonSpeed.MouseButton1Click:Connect(SpeedBoost)
