@@ -1,12 +1,13 @@
+
 -- Kenon Ultimate Fix Lag Script
--- Cho phép chọn phần trăm fix lag từ 15% đến 100% bằng nút chọn
--- Hỗ trợ mọi executor, có UI bật/tắt
+-- Cho phép chọn phần trăm fix lag từ 15% đến 100% bằng thanh trượt
+-- Hỗ trợ mọi executor, có UI bật/tắt, Reset đồ họa
 
 local ScreenGui = Instance.new("ScreenGui")
 local ToggleButton = Instance.new("ImageButton")
-local Dropdown = Instance.new("TextButton")
-local DropdownList = Instance.new("Frame")
-local Options = {}
+local SliderFrame = Instance.new("Frame")
+local Slider = Instance.new("TextButton")
+local ResetButton = Instance.new("TextButton")
 local UserInputService = game:GetService("UserInputService")
 
 -- Cấu hình UI
@@ -20,49 +21,53 @@ ToggleButton.Position = UDim2.new(0, 10, 0, 10)
 ToggleButton.Image = "rbxassetid://84122944038358" -- Thay bằng ID logo của bạn
 ToggleButton.BackgroundTransparency = 1
 
-Dropdown.Name = "Dropdown"
-Dropdown.Parent = ScreenGui
-Dropdown.Size = UDim2.new(0, 100, 0, 30)
-Dropdown.Position = UDim2.new(0, 10, 0, 100)
-Dropdown.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-Dropdown.Text = "Chọn % Fix Lag"
-Dropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
-Dropdown.TextScaled = true
-Dropdown.Font = Enum.Font.SourceSansBold
+SliderFrame.Name = "SliderFrame"
+SliderFrame.Parent = ScreenGui
+SliderFrame.Size = UDim2.new(0, 150, 0, 40)
+SliderFrame.Position = UDim2.new(0, 10, 0, 100)
+SliderFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 
-DropdownList.Name = "DropdownList"
-DropdownList.Parent = Dropdown
-DropdownList.Size = UDim2.new(0, 100, 0, 150)
-DropdownList.Position = UDim2.new(0, 0, 1, 5)
-DropdownList.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-DropdownList.Visible = false
+Slider.Name = "Slider"
+Slider.Parent = SliderFrame
+Slider.Size = UDim2.new(0, 20, 1, 0)
+Slider.Position = UDim2.new(0.5, -10, 0, 0)
+Slider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 
-local percentages = {15, 25, 50, 75, 100}
-local fixLagPercentage = 50 -- Mức xoá đồ hoạ trung bình
+ResetButton.Name = "ResetButton"
+ResetButton.Parent = ScreenGui
+ResetButton.Size = UDim2.new(0, 100, 0, 30)
+ResetButton.Position = UDim2.new(0, 10, 0, 150)
+ResetButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+ResetButton.Text = "Reset Đồ Họa"
+ResetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ResetButton.TextScaled = true
+ResetButton.Font = Enum.Font.SourceSansBold
 
-for i, percent in ipairs(percentages) do
-    local Option = Instance.new("TextButton")
-    Option.Parent = DropdownList
-    Option.Size = UDim2.new(1, 0, 0, 30)
-    Option.Position = UDim2.new(0, 0, 0, (i - 1) * 30)
-    Option.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    Option.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Option.Text = percent .. "%"
-    Option.TextScaled = true
-    Option.Font = Enum.Font.SourceSansBold
-    Option.MouseButton1Click:Connect(function()
-        fixLagPercentage = percent
-        Dropdown.Text = "Fix Lag: " .. percent .. "%"
-        DropdownList.Visible = false
-    end)
-    table.insert(Options, Option)
+local fixLagPercentage = 50 -- Mặc định 50%
+
+local function UpdateSlider(input)
+    local scale = math.clamp((input.Position.X - SliderFrame.AbsolutePosition.X) / SliderFrame.AbsoluteSize.X, 0.15, 1)
+    fixLagPercentage = math.floor(scale * 100)
+    Slider.Position = UDim2.new(scale, -10, 0, 0)
 end
 
-Dropdown.MouseButton1Click:Connect(function()
-    DropdownList.Visible = not DropdownList.Visible
+Slider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                UpdateSlider(input)
+            end
+        end)
+    end
 end)
 
-local function RemoveIslands(percentage)
+local function RemoveLagObjects(percentage)
+    for _, v in pairs(game.Workspace:GetDescendants()) do
+        if v:IsA("ParticleEmitter") or v:IsA("PointLight") or v:IsA("SurfaceLight") then
+            v.Enabled = false
+        end
+    end
+    
     local islands = {}
     for _, v in pairs(game.Workspace:GetChildren()) do
         if v:IsA("Model") and v.Name:lower():find("island") then
@@ -75,6 +80,18 @@ local function RemoveIslands(percentage)
     end
 end
 
+local function ResetGraphics()
+    for _, v in pairs(game.Workspace:GetDescendants()) do
+        if v:IsA("ParticleEmitter") or v:IsA("PointLight") or v:IsA("SurfaceLight") then
+            v.Enabled = true
+        end
+    end
+end
+
 ToggleButton.MouseButton1Click:Connect(function()
-    RemoveIslands(fixLagPercentage)
+    RemoveLagObjects(fixLagPercentage)
+end)
+
+ResetButton.MouseButton1Click:Connect(function()
+    ResetGraphics()
 end)
