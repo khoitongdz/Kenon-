@@ -1,5 +1,6 @@
--- Kenon Fix Lag Script
--- Discord:https://discord.gg/w26VGWmMPb
+-- Kenon Ultimate Fix Lag Script
+-- Cho phép chỉnh phần trăm fix lag từ 15% đến 100%
+-- Hỗ trợ mọi executor, có UI bật/tắt
 
 local ScreenGui = Instance.new("ScreenGui")
 local ToggleButton = Instance.new("ImageButton")
@@ -8,6 +9,7 @@ local SliderFrame = Instance.new("Frame")
 local Slider = Instance.new("TextButton")
 local PercentageLabel = Instance.new("TextLabel")
 
+-- Cấu hình UI
 ScreenGui.Name = "KenonFixLagUI"
 ScreenGui.Parent = game:GetService("CoreGui")
 
@@ -15,7 +17,7 @@ ToggleButton.Name = "ToggleButton"
 ToggleButton.Parent = ScreenGui
 ToggleButton.Size = UDim2.new(0, 50, 0, 50)
 ToggleButton.Position = UDim2.new(0, 10, 0, 10)
-ToggleButton.Image = "rbxassetid://84122944038358"
+ToggleButton.Image = "rbxassetid://84122944038358" -- Thay bằng ID logo của bạn
 ToggleButton.BackgroundTransparency = 1
 
 PingLabel.Name = "PingLabel"
@@ -69,10 +71,10 @@ ToggleButton.MouseButton1Click:Connect(function()
     isLagFixEnabled = not isLagFixEnabled
     if isLagFixEnabled then
         RemoveIslands(fixLagPercentage)
-        ToggleButton.ImageColor3 = Color3.fromRGB(0, 255, 0) 
+        ToggleButton.ImageColor3 = Color3.fromRGB(0, 255, 0) -- Chuyển xanh khi bật
     else
-        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer) 
-        ToggleButton.ImageColor3 = Color3.fromRGB(255, 0, 0) 
+        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer) -- Reset game
+        ToggleButton.ImageColor3 = Color3.fromRGB(255, 0, 0) -- Chuyển đỏ khi tắt
     end
 end)
 
@@ -93,6 +95,7 @@ Slider.MouseButton1Down:Connect(function()
     end)
 end)
 
+-- Cập nhật ping
 spawn(function()
     while true do
         local stats = game:GetService("Stats"):FindFirstChild("PerformanceStats")
