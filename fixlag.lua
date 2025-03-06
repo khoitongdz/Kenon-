@@ -60,7 +60,7 @@ FixLag()
 spawn(function()
     while true do
         ModifyCharacter("JumpPower", 200, "✅ Đã bật Nhảy Cao!")
-        ModifyCharacter("WalkSpeed", 290, "✅ Đã bật Chạy Nhanh!")
+        ModifyCharacter("WalkSpeed", 250, "✅ Đã bật Chạy Nhanh!")
         wait(2)
     end
 end)
