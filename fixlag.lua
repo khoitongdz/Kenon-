@@ -1,4 +1,3 @@
-
 -- Kenon Ultimate Fix Lag Script
 -- Cho phép chọn phần trăm fix lag từ 15% đến 100% bằng thanh trượt
 -- Hỗ trợ mọi executor, có UI bật/tắt, Reset đồ họa
