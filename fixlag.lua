@@ -1,13 +1,13 @@
 -- Kenon Ultimate Fix Lag Script
--- Cho phép chỉnh phần trăm fix lag từ 15% đến 100%
+-- Cho phép chọn phần trăm fix lag từ 15% đến 100% bằng nút chọn
 -- Hỗ trợ mọi executor, có UI bật/tắt
 
 local ScreenGui = Instance.new("ScreenGui")
 local ToggleButton = Instance.new("ImageButton")
 local PingLabel = Instance.new("TextLabel")
-local SliderFrame = Instance.new("Frame")
-local Slider = Instance.new("TextButton")
-local PercentageLabel = Instance.new("TextLabel")
+local Dropdown = Instance.new("TextButton")
+local DropdownList = Instance.new("Frame")
+local Options = {}
 local UserInputService = game:GetService("UserInputService")
 
 -- Cấu hình UI
@@ -18,7 +18,7 @@ ToggleButton.Name = "ToggleButton"
 ToggleButton.Parent = ScreenGui
 ToggleButton.Size = UDim2.new(0, 50, 0, 50)
 ToggleButton.Position = UDim2.new(0, 10, 0, 10)
-ToggleButton.Image = "rbxassetid://12345678" -- Thay bằng ID logo của bạn
+ToggleButton.Image = "rbxassetid://84122944038358" -- Thay bằng ID logo của bạn
 ToggleButton.BackgroundTransparency = 1
 
 PingLabel.Name = "PingLabel"
@@ -31,29 +31,47 @@ PingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 PingLabel.TextScaled = true
 PingLabel.Font = Enum.Font.SourceSansBold
 
-SliderFrame.Name = "SliderFrame"
-SliderFrame.Parent = ScreenGui
-SliderFrame.Size = UDim2.new(0, 150, 0, 20)
-SliderFrame.Position = UDim2.new(0, 10, 0, 100)
-SliderFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Dropdown.Name = "Dropdown"
+Dropdown.Parent = ScreenGui
+Dropdown.Size = UDim2.new(0, 100, 0, 30)
+Dropdown.Position = UDim2.new(0, 10, 0, 100)
+Dropdown.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Dropdown.Text = "Chọn % Fix Lag"
+Dropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+Dropdown.TextScaled = true
+Dropdown.Font = Enum.Font.SourceSansBold
 
-Slider.Name = "Slider"
-Slider.Parent = SliderFrame
-Slider.Size = UDim2.new(0, 15, 0, 20)
-Slider.Position = UDim2.new(0, 0, 0, 0)
-Slider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+DropdownList.Name = "DropdownList"
+DropdownList.Parent = Dropdown
+DropdownList.Size = UDim2.new(0, 100, 0, 150)
+DropdownList.Position = UDim2.new(0, 0, 1, 5)
+DropdownList.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+DropdownList.Visible = false
 
-PercentageLabel.Name = "PercentageLabel"
-PercentageLabel.Parent = ScreenGui
-PercentageLabel.Size = UDim2.new(0, 100, 0, 20)
-PercentageLabel.Position = UDim2.new(0, 10, 0, 130)
-PercentageLabel.Text = "Fix Lag: 15%"
-PercentageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-PercentageLabel.TextScaled = true
-PercentageLabel.Font = Enum.Font.SourceSansBold
-
-local isLagFixEnabled = false
+local percentages = {15, 25, 50, 75, 100}
 local fixLagPercentage = 15
+
+for i, percent in ipairs(percentages) do
+    local Option = Instance.new("TextButton")
+    Option.Parent = DropdownList
+    Option.Size = UDim2.new(1, 0, 0, 30)
+    Option.Position = UDim2.new(0, 0, 0, (i - 1) * 30)
+    Option.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Option.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Option.Text = percent .. "%"
+    Option.TextScaled = true
+    Option.Font = Enum.Font.SourceSansBold
+    Option.MouseButton1Click:Connect(function()
+        fixLagPercentage = percent
+        Dropdown.Text = "Fix Lag: " .. percent .. "%"
+        DropdownList.Visible = false
+    end)
+    table.insert(Options, Option)
+end
+
+Dropdown.MouseButton1Click:Connect(function()
+    DropdownList.Visible = not DropdownList.Visible
+end)
 
 local function RemoveIslands(percentage)
     local islands = {}
@@ -69,47 +87,19 @@ local function RemoveIslands(percentage)
 end
 
 ToggleButton.MouseButton1Click:Connect(function()
-    isLagFixEnabled = not isLagFixEnabled
-    if isLagFixEnabled then
-        RemoveIslands(fixLagPercentage)
-        ToggleButton.ImageColor3 = Color3.fromRGB(0, 255, 0) -- Chuyển xanh khi bật
-    else
-        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer) -- Reset game
-        ToggleButton.ImageColor3 = Color3.fromRGB(255, 0, 0) -- Chuyển đỏ khi tắt
-    end
-end)
-
-local function updateSlider(input)
-    local relativeX = math.clamp(input.Position.X - SliderFrame.AbsolutePosition.X, 0, SliderFrame.AbsoluteSize.X)
-    Slider.Position = UDim2.new(0, relativeX, 0, 0)
-    fixLagPercentage = math.floor(15 + (relativeX / SliderFrame.AbsoluteSize.X) * 85)
-    PercentageLabel.Text = "Fix Lag: " .. fixLagPercentage .. "%"
-end
-
-Slider.MouseButton1Down:Connect(function()
-    local moveConnection, releaseConnection
-    moveConnection = UserInputService.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            updateSlider(input)
-        end
-    end)
-    releaseConnection = UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            moveConnection:Disconnect()
-            releaseConnection:Disconnect()
-        end
-    end)
+    RemoveIslands(fixLagPercentage)
 end)
 
 -- Cập nhật ping
 spawn(function()
     while true do
-        local stats = game:GetService("Stats")
-        if stats then
-            local ping = stats:FindFirstChild("Ping")
-            if ping then
-                PingLabel.Text = "Ping: " .. math.floor(ping.Value) .. " ms"
-            end
+        local success, pingValue = pcall(function()
+            return game:GetService("Stats").Network.ServerStatsItem["Data Ping"]
+        end)
+        if success and pingValue then
+            PingLabel.Text = "Ping: " .. math.floor(pingValue:GetValue()) .. " ms"
+        else
+            PingLabel.Text = "Ping: N/A"
         end
         wait(1)
     end
