@@ -1,18 +1,16 @@
--- 🛠️ Tạo GUI và Logo
+--By:khoitongdz
 local gui = Instance.new("ScreenGui")
 gui.Parent = game.CoreGui
 gui.Name = "FixLagUI"
 
 local toggleButton = Instance.new("ImageButton", gui)
 toggleButton.Size = UDim2.new(0, 80, 0, 80) -- Mở rộng kích thước
-
 toggleButton.Position = UDim2.new(0.02, 0, 0.02, 0) -- Đẩy sát góc
-
 toggleButton.Image = "rbxassetid://126229665034471"
 toggleButton.BackgroundTransparency = 1
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 250, 0, 300) -- Mở rộng UI
+frame.Size = UDim2.new(0, 250, 0, 300) 
 frame.Position = UDim2.new(0.5, -125, 0.4, -150)
 frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 frame.Active, frame.Draggable, frame.Visible = true, true, false
@@ -23,6 +21,14 @@ FPSLabel.TextColor3, FPSLabel.BackgroundTransparency = Color3.fromRGB(255, 255, 
 FPSLabel.Text = "FPS: Calculating..."
 FPSLabel.Font = Enum.Font.SourceSansBold
 FPSLabel.TextSize = 18
+
+local FPSCornerLabel = Instance.new("TextLabel", gui)
+FPSCornerLabel.Size, FPSCornerLabel.Position = UDim2.new(0, 100, 0, 30), UDim2.new(0.9, -110, 0.02, 0)
+FPSCornerLabel.TextColor3, FPSCornerLabel.BackgroundTransparency = Color3.fromRGB(255, 255, 255), 1
+FPSCornerLabel.Text = "FPS: Calculating..."
+FPSCornerLabel.Font = Enum.Font.SourceSansBold
+FPSCornerLabel.TextSize = 18
+FPSCornerLabel.TextXAlignment = Enum.TextXAlignment.Right
 
 local function createButton(parent, text, position, callback)
     local btn = Instance.new("TextButton", parent)
@@ -61,12 +67,16 @@ local function ToggleSpeed()
 end
 
 local jumpEnabled = false
-local function ToggleInfiniteJump()
-    jumpEnabled = not jumpEnabled
-    game:GetService("UserInputService").JumpRequest:Connect(function()
-        if jumpEnabled then game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping") end
-    end)
-    print("✅ Nhảy cao: " .. tostring(jumpEnabled))
+local function ToggleJumpPower()
+    local player = game.Players.LocalPlayer
+    if player and player.Character then
+        local humanoid = player.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            jumpEnabled = not jumpEnabled
+            humanoid.JumpPower = jumpEnabled and 150 or 250 
+            print("✅ Nhảy Cao: " .. tostring(jumpEnabled))
+        end
+    end
 end
 
 local function ToggleNoclip()
@@ -77,7 +87,7 @@ FixLag()
 
 local btnFixLag = createButton(frame, "🛠️ Fix Lag", UDim2.new(0, 10, 0, 10), FixLag)
 local btnSpeed = createButton(frame, "⚡ Chạy Nhanh", UDim2.new(0, 10, 0, 60), ToggleSpeed)
-local btnJump = createButton(frame, "🔥 Nhảy Cao", UDim2.new(0, 10, 0, 110), ToggleInfiniteJump)
+local btnJump = createButton(frame, "🔥 Nhảy Cao", UDim2.new(0, 10, 0, 110), ToggleJumpPower)
 local btnNoclip = createButton(frame, "🛸 Xuyên Tường", UDim2.new(0, 10, 0, 160), ToggleNoclip)
 
 toggleButton.MouseButton1Click:Connect(function() frame.Visible = not frame.Visible end)
@@ -89,6 +99,7 @@ RunService.Heartbeat:Connect(function() fps = fps + 1 end)
 spawn(function()
     while wait(1) do
         FPSLabel.Text = "FPS: " .. fps
+        FPSCornerLabel.Text = "FPS: " .. fps
         fps = 0
     end
 end)
