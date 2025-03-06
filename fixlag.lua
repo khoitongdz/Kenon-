@@ -1,4 +1,5 @@
--- By: khoitongdz
+--discord.gg//w26VGWmMPb
+
 local gui = Instance.new("ScreenGui")
 gui.Parent = game.CoreGui
 gui.Name = "FixLagUI"
@@ -13,97 +14,70 @@ local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 200, 0, 160)
 frame.Position = UDim2.new(0.5, -100, 0.4, -80)
 frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-frame.Active = true
-frame.Draggable = true
-frame.Visible = false
+frame.Active, frame.Draggable, frame.Visible = true, true, false
 
-local ButtonFixLag = Instance.new("TextButton", frame)
-ButtonFixLag.Size = UDim2.new(0, 180, 0, 40)
-ButtonFixLag.Position = UDim2.new(0, 10, 0, 10)
-ButtonFixLag.Text = "Fix Lag"
-ButtonFixLag.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-ButtonFixLag.TextColor3 = Color3.fromRGB(255, 255, 255)
+local function createButton(parent, text, position)
+    local btn = Instance.new("TextButton", parent)
+    btn.Size, btn.Position = UDim2.new(0, 180, 0, 40), position
+    btn.Text, btn.BackgroundColor3, btn.TextColor3 = text, Color3.fromRGB(100, 100, 100), Color3.fromRGB(255, 255, 255)
+    return btn
+end
 
-local ButtonJump = Instance.new("TextButton", frame)
-ButtonJump.Size = UDim2.new(0, 180, 0, 40)
-ButtonJump.Position = UDim2.new(0, 10, 0, 60)
-ButtonJump.Text = "Nhảy Cao"
-ButtonJump.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-ButtonJump.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-local ButtonSpeed = Instance.new("TextButton", frame)
-ButtonSpeed.Size = UDim2.new(0, 180, 0, 40)
-ButtonSpeed.Position = UDim2.new(0, 10, 0, 110)
-ButtonSpeed.Text = "Chạy Nhanh"
-ButtonSpeed.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-ButtonSpeed.TextColor3 = Color3.fromRGB(255, 255, 255)
+local btnFixLag = createButton(frame, "Fix Lag Max", UDim2.new(0, 10, 0, 10))
+local btnJump = createButton(frame, "Nhảy Cao", UDim2.new(0, 10, 0, 60))
+local btnSpeed = createButton(frame, "Chạy Nhanh", UDim2.new(0, 10, 0, 110))
 
 local FPSLabel = Instance.new("TextLabel", gui)
-FPSLabel.Size = UDim2.new(0, 100, 0, 30)
-FPSLabel.Position = UDim2.new(0.02, 0, 0.02, 0)
-FPSLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-FPSLabel.BackgroundTransparency = 1
-FPSLabel.Text = "FPS: đang tải..."
+FPSLabel.Size, FPSLabel.Position = UDim2.new(0, 100, 0, 30), UDim2.new(0.02, 0, 0.02, 0)
+FPSLabel.TextColor3, FPSLabel.BackgroundTransparency = Color3.fromRGB(255, 255, 255), 1
+FPSLabel.Text = "FPS: Calculating..."
 
 local function FixLag()
     settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
     game.Lighting.GlobalShadows = false
+    game.Lighting.FogEnd = 9e9
+    game.Lighting.Brightness = 1
     for _, v in pairs(game:GetDescendants()) do
-        if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Trail") or v:IsA("Sparkles") then
-            v:Destroy()
-        end
-        if v:IsA("Decal") or v:IsA("Texture") then
-            v:Destroy()
-        end
-        if v:IsA("Sound") then
-            v.Volume = 0
-        end
-        if v:IsA("CharacterMesh") or v:IsA("Accessory") then
-            v:Destroy()
-        end
-        if v:IsA("BasePart") then
-            v.Material = Enum.Material.SmoothPlastic
-        end
+        if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Trail") or v:IsA("Sparkles") then v:Destroy() end
+        if v:IsA("Decal") or v:IsA("Texture") then v.Transparency = 1 end
+        if v:IsA("Sound") then v.Volume = 0 end
+        if v:IsA("BasePart") then v.Material = Enum.Material.SmoothPlastic end
+        if v:IsA("MeshPart") then v.TextureID = "" end
     end
-    print("✅ Đã Fix Lag thành công!")
+    print("✅ Fix Lag Cấp Độ Max thành công!")
 end
 
-local function JumpBoost()
+local function ModifyCharacter(property, value, message)
     local player = game.Players.LocalPlayer
     if player and player.Character then
-        player.Character.Humanoid.JumpPower = 150
-        print("✅ Đã bật Nhảy Cao!")
+        local humanoid = player.Character:FindFirstChild("Humanoid")
+        if humanoid then humanoid[property] = value print(message) end
     end
 end
 
-local function SpeedBoost()
-    local player = game.Players.LocalPlayer
-    if player and player.Character then
-        player.Character.Humanoid.WalkSpeed = 450
-        print("✅ Đã bật Chạy Nhanh!")
-    end
-end
-
-local RunService = game:GetService("RunService")
-local fps = 0
-RunService.RenderStepped:Connect(function()
-    fps = fps + 1
-end)
+FixLag()
 
 spawn(function()
     while true do
-        wait(1)
+        ModifyCharacter("JumpPower", 200, "✅ Đã bật Nhảy Cao!")
+        ModifyCharacter("WalkSpeed", 290, "✅ Đã bật Chạy Nhanh!")
+        wait(2)
+    end
+end)
+
+local RunService = game:GetService("RunService")
+local fps = 0
+RunService.Heartbeat:Connect(function() fps = fps + 1 end)
+
+spawn(function()
+    while wait(1) do
         FPSLabel.Text = "FPS: " .. fps
         fps = 0
     end
 end)
 
-local uiVisible = false
-toggleButton.MouseButton1Click:Connect(function()
-    uiVisible = not uiVisible
-    frame.Visible = uiVisible
-end)
+toggleButton.MouseButton1Click:Connect(function() frame.Visible = not frame.Visible end)
 
-ButtonFixLag.MouseButton1Click:Connect(FixLag)
-ButtonJump.MouseButton1Click:Connect(JumpBoost)
-ButtonSpeed.MouseButton1Click:Connect(SpeedBoost)
+btnFixLag.MouseButton1Click:Connect(FixLag)
+btnJump.MouseButton1Click:Connect(function() ModifyCharacter("JumpPower", 200, "✅ Đã bật Nhảy Cao!") end)
+btnSpeed.MouseButton1Click:Connect(function() ModifyCharacter("WalkSpeed", 500, "✅ Đã bật Chạy Nhanh!") end)
