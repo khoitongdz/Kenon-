@@ -4,7 +4,6 @@
 
 local ScreenGui = Instance.new("ScreenGui")
 local ToggleButton = Instance.new("ImageButton")
-local PingLabel = Instance.new("TextLabel")
 local Dropdown = Instance.new("TextButton")
 local DropdownList = Instance.new("Frame")
 local Options = {}
@@ -20,16 +19,6 @@ ToggleButton.Size = UDim2.new(0, 50, 0, 50)
 ToggleButton.Position = UDim2.new(0, 10, 0, 10)
 ToggleButton.Image = "rbxassetid://84122944038358" -- Thay bằng ID logo của bạn
 ToggleButton.BackgroundTransparency = 1
-
-PingLabel.Name = "PingLabel"
-PingLabel.Parent = ScreenGui
-PingLabel.Size = UDim2.new(0, 100, 0, 30)
-PingLabel.Position = UDim2.new(0, 10, 0, 60)
-PingLabel.BackgroundTransparency = 0.5
-PingLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-PingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-PingLabel.TextScaled = true
-PingLabel.Font = Enum.Font.SourceSansBold
 
 Dropdown.Name = "Dropdown"
 Dropdown.Parent = ScreenGui
@@ -49,7 +38,7 @@ DropdownList.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 DropdownList.Visible = false
 
 local percentages = {15, 25, 50, 75, 100}
-local fixLagPercentage = 15
+local fixLagPercentage = 50 -- Mức xoá đồ hoạ trung bình
 
 for i, percent in ipairs(percentages) do
     local Option = Instance.new("TextButton")
@@ -88,19 +77,4 @@ end
 
 ToggleButton.MouseButton1Click:Connect(function()
     RemoveIslands(fixLagPercentage)
-end)
-
--- Cập nhật ping
-spawn(function()
-    while true do
-        local success, pingValue = pcall(function()
-            return game:GetService("Stats").Network.ServerStatsItem["Data Ping"]
-        end)
-        if success and pingValue then
-            PingLabel.Text = "Ping: " .. math.floor(pingValue:GetValue()) .. " ms"
-        else
-            PingLabel.Text = "Ping: N/A"
-        end
-        wait(1)
-    end
 end)
