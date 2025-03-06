@@ -1,71 +1,90 @@
---// Kenon Hub - Fix Lag Script
-local ui = Instance.new("ScreenGui")
-local frame = Instance.new("Frame")
-local buttons = {}
-local levels = {"Đã Bật X1", "Đã Bật X2", "Đã Bật X3", "Tắt"}
-local toggleButton = Instance.new("ImageButton") -- Nút logo
+--// UI Fix Lag Roblox
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local ToggleButton = Instance.new("TextButton")
+local Logo = Instance.new("ImageLabel")
+local FPSText = Instance.new("TextLabel")
 
--- UI Setup
-ui.Parent = game.CoreGui
-frame.Parent = ui
-frame.Size = UDim2.new(0, 200, 0, 250)
-frame.Position = UDim2.new(0.5, -100, 0.4, 0)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-frame.BorderSizePixel = 3
+ScreenGui.Parent = game.CoreGui
+ScreenGui.Name = "FixLagUI"
 
-for i, text in ipairs(levels) do
-    local button = Instance.new("TextButton")
-    button.Parent = frame
-    button.Size = UDim2.new(1, 0, 0, 50)
-    button.Position = UDim2.new(0, 0, 0, (i-1) * 55)
-    button.Text = text
-    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Font = Enum.Font.SourceSansBold
-    button.TextSize = 20
-    table.insert(buttons, button)
+-- UI chính
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.Position = UDim2.new(0.05, 0, 0.1, 0)
+MainFrame.Size = UDim2.new(0, 150, 0, 100)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+-- Nút bật/tắt fix lag
+ToggleButton.Parent = MainFrame
+ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ToggleButton.Size = UDim2.new(0, 130, 0, 40)
+ToggleButton.Position = UDim2.new(0.05, 0, 0.5, 0)
+ToggleButton.Text = "Bật Fix Lag"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+-- Logo
+Logo.Parent = MainFrame
+Logo.Size = UDim2.new(0, 50, 0, 50)
+Logo.Position = UDim2.new(0.5, -25, 0.05, 0)
+Logo.Image = "rbxassetid://84122944038358" -- 🔴 Thay ID ảnh của bạn vào đây!
+
+-- Hiển thị FPS
+FPSText.Parent = ScreenGui
+FPSText.BackgroundTransparency = 1
+FPSText.Position = UDim2.new(0.85, 0, 0.05, 0)
+FPSText.Size = UDim2.new(0, 150, 0, 40)
+FPSText.Font = Enum.Font.SourceSansBold
+FPSText.TextSize = 20
+FPSText.TextColor3 = Color3.fromRGB(0, 255, 0)
+FPSText.Text = "FPS: 0"
+
+--// Script fix lag
+local function fixLag(state)
+    if state then
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+        game.Lighting.GlobalShadows = false
+        game.Lighting.FogEnd = 9e9
+        game.Lighting.Brightness = 1
+        
+        for _, v in pairs(game:GetDescendants()) do
+            if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Decal") or v:IsA("Texture") then
+                v:Destroy()
+            end
+        end
+        
+        for _, v in pairs(game:GetService("SoundService"):GetDescendants()) do
+            if v:IsA("Sound") then
+                v.Volume = 0
+            end
+        end
+        
+        ToggleButton.Text = "Tắt Fix Lag"
+    else
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+        game.Lighting.GlobalShadows = true
+        game.Lighting.Brightness = 2
+        ToggleButton.Text = "Bật Fix Lag"
+    end
 end
 
--- Toggle UI Button
-toggleButton.Parent = ui
-toggleButton.Size = UDim2.new(0, 50, 0, 50)
-toggleButton.Position = UDim2.new(0.05, 0, 0.1, 0)
-toggleButton.Image = "rbxassetid://84122944038358" -- Thay bằng ID hình ảnh logo
-toggleButton.BackgroundTransparency = 1
-
-toggleButton.MouseButton1Click:Connect(function()
-    frame.Visible = not frame.Visible
+-- Bật/Tắt Fix Lag
+local isLagFixed = false
+ToggleButton.MouseButton1Click:Connect(function()
+    isLagFixed = not isLagFixed
+    fixLag(isLagFixed)
 end)
 
--- Function to adjust lag settings
-local function fixLag(level)
-    if level >= 1 then
-        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 -- Giảm đồ họa
-        game.Lighting.GlobalShadows = false -- Tắt bóng
-        game.Lighting.Brightness = 2 -- Tăng độ sáng
-        for _, v in pairs(workspace:GetDescendants()) do
-            if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") then
-                v.Enabled = false -- Tắt hiệu ứng hình ảnh
-            end
-        end
-    end
-    if level >= 2 then
-        for _, v in pairs(workspace:GetDescendants()) do
-            if v:IsA("MeshPart") or v:IsA("Part") or v:IsA("UnionOperation") then
-                v.Material = Enum.Material.SmoothPlastic -- Đơn giản hóa vật thể
-            end
-        end
-    end
-    if level >= 3 then
-        game:GetService("RunService"):Set3dRenderingEnabled(false) -- Tắt hoàn toàn đồ họa
-    end
-    if level == 0 then
-        game:GetService("RunService"):Set3dRenderingEnabled(true) -- Bật lại đồ họa
-    end
-end
+-- FPS Counter
+local RunService = game:GetService("RunService")
+local LastTick = tick()
 
--- Button Events
-buttons[1].MouseButton1Click:Connect(function() fixLag(1) end)
-buttons[2].MouseButton1Click:Connect(function() fixLag(2) end)
-buttons[3].MouseButton1Click:Connect(function() fixLag(3) end)
-buttons[4].MouseButton1Click:Connect(function() fixLag(0) end)
+RunService.RenderStepped:Connect(function()
+    local CurrentTick = tick()
+    local FPS = math.floor(1 / (CurrentTick - LastTick))
+    LastTick = CurrentTick
+    FPSText.Text = "FPS: " .. FPS
+end)
+
+print("✅ Fix Lag UI đã hoạt động!")
