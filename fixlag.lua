@@ -25,7 +25,7 @@ ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 LogoButton.Parent = ScreenGui
 LogoButton.Size = UDim2.new(0, 60, 0, 60)
 LogoButton.Position = UDim2.new(0.05, 0, 0.05, 0)
-LogoButton.Image = "rbxassetid://75989752728924" 
+LogoButton.Image = "rbxassetid://126229665034471" 
 LogoButton.BackgroundTransparency = 1
 
 FPSText.Parent = ScreenGui
