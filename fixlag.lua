@@ -27,27 +27,23 @@ PingLabel.Font = Enum.Font.SourceSansBold
 
 local isLagFixEnabled = false
 
-local function RemoveEverything()
+local function RemoveMap()
     for _, v in pairs(game.Workspace:GetChildren()) do
-        if not v:IsA("Camera") and not v:IsA("Terrain") and not v:IsA("SpawnLocation") then
-            pcall(function() v:Destroy() end) -- Sử dụng pcall để tránh lỗi
+        if v:IsA("Model") and not game.Players:GetPlayerFromCharacter(v) and v.Name ~= "NPCs" then
+            pcall(function() v:Destroy() end)
         end
     end
     for _, v in pairs(game.Lighting:GetChildren()) do pcall(function() v:Destroy() end) end
-    game.Lighting.GlobalShadows = false
-    game.Lighting.FogEnd = 1e9
-    game.Lighting.Brightness = 2
-    game.Lighting.Ambient = Color3.new(1, 1, 1)
 end
 
 ToggleButton.MouseButton1Click:Connect(function()
     isLagFixEnabled = not isLagFixEnabled
     if isLagFixEnabled then
-        RemoveEverything()
-        ToggleButton.ImageColor3 = Color3.fromRGB(0, 255, 0) -- Chuyển xanh khi bật
+        RemoveMap()
+        ToggleButton.ImageColor3 = Color3.fromRGB(0, 255, 0) 
     else
-        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer) -- Reset game thay vì xóa lại
-        ToggleButton.ImageColor3 = Color3.fromRGB(255, 0, 0) -- Chuyển đỏ khi tắt
+        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer) 
+        ToggleButton.ImageColor3 = Color3.fromRGB(255, 0, 0)
     end
 end)
 
@@ -63,5 +59,4 @@ spawn(function()
         wait(1)
     end
 end)
-
 
