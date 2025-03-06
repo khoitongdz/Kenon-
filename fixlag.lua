@@ -1,96 +1,59 @@
--- Kenon Ultimate Fix Lag Script
--- Cho phép chọn phần trăm fix lag từ 15% đến 100% bằng thanh trượt
--- Hỗ trợ mọi executor, có UI bật/tắt, Reset đồ họa
+--// Kenon Hub - Fix Lag Script
+local ui = Instance.new("ScreenGui")
+local frame = Instance.new("Frame")
+local buttons = {}
+local levels = {"Đã Bật X1", "Đã Bật X2", "Đã Bật X3", "Tắt"}
 
-local ScreenGui = Instance.new("ScreenGui")
-local ToggleButton = Instance.new("ImageButton")
-local SliderFrame = Instance.new("Frame")
-local Slider = Instance.new("TextButton")
-local ResetButton = Instance.new("TextButton")
-local UserInputService = game:GetService("UserInputService")
+-- UI Setup
+ui.Parent = game.CoreGui
+frame.Parent = ui
+frame.Size = UDim2.new(0, 200, 0, 250)
+frame.Position = UDim2.new(0.5, -100, 0.4, 0)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 3
 
--- Cấu hình UI
-ScreenGui.Name = "KenonFixLagUI"
-ScreenGui.Parent = game:GetService("CoreGui")
-
-ToggleButton.Name = "ToggleButton"
-ToggleButton.Parent = ScreenGui
-ToggleButton.Size = UDim2.new(0, 50, 0, 50)
-ToggleButton.Position = UDim2.new(0, 10, 0, 10)
-ToggleButton.Image = "rbxassetid://84122944038358" -- Thay bằng ID logo của bạn
-ToggleButton.BackgroundTransparency = 1
-
-SliderFrame.Name = "SliderFrame"
-SliderFrame.Parent = ScreenGui
-SliderFrame.Size = UDim2.new(0, 150, 0, 40)
-SliderFrame.Position = UDim2.new(0, 10, 0, 100)
-SliderFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-
-Slider.Name = "Slider"
-Slider.Parent = SliderFrame
-Slider.Size = UDim2.new(0, 20, 1, 0)
-Slider.Position = UDim2.new(0.5, -10, 0, 0)
-Slider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-
-ResetButton.Name = "ResetButton"
-ResetButton.Parent = ScreenGui
-ResetButton.Size = UDim2.new(0, 100, 0, 30)
-ResetButton.Position = UDim2.new(0, 10, 0, 150)
-ResetButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-ResetButton.Text = "Reset Đồ Họa"
-ResetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ResetButton.TextScaled = true
-ResetButton.Font = Enum.Font.SourceSansBold
-
-local fixLagPercentage = 50 -- Mặc định 50%
-
-local function UpdateSlider(input)
-    local scale = math.clamp((input.Position.X - SliderFrame.AbsolutePosition.X) / SliderFrame.AbsoluteSize.X, 0.15, 1)
-    fixLagPercentage = math.floor(scale * 100)
-    Slider.Position = UDim2.new(scale, -10, 0, 0)
+for i, text in ipairs(levels) do
+    local button = Instance.new("TextButton")
+    button.Parent = frame
+    button.Size = UDim2.new(1, 0, 0, 50)
+    button.Position = UDim2.new(0, 0, 0, (i-1) * 55)
+    button.Text = text
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.SourceSansBold
+    button.TextSize = 20
+    table.insert(buttons, button)
 end
 
-Slider.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                UpdateSlider(input)
+-- Function to adjust lag settings
+local function fixLag(level)
+    if level >= 1 then
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 -- Giảm đồ họa
+        game.Lighting.GlobalShadows = false -- Tắt bóng
+        game.Lighting.Brightness = 2 -- Tăng độ sáng
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") then
+                v.Enabled = false -- Tắt hiệu ứng hình ảnh
             end
-        end)
-    end
-end)
-
-local function RemoveLagObjects(percentage)
-    for _, v in pairs(game.Workspace:GetDescendants()) do
-        if v:IsA("ParticleEmitter") or v:IsA("PointLight") or v:IsA("SurfaceLight") then
-            v.Enabled = false
         end
     end
-    
-    local islands = {}
-    for _, v in pairs(game.Workspace:GetChildren()) do
-        if v:IsA("Model") and v.Name:lower():find("island") then
-            table.insert(islands, v)
+    if level >= 2 then
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("MeshPart") or v:IsA("Part") or v:IsA("UnionOperation") then
+                v.Material = Enum.Material.SmoothPlastic -- Đơn giản hóa vật thể
+            end
         end
     end
-    local removeCount = math.floor(#islands * (percentage / 100))
-    for i = 1, removeCount do
-        pcall(function() islands[i]:Destroy() end)
+    if level >= 3 then
+        game:GetService("RunService"):Set3dRenderingEnabled(false) -- Tắt hoàn toàn đồ họa
+    end
+    if level == 0 then
+        game:GetService("RunService"):Set3dRenderingEnabled(true) -- Bật lại đồ họa
     end
 end
 
-local function ResetGraphics()
-    for _, v in pairs(game.Workspace:GetDescendants()) do
-        if v:IsA("ParticleEmitter") or v:IsA("PointLight") or v:IsA("SurfaceLight") then
-            v.Enabled = true
-        end
-    end
-end
-
-ToggleButton.MouseButton1Click:Connect(function()
-    RemoveLagObjects(fixLagPercentage)
-end)
-
-ResetButton.MouseButton1Click:Connect(function()
-    ResetGraphics()
-end)
+-- Button Events
+buttons[1].MouseButton1Click:Connect(function() fixLag(1) end)
+buttons[2].MouseButton1Click:Connect(function() fixLag(2) end)
+buttons[3].MouseButton1Click:Connect(function() fixLag(3) end)
+buttons[4].MouseButton1Click:Connect(function() fixLag(0) end)
