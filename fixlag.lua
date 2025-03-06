@@ -6,7 +6,7 @@ local ToggleButton = Instance.new("ImageButton")
 local PingLabel = Instance.new("TextLabel")
 
 ScreenGui.Name = "KenonFixLagUI"
-ScreenGui.Parent = game.CoreGui
+ScreenGui.Parent = game:GetService("CoreGui")
 
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Parent = ScreenGui
@@ -28,35 +28,40 @@ PingLabel.Font = Enum.Font.SourceSansBold
 local isLagFixEnabled = false
 
 local function RemoveEverything()
-    for _, v in pairs(game:GetDescendants()) do
-        if not v:IsA("LocalScript") and not v:IsA("ScreenGui") then
-            v:Destroy()
+    for _, v in pairs(game.Workspace:GetChildren()) do
+        if not v:IsA("Camera") and not v:IsA("Terrain") and not v:IsA("SpawnLocation") then
+            pcall(function() v:Destroy() end) -- Sử dụng pcall để tránh lỗi
         end
     end
-    sethiddenproperty(game.Lighting, "Technology", Enum.Technology.Compatibility)
+    for _, v in pairs(game.Lighting:GetChildren()) do pcall(function() v:Destroy() end) end
     game.Lighting.GlobalShadows = false
-    game.Lighting.FogEnd = 9e9
+    game.Lighting.FogEnd = 1e9
     game.Lighting.Brightness = 2
-    game.Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-    for _, v in pairs(game.Lighting:GetChildren()) do v:Destroy() end
+    game.Lighting.Ambient = Color3.new(1, 1, 1)
 end
 
 ToggleButton.MouseButton1Click:Connect(function()
     isLagFixEnabled = not isLagFixEnabled
     if isLagFixEnabled then
         RemoveEverything()
-        ToggleButton.ImageColor3 = Color3.fromRGB(0, 255, 0) 
+        ToggleButton.ImageColor3 = Color3.fromRGB(0, 255, 0) -- Chuyển xanh khi bật
     else
-        RemoveEverything() 
-        ToggleButton.ImageColor3 = Color3.fromRGB(255, 0, 0)
+        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer) -- Reset game thay vì xóa lại
+        ToggleButton.ImageColor3 = Color3.fromRGB(255, 0, 0) -- Chuyển đỏ khi tắt
     end
 end)
 
 spawn(function()
     while true do
-        local ping = game:GetService("Stats"):FindFirstChild("Network"):FindFirstChild("Ping").Value
-        PingLabel.Text = "Ping: " .. math.floor(ping * 1000) .. " ms"
+        local stats = game:GetService("Stats"):FindFirstChild("PerformanceStats")
+        if stats then
+            local ping = stats:FindFirstChild("Ping")
+            if ping then
+                PingLabel.Text = "Ping: " .. math.floor(ping.Value) .. " ms"
+            end
+        end
         wait(1)
     end
 end)
+
 
