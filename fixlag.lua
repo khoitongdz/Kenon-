@@ -4,10 +4,12 @@ gui.Parent = game.CoreGui
 gui.Name = "FixLagUI"
 
 local toggleButton = Instance.new("ImageButton", gui)
-toggleButton.Size = UDim2.new(0, 80, 0, 80) -- Mở rộng kích thước
+toggleButton.Size = UDim2.new(0, 30, 0, 30) -- Giảm kích thước logo
 toggleButton.Position = UDim2.new(0.02, 0, 0.02, 0) -- Đẩy sát góc
 toggleButton.Image = "rbxassetid://126229665034471"
 toggleButton.BackgroundTransparency = 1
+toggleButton.Active = true
+toggleButton.Draggable = true -- Cho phép di chuyển
 
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 250, 0, 300) 
