@@ -47,10 +47,11 @@ local function FixLag()
         if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Trail") or v:IsA("Sparkles") then v:Destroy() end
         if v:IsA("Decal") or v:IsA("Texture") then v.Transparency = 1 end
         if v:IsA("Sound") then v.Volume = 0 end
-        if v:IsA("BasePart") then v.Material = Enum.Material.SmoothPlastic end
-        if v:IsA("MeshPart") then v.TextureID = "" end
+        if v:IsA("BasePart") then v.Material = Enum.Material.SmoothPlastic; v.Color = Color3.fromRGB(200, 200, 200) end
+        if v:IsA("MeshPart") then v.TextureID = ""; v.Color = Color3.fromRGB(200, 200, 200) end
+        if v:IsA("Model") and v.Name == "Tree" then v:Destroy() end
     end
-    print("✅ Fix Lag hoàn tất!")
+    print("✅ Fix Lag hoàn tất! Mọi vật thể đã được làm trắng bạc và cây đã bị xóa.")
 end
 
 local speedEnabled = false
