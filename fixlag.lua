@@ -91,7 +91,6 @@ FixLag()
 local btnFixLag = createButton(frame, "🛠️ Fix Lag", UDim2.new(0, 10, 0, 10), FixLag)
 local btnSpeed = createButton(frame, "⚡ Chạy Nhanh", UDim2.new(0, 10, 0, 60), ToggleSpeed)
 local btnJump = createButton(frame, "🔥 Nhảy Cao", UDim2.new(0, 10, 0, 110), ToggleJumpPower)
-local btnNoclip = createButton(frame, "🛸 Xuyên Tường", UDim2.new(0, 10, 0, 160), ToggleNoclip)
 
 toggleButton.MouseButton1Click:Connect(function() frame.Visible = not frame.Visible end)
 
