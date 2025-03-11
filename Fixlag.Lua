@@ -11,7 +11,7 @@ local logoButton = Instance.new("ImageButton", screenGui)
 logoButton.Size = UDim2.new(0, 40, 0, 40)
 logoButton.Position = UDim2.new(0.02, 0, 0.1, 0)
 logoButton.BackgroundTransparency = 1
-logoButton.Image = "rbxassetid://126229665034471"
+logoButton.Image = "rbxassetid://105486552530887"
 logoButton.Active = true
 logoButton.Draggable = true
 
