@@ -127,7 +127,7 @@ local function ToggleSpeed()
         local humanoid = player.Character:FindFirstChild("Humanoid")
         if humanoid then
             speedEnabled = not speedEnabled
-            humanoid.WalkSpeed = speedEnabled and 300 or 16
+            humanoid.WalkSpeed = speedEnabled and 300 or 360
             print("✅ Chạy nhanh: " .. tostring(speedEnabled))
         end
     end
