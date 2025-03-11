@@ -1,14 +1,12 @@
--- By: khoitongdz (Updated UI + Features)
+-- By: khoitongdz (Script v1 beta)
 local player = game.Players.LocalPlayer
 local runService = game:GetService("RunService")
 local tweenService = game:GetService("TweenService")
 local userInputService = game:GetService("UserInputService")
 
--- UI Setup
 local screenGui = Instance.new("ScreenGui", game.CoreGui)
 screenGui.Name = "BloxFruitsFixLag"
 
--- Logo Button (Draggable)
 local logoButton = Instance.new("ImageButton", screenGui)
 logoButton.Size = UDim2.new(0, 40, 0, 40)
 logoButton.Position = UDim2.new(0.02, 0, 0.1, 0)
@@ -17,7 +15,6 @@ logoButton.Image = "rbxassetid://105486552530887"
 logoButton.Active = true
 logoButton.Draggable = true
 
--- UI Panel
 local mainFrame = Instance.new("Frame", screenGui)
 mainFrame.Size = UDim2.new(0, 300, 0, 350)
 mainFrame.Position = UDim2.new(0.5, -150, 0.5, -175)
@@ -35,7 +32,6 @@ titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextSize = 18
 titleLabel.BackgroundTransparency = 1
 
--- Toggle UI with Animation
 local isUIOpen = false
 local function toggleUI()
     isUIOpen = not isUIOpen
@@ -52,7 +48,6 @@ local function toggleUI()
 end
 logoButton.MouseButton1Click:Connect(toggleUI)
 
--- Create Button Function
 local function createToggleButton(name, position, callback)
     local button = Instance.new("TextButton", mainFrame)
     button.Size = UDim2.new(0.9, 0, 0, 40)
@@ -71,7 +66,6 @@ local function createToggleButton(name, position, callback)
     end)
 end
 
--- Fix Lag Function
 local function FixLag()
     settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
     game.Lighting.GlobalShadows = false
@@ -88,11 +82,10 @@ local function FixLag()
     print("✅ Fix Lag hoàn tất!")
 end
 
--- Speed & Jump Toggle
 local function ToggleSpeed(enabled)
     local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
     if humanoid then
-        humanoid.WalkSpeed = enabled and 300 or 16
+        humanoid.WalkSpeed = enabled and 300 or 260
         print("✅ Chạy nhanh: " .. tostring(enabled))
     end
 end
@@ -100,17 +93,15 @@ end
 local function ToggleJumpPower(enabled)
     local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
     if humanoid then
-        humanoid.JumpPower = enabled and 150 or 50
+        humanoid.JumpPower = enabled and 250 or 350
         print("✅ Nhảy Cao: " .. tostring(enabled))
     end
 end
 
--- Add Buttons
 createToggleButton("🛠️ Fix Lag", 0.15, FixLag)
 createToggleButton("⚡ Chạy Nhanh", 0.3, ToggleSpeed)
 createToggleButton("🔥 Nhảy Cao", 0.45, ToggleJumpPower)
 
--- FPS Counter
 local fpsLabel = Instance.new("TextLabel", screenGui)
 fpsLabel.Size = UDim2.new(0, 120, 0, 30)
 fpsLabel.Position = UDim2.new(0.85, 0, 0.02, 0)
