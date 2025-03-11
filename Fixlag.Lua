@@ -5,7 +5,7 @@ local tweenService = game:GetService("TweenService")
 local userInputService = game:GetService("UserInputService")
 
 local screenGui = Instance.new("ScreenGui", game.CoreGui)
-screenGui.Name = "BloxFruitsFixLag"
+screenGui.Name = "Fix Lag All Games"
 
 local logoButton = Instance.new("ImageButton", screenGui)
 logoButton.Size = UDim2.new(0, 40, 0, 40)
@@ -22,7 +22,7 @@ mainFrame.Visible = false
 
 local titleLabel = Instance.new("TextLabel", mainFrame)
 titleLabel.Size = UDim2.new(1, 0, 0, 40)
-titleLabel.Text = "Blox Fruits Fix Lag"
+titleLabel.Text = "Fix Lag All Games"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextSize = 18
