@@ -1,4 +1,4 @@
--- By: khoitongdz (Script v1 beta)
+-- By: khoitongdz (This beta script!)
 local player = game.Players.LocalPlayer
 local runService = game:GetService("RunService")
 local tweenService = game:GetService("TweenService")
@@ -11,7 +11,7 @@ local logoButton = Instance.new("ImageButton", screenGui)
 logoButton.Size = UDim2.new(0, 40, 0, 40)
 logoButton.Position = UDim2.new(0.02, 0, 0.1, 0)
 logoButton.BackgroundTransparency = 1
-logoButton.Image = "rbxassetid://105486552530887"
+logoButton.Image = "rbxassetid://126229665034471"
 logoButton.Active = true
 logoButton.Draggable = true
 
@@ -82,24 +82,31 @@ local function FixLag()
     print("✅ Fix Lag hoàn tất!")
 end
 
-local function ToggleSpeed(enabled)
+local function SeepHack(enabled)
     local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
     if humanoid then
-        humanoid.WalkSpeed = enabled and 300 or 260
-        print("✅ Chạy nhanh: " .. tostring(enabled))
+        if enabled then
+            while enabled do
+                humanoid.WalkSpeed = 300
+                runService.Heartbeat:Wait()
+            end
+        else
+            humanoid.WalkSpeed = 300
+        end
+        print("✅ Seep Hack: " .. tostring(enabled))
     end
 end
 
 local function ToggleJumpPower(enabled)
     local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
     if humanoid then
-        humanoid.JumpPower = enabled and 250 or 350
+        humanoid.JumpPower = enabled and 150 or 250
         print("✅ Nhảy Cao: " .. tostring(enabled))
     end
 end
 
 createToggleButton("🛠️ Fix Lag", 0.15, FixLag)
-createToggleButton("⚡ Chạy Nhanh", 0.3, ToggleSpeed)
+createToggleButton("⚡ Seep Hack", 0.3, SeepHack)
 createToggleButton("🔥 Nhảy Cao", 0.45, ToggleJumpPower)
 
 local fpsLabel = Instance.new("TextLabel", screenGui)
@@ -109,7 +116,7 @@ fpsLabel.BackgroundTransparency = 1
 fpsLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 fpsLabel.Font = Enum.Font.GothamBold
 fpsLabel.TextSize = 16
-fpsLabel.Text = "FPS: Calculating..."
+fpsLabel.Text = "FPS: loading..."
 
 local fps = 0
 runService.Heartbeat:Connect(function() fps = fps + 1 end)
