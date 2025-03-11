@@ -21,8 +21,8 @@ mainFrame.Draggable = true
 mainFrame.Parent = screenGui
 
 local logoButton = Instance.new("ImageButton")
-logoButton.Size = UDim2.new(0, 25, 0, 25)
-logoButton.Position = UDim2.new(0, 10, 0, 10)
+logoButton.Size = UDim2.new(0, 30, 0, 30)
+logoButton.Position = UDim2.new(0, 12, 0, 12)
 logoButton.BackgroundTransparency = 1
 logoButton.Image = "rbxassetid://126229665034471"
 logoButton.Parent = screenGui
