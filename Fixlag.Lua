@@ -24,7 +24,7 @@ local logoButton = Instance.new("ImageButton")
 logoButton.Size = UDim2.new(0, 30, 0, 30)
 logoButton.Position = UDim2.new(0, 12, 0, 12)
 logoButton.BackgroundTransparency = 1
-logoButton.Image = "rbxassetid://126229665034471"
+logoButton.Image = "rbxassetid://93830679692374"
 logoButton.Parent = screenGui
 
 local isUIOpen = true
