@@ -82,18 +82,17 @@ local function FixLag()
     print("✅ Fix Lag hoàn tất!")
 end
 
-local function SeepHack(enabled)
-    local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
+local function SeepHackSpeed(enabled)
+    local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
     if humanoid then
         if enabled then
-            while enabled do
-                humanoid.WalkSpeed = 300
-                runService.Heartbeat:Wait()
-            end
-        else
+            humanoid:SetAttribute("WalkSpeedMultiplier", 10)
             humanoid.WalkSpeed = 300
+        else
+            humanoid:SetAttribute("WalkSpeedMultiplier", 1)
+            humanoid.WalkSpeed = 260
         end
-        print("✅ Seep Hack: " .. tostring(enabled))
+        print("✅ Seep Hack Speed: " .. tostring(enabled))
     end
 end
 
