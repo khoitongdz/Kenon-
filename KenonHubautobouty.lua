@@ -2,7 +2,7 @@ local function obf(x) return string.char(x:byte() + 1) end
 local function deobf(x) return string.char(x:byte() - 1) end
 
 local urls = {
-    "https://shz.al/~098",
+    "https://shz.al/~000",
     "https://raw.githubusercontent.com/khoitongdz/Kenon-/refs/heads/main/Fixlag.Lua",
 }
 
