@@ -123,8 +123,3 @@ spawn(function()
         fps = 0
     end
 end)
-
-player.CharacterAdded:Connect(function()
-    wait(2) -- Đợi nhân vật load xong
-    FixLag()
-end)
