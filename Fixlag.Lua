@@ -97,7 +97,7 @@ end
 local function ToggleJumpPower(enabled)
     local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
     if humanoid then
-        humanoid.JumpPower = enabled and 150 or 50
+        humanoid.JumpPower = enabled and 300 or 50
         print("✅ Nhảy Cao: " .. tostring(enabled))
     end
 end
