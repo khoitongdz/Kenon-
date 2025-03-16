@@ -71,29 +71,14 @@ local function FixLag()
     game.Lighting.GlobalShadows = false
     game.Lighting.FogEnd = 9e9
     game.Lighting.Brightness = 1
-    game.Lighting.Ambient = Color3.new(1,1,1)
-    
     for _, v in pairs(game:GetDescendants()) do
-        if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Trail") or v:IsA("Sparkles") or v:IsA("BillboardGui") or v:IsA("SurfaceGui") or v:IsA("TextLabel") then v:Destroy() end
+        if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Trail") or v:IsA("Sparkles") then v:Destroy() end
         if v:IsA("Decal") or v:IsA("Texture") then v.Transparency = 1 end
         if v:IsA("Sound") then v.Volume = 0 end
-        if v:IsA("BasePart") then v.Material = Enum.Material.SmoothPlastic; v.Color = Color3.fromRGB(200, 200, 200); v.CastShadow = false end
+        if v:IsA("BasePart") then v.Material = Enum.Material.SmoothPlastic; v.Color = Color3.fromRGB(200, 200, 200) end
         if v:IsA("MeshPart") then v.TextureID = ""; v.Color = Color3.fromRGB(200, 200, 200) end
         if v:IsA("Model") and v.Name == "Tree" then v:Destroy() end
-        if v:IsA("ForceField") then v:Destroy() end
-        if v:IsA("Explosion") then v:Destroy() end
     end
-    
-    for _, child in pairs(workspace:GetChildren()) do
-        if child:IsA("Model") and (child.Name == "Tree" or child.Name == "Grass" or child.Name == "Rock") then
-            child:Destroy()
-        end
-    end
-    
-    workspace.DescendantAdded:Connect(function(v)
-        if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Trail") or v:IsA("Sparkles") or v:IsA("BillboardGui") or v:IsA("SurfaceGui") or v:IsA("TextLabel") or v:IsA("Explosion") then v:Destroy() end
-    end)
-    
     print("✅ Fix Lag hoàn tất!")
 end
 
