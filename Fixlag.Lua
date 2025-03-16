@@ -81,29 +81,23 @@ local function FixLag()
     end
     print("✅ Fix Lag hoàn tất!")
 end
-local function SeepHackSpeed(enabled)
- local function ToggleSpeed(enabled)
-local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-if humanoid then
-if enabled then
-humanoid:SetAttribute("WalkSpeedMultiplier", 10)
-humanoid.WalkSpeed = 300
-game:GetService("RunService").Stepped:Connect(function()
-if humanoid and player.Character then
-humanoid.WalkSpeed = 350 
+
+local function SeepHack(enabled)
+    local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        if enabled then
+            humanoid.WalkSpeed = 300
+        else
+            humanoid.WalkSpeed = 16
+        end
+        print("✅ Seep Hack Speed: " .. tostring(enabled))
+    end
 end
-end)
-else
-humanoid:SetAttribute("WalkSpeedMultiplier", 1)
-humanoid.WalkSpeed = 260
-humanoid.WalkSpeed = 16 
-end
-print("✅ Seep Hack Speed: " .. tostring(enabled))
 
 local function ToggleJumpPower(enabled)
     local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
     if humanoid then
-        humanoid.JumpPower = enabled and 150 or 250
+        humanoid.JumpPower = enabled and 150 or 50
         print("✅ Nhảy Cao: " .. tostring(enabled))
     end
 end
@@ -128,4 +122,9 @@ spawn(function()
         fpsLabel.Text = "FPS: " .. fps
         fps = 0
     end
+end)
+
+player.CharacterAdded:Connect(function()
+    wait(2) -- Đợi nhân vật load xong
+    FixLag()
 end)
