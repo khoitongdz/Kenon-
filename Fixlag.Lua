@@ -85,16 +85,7 @@ end
 local function ToggleSpeed(enabled)
     local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
     if humanoid then
-        if enabled then
-            game:GetService("RunService").Stepped:Connect(function()
-                if humanoid and player.Character then
-                    humanoid.WalkSpeed = 350 
-                end
-            end)
-        else
-            humanoid.WalkSpeed = 16 
-        end
-        print("✅ Chạy nhanh: " .. tostring(enabled))
+        humanoid.WalkSpeed = enabled and 300 or 260
     end
 end
 
