@@ -3,7 +3,7 @@
 local executorName = "Không xác định"
 local function detectExecutor()
     if type(synapse) == "table" or pcall(function() loadstring("print('Synapse test')") end) then
-        return "Cực Víp"
+        return "Cực Vip"
     end
     if getrawmetatable and not synapse then
         return "Vip vừa"
@@ -2650,7 +2650,7 @@ v23.BorderSizePixel = 0;
 v23.Position = UDim2.new(0.120833337 - 0.1, 0, 0.0952890813 + 0.01, 0);
 v23.Size = UDim2.new(0, 50, 0, 50);
 v23.Draggable = true;
-v23.Image = "http://www.roblox.com/asset/?id=74685297119537";
+v23.Image = "http://www.roblox.com/asset/?id=105486552530887";
 v24.Parent = v23;
 v24.CornerRadius = UDim.new(0, 12);
 v25.Parent = v23;
@@ -2703,7 +2703,7 @@ v16.Home:AddButton({
 
 v16.Home:AddParagraph({
     Title = "Created By Team Coder:",
-    Content = "HieuDz * DuckNoVis",
+    Content = "KhoitongDZ",
 });
 
 v16.Home:AddParagraph({
@@ -3902,7 +3902,7 @@ if Sea3 then
             _G.AutoFindPrehistoric = false;
             if not v513 then
                 v14:Notify({
-                    Title = "HieuDz Hub Roblox",
+                    Title = "KhoitongDZ Hub Roblox",
                     Content = "Đảo Dung Nham Tìm Thấy",
                     Duration = 10
                 });
@@ -3996,7 +3996,7 @@ if Sea3 then
             _G.AutoFindMirage = false;
             if not v513 then
                 v14:Notify({
-                    Title = "HieuDz Hub Roblox",
+                    Title = "Khoitongdz Hub Roblox",
                     Content = "Đảo Bí Ẩn Tìm Thấy",
                     Duration = 10
                 });
@@ -9354,5 +9354,5 @@ end);
 v14:Notify({
     Title = "Khoitongdz Hub",
     Content = "Load Xong",
-    Duration = 5
+    Duration = 2
 });
