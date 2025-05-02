@@ -1,71 +1,121 @@
--- Kenon Hub | Full Blox Fruits Script (Update 26)
--- Support Executor PC/Mobile | Full UI | Full Features
--- Toggle UI = Click logo icon in bottom left corner
 
-local KenonUI = Instance.new("ScreenGui")
-KenonUI.Name = "KenonHub"
-KenonUI.ResetOnSpawn = false
-KenonUI.DisplayOrder = 999
-KenonUI.ZIndexBehavior = Enum.ZIndexBehavior.Global
-KenonUI.Parent = game.CoreGui
+-- Xoá UI cũ nếu có
+if game.CoreGui:FindFirstChild("FastAttackUI") then
+    game.CoreGui.FastAttackUI:Destroy()
+end
 
-local toggleButton = Instance.new("ImageButton")
-toggleButton.Size = UDim2.new(0, 50, 0, 50)
-toggleButton.Position = UDim2.new(0, 10, 1, -60)
-toggleButton.BackgroundTransparency = 1
-toggleButton.Image = "rbxassetid://105486552530887"
-toggleButton.Parent = KenonUI
+-- Biến toàn cục
+local FastAttack = false
+local AttackSpeed = 0.5
+local UIVisible = false
+local Player = game.Players.LocalPlayer
+local MonFarm = nil
+local PosMon = nil
+local BringMobDistance = 300
 
-local mainUI = Instance.new("Frame")
-mainUI.Size = UDim2.new(0, 600, 0, 400)
-mainUI.Position = UDim2.new(0.5, -300, 0.5, -200)
-mainUI.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-mainUI.BackgroundTransparency = 0.2
-mainUI.BorderSizePixel = 0
-mainUI.Visible = false
-mainUI.Active = true
-mainUI.Draggable = true
-mainUI.Parent = KenonUI
+local SpeedTable = {
+    ["Slow"] = 0.10,
+    ["Normal"] = 0.19,
+    ["Fast"] = 0.12,
+    ["Super Fast"] = 0.5
+}
+local SpeedList = {"Slow", "Normal", "Fast", "Super Fast"}
+local CurrentSpeed = "Normal"
 
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 16)
-UICorner.Parent = mainUI
+-- UI Setup
+local CoreGui = game:GetService("CoreGui")
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "FastAttackUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = syn and syn.protect_gui and syn.protect_gui(ScreenGui) or CoreGui
 
--- UI Title
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 40)
-title.BackgroundTransparency = 1
-title.Text = "Kenon Hub | Blox Fruits"
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.TextSize = 24
-title.Font = Enum.Font.GothamBold
-title.Parent = mainUI
+-- Nút bật/tắt UI
+local ToggleBtn = Instance.new("TextButton", ScreenGui)
+ToggleBtn.Size = UDim2.new(0, 100, 0, 40)
+ToggleBtn.Position = UDim2.new(0, 10, 0.4, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+ToggleBtn.Text = "OFF"
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
+ToggleBtn.TextSize = 16
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.AutoButtonColor = false
+Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0, 10)
 
--- Toggle UI
-local visible = false
-toggleButton.MouseButton1Click:Connect(function()
-    visible = not visible
-    mainUI.Visible = visible
+-- Frame chính
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 250, 0, 160)
+Frame.Position = UDim2.new(0.5, -125, 0.5, -80)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.Visible = false
+Frame.Active = true
+Frame.Draggable = true
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 10)
+
+local Title = Instance.new("TextLabel", Frame)
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.BackgroundTransparency = 1
+Title.Text = "⚡ Fram Skibiditolet"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+-- Toggle Fast Attack
+local Toggle = Instance.new("TextButton", Frame)
+Toggle.Size = UDim2.new(1, -20, 0, 30)
+Toggle.Position = UDim2.new(0, 10, 0, 40)
+Toggle.Text = "🔄 Fram quái: OFF"
+Toggle.Font = Enum.Font.Gotham
+Toggle.TextSize = 16
+Toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+Toggle.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+Instance.new("UICorner", Toggle).CornerRadius = UDim.new(0, 6)
+
+-- Dropdown Speed
+local Drop = Instance.new("TextButton", Frame)
+Drop.Size = UDim2.new(1, -20, 0, 30)
+Drop.Position = UDim2.new(0, 10, 0, 80)
+Drop.Text = "⚙️ Speed: Normal"
+Drop.Font = Enum.Font.Gotham
+Drop.TextSize = 16
+Drop.TextColor3 = Color3.fromRGB(255, 255, 255)
+Drop.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+Instance.new("UICorner", Drop).CornerRadius = UDim.new(0, 6)
+
+-- Nút xóa UI
+local Close = Instance.new("TextButton", Frame)
+Close.Size = UDim2.new(1, -20, 0, 30)
+Close.Position = UDim2.new(0, 10, 0, 120)
+Close.Text = "🗑 Xoá UI"
+Close.Font = Enum.Font.GothamBold
+Close.TextSize = 16
+Close.TextColor3 = Color3.fromRGB(255, 100, 100)
+Close.BackgroundColor3 = Color3.fromRGB(50, 0, 0)
+Instance.new("UICorner", Close).CornerRadius = UDim.new(0, 6)
+
+-- Logic Toggle
+Toggle.MouseButton1Click:Connect(function()
+    FastAttack = not FastAttack
+    Toggle.Text = FastAttack and "🔄 Fram quái: ON" or "🔄 Fram quái: OFF"
 end)
 
--- Loader for all features
-loadstring(game:HttpGet("https://raw.githubusercontent.com/khoitongdz/Kenon-/refs/heads/main/KenonHubautobouty.lua"))()
+-- Logic đổi tốc độ
+local index = 2
+Drop.MouseButton1Click:Connect(function()
+    index = index % #SpeedList + 1
+    CurrentSpeed = SpeedList[index]
+    AttackSpeed = SpeedTable[CurrentSpeed]
+    Drop.Text = "⚙️ Speed: " .. CurrentSpeed
+end)
 
--- Show loading
-local loading = Instance.new("TextLabel")
-loading.Size = UDim2.new(1, 0, 1, 0)
-loading.Position = UDim2.new(0, 0, 0, 0)
-loading.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-loading.BackgroundTransparency = 0.3
-loading.Text = "Kenon Loading..."
-loading.TextColor3 = Color3.new(1, 1, 1)
-loading.TextSize = 36
-loading.Font = Enum.Font.GothamBold
-loading.ZIndex = 9999
-loading.Parent = KenonUI
+-- Xoá UI
+Close.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
 
-task.wait(5)
-loading:Destroy()
-
--- End UI base
--- Make sure the script 'core.lua' contains all features (AutoFarm, Webhook, etc.)
+-- Bật/tắt UI bằng nút
+ToggleBtn.MouseButton1Click:Connect(function()
+    UIVisible = not UIVisible
+    Frame.Visible = UIVisible
+    ToggleBtn.Text = UIVisible and "ON" or "OFF"
+    ToggleBtn.TextColor3 = UIVisible and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
+end)
